@@ -1,0 +1,144 @@
+---
+title: 'Introduction'
+description: 'Terrain-intelligent routing and spatial analysis API'
+---
+
+## Footstep Routing API
+
+The Routing API provides terrain-intelligent routing, elevation queries, and spatial analysis. Every routing response includes terrain analytics by default — ascent, descent, grade profiles, and difficulty classification — without any extra configuration.
+
+### Design philosophy
+
+Every endpoint works with just coordinates. Send locations, get a route with full terrain intelligence:
+
+```json
+POST /v1/routing/route
+{
+  "locations": [
+    { "lat": 51.5322, "lon": -0.1240 },
+    { "lat": 51.5055, "lon": -0.0754 }
+  ]
+}
+```
+
+No transport mode, no options, no configuration required. The defaults give you a car route with terrain analytics, turn-by-turn directions, and an elevation profile.
+
+Power users can tune behaviour with optional parameters — `costing` to change transport mode, `costing_options` for mode-specific preferences (hill avoidance, walking speed, vehicle dimensions), `elevation_interval` to control elevation sampling density, and `language` for localised navigation instructions.
+
+### Response conventions
+
+Every response uses self-documenting field names with explicit units:
+
+- `distance_m` — distance in meters
+- `duration_s` — duration in seconds
+- `grade_percent` — grade as a percentage
+- `speed_kph` — speed in km/h
+- `elevation_m` — elevation in meters
+
+All values are in meters and seconds regardless of the `units` request parameter. The `units` field in the response echoes your request value for reference only.
+
+### Endpoints
+
+All endpoints are `POST` requests under `/v1/routing/`:
+
+| Endpoint | Description |
+|----------|-------------|
+| [`POST /route`](/api/endpoint/route) | Route between locations with terrain analytics and turn-by-turn directions |
+| [`POST /optimize`](/api/endpoint/optimize) | Travelling salesman — optimise visit order for multiple stops |
+| [`POST /snap`](/api/endpoint/snap) | Map-match GPS traces to the road network |
+| [`POST /elevation`](/api/endpoint/elevation) | Elevation queries with computed summary statistics |
+| [`POST /isochrone`](/api/endpoint/isochrone) | Time or distance-based reachability polygons |
+| [`POST /matrix`](/api/endpoint/matrix) | Time/distance matrices for logistics and dispatching |
+| [`POST /locate`](/api/endpoint/locate) | Snap coordinates to the nearest road with metadata |
+
+### Authentication
+
+All endpoints require an API key passed via the `x-api-key` header. See the [authentication guide](/authentication) for details on key format, states, and security practices.
+
+```bash
+curl -X POST https://api.footstep.ai/v1/routing/route \
+  -H "x-api-key: sk_live_your_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"locations": [{"lat": 51.5322, "lon": -0.1240}, {"lat": 51.5055, "lon": -0.0754}]}'
+```
+
+### Transport modes
+
+All routing endpoints accept a `costing` parameter to select the transport mode:
+
+| Mode | Description |
+|------|-------------|
+| `auto` | Car routing (default). Respects one-way streets, turn restrictions, and road hierarchy |
+| `pedestrian` | Walking and hiking. Factors in terrain grade, avoids motorways, supports SAC hiking difficulty scale |
+| `bicycle` | Cycling. Considers surface type, hill gradients. Supports road, hybrid, cross, and mountain bike types |
+| `bus` | Bus routing. Similar to auto with bus-specific road access |
+| `truck` | Truck routing. Respects vehicle height, width, weight, and axle load restrictions |
+
+Each mode has its own `costing_options` for fine-tuning. For example, `pedestrian` supports `use_hills` (0 = avoid hills, 1 = prefer hills), `walking_speed` (0.5–25 km/h), and `max_hiking_difficulty` (0–6, SAC hiking scale). See the [route endpoint](/api/endpoint/route) for the full schema.
+
+### Multi-format support
+
+Every endpoint accepts a `format` parameter:
+
+| Format | Content-Type | Best for |
+|--------|-------------|----------|
+| `footstep` (default) | `application/json` | App developers. Compact encoded polyline geometry, flat structure, optimised DX |
+| `geojson` | `application/geo+json` | GIS tools. Standard GeoJSON FeatureCollection with decoded coordinates |
+
+GeoJSON responses work directly with Leaflet, Mapbox GL, deck.gl, and QGIS — no transformation needed.
+
+```json
+{
+  "locations": [...],
+  "format": "geojson"
+}
+```
+
+### Terrain analytics
+
+Routing responses include a `terrain` object at both the route and per-leg level:
+
+```json
+{
+  "terrain": {
+    "total_ascent_m": 12.4,
+    "total_descent_m": 8.1,
+    "max_elevation_m": 28,
+    "min_elevation_m": 5,
+    "avg_grade_percent": 1.2,
+    "max_grade_percent": 4.5,
+    "elevation_profile": [
+      { "distance_m": 0, "elevation_m": 22 },
+      { "distance_m": 30, "elevation_m": 20 }
+    ],
+    "difficulty": "flat"
+  }
+}
+```
+
+The `elevation_profile` is an array of distance/elevation points sampled along the route. Control the sampling interval with the `elevation_interval` parameter (10–200 meters, default 30).
+
+The `difficulty` classification is based on average and maximum grade:
+
+| Difficulty | Average grade | Maximum grade |
+|------------|---------------|---------------|
+| `flat` | < 2% | < 5% |
+| `rolling` | < 4% | < 8% |
+| `hilly` | < 6% | < 15% |
+| `mountainous` | >= 6% | >= 15% |
+
+### Route flags
+
+Every route and leg includes a `flags` object indicating infrastructure used:
+
+```json
+{
+  "flags": {
+    "has_toll": false,
+    "has_highway": true,
+    "has_ferry": false
+  }
+}
+```
+
+Use these to inform users about tolls, filter routes, or display warnings in your UI.

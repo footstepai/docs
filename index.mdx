@@ -1,97 +1,43 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Footstep API"
+description: "Terrain-intelligent geospatial APIs"
 ---
 
-## Setting up
+## Getting started
 
-Get your documentation site up and running in minutes.
+Footstep provides terrain-intelligent routing and spatial analysis APIs. Every response includes elevation analytics by default — just send coordinates.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<Columns cols={3}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Make your first API call in under a minute.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Authentication" icon="key" href="/authentication">
+    API key setup and security.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Errors" icon="triangle-exclamation" href="/errors">
+    Error codes and retry strategies.
   </Card>
 </Columns>
 
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
+## Endpoints
 
 <Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+  <Card title="Route" icon="route" href="/api/endpoint/route">
+    Turn-by-turn directions with terrain analytics.
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="Optimise" icon="arrows-rotate" href="/api/endpoint/optimize">
+    Travelling salesman — optimise visit order.
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="Snap" icon="map-pin" href="/api/endpoint/snap">
+    Map-match GPS traces to roads.
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="Elevation" icon="mountain" href="/api/endpoint/elevation">
+    Query elevation with computed summaries.
+  </Card>
+  <Card title="Isochrone" icon="circle-nodes" href="/api/endpoint/isochrone">
+    Time and distance-based reachability.
+  </Card>
+  <Card title="Matrix" icon="table-cells" href="/api/endpoint/matrix">
+    Time/distance matrices for logistics.
   </Card>
 </Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>

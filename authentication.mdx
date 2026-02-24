@@ -1,0 +1,85 @@
+---
+title: "Authentication"
+description: "Authenticate requests with your API key"
+---
+
+Every request to the Footstep API must include an API key. This page explains how keys work, what happens when authentication fails, and how to keep your keys secure.
+
+## How it works
+
+Pass your API key in the `x-api-key` header on every request. The API validates the key before processing — if it's missing, malformed, or invalid, the request is rejected immediately.
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.footstep.ai/v1/routing/route \
+  -H "x-api-key: sk_live_your_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"locations": [{"lat": 51.5322, "lon": -0.1240}, {"lat": 51.5055, "lon": -0.0754}]}'
+```
+
+```javascript JavaScript
+const response = await fetch("https://api.footstep.ai/v1/routing/route", {
+  method: "POST",
+  headers: {
+    "x-api-key": process.env.FOOTSTEP_API_KEY,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    locations: [
+      { lat: 51.5322, lon: -0.1240 },
+      { lat: 51.5055, lon: -0.0754 },
+    ],
+  }),
+});
+```
+
+```python Python
+import os
+import requests
+
+response = requests.post(
+    "https://api.footstep.ai/v1/routing/route",
+    headers={"x-api-key": os.environ["FOOTSTEP_API_KEY"]},
+    json={
+        "locations": [
+            {"lat": 51.5322, "lon": -0.1240},
+            {"lat": 51.5055, "lon": -0.0754},
+        ]
+    },
+)
+```
+</CodeGroup>
+
+## Key format
+
+All API keys follow the format `sk_live_*` (e.g. `sk_live_abc123def456`). If the key you're sending doesn't start with `sk_live_`, the API will reject it with a `401`.
+
+Create and manage keys at [console.footstep.ai](https://console.footstep.ai).
+
+## Key states
+
+Keys can be in one of several states. The API checks the key's state on every request:
+
+| State | HTTP status | Error message | What to do |
+|-------|-------------|---------------|------------|
+| Active | `200` | — | Key is working normally |
+| Suspended | `403` | `API key is suspended` | Contact support — your key has been temporarily disabled |
+| Revoked | `403` | `API key has been revoked` | Generate a new key in the console. Revoked keys cannot be reactivated |
+| Not found | `403` | `Invalid API key` | Check for typos. If correct, the key may have been deleted |
+| Missing or malformed | `401` | `Missing or invalid API key format` | Ensure you're sending the `x-api-key` header with a valid `sk_live_*` key |
+
+<Note>
+A `401` means the request had no valid key at all. A `403` means the key was recognised but isn't allowed — it's been suspended, revoked, or doesn't exist.
+</Note>
+
+## Security best practices
+
+<Warning>
+API keys are for server-side use only. Never expose them in frontend code, mobile apps, or browser JavaScript. Anyone who has your key can make requests on your behalf.
+</Warning>
+
+- **Use environment variables** — store keys in `FOOTSTEP_API_KEY` or your platform's secret manager, not in source code.
+- **Never include keys in query strings** — query strings appear in server logs, browser history, and CDN caches. Always use the `x-api-key` header.
+- **Rotate keys regularly** — generate a new key in the console, update your services, then revoke the old one.
+- **Use separate keys per environment** — different keys for development, staging, and production make it easier to rotate and audit.
+- **Restrict access** — only share keys with services that need them. If a key is compromised, revoke it immediately and generate a replacement.
