@@ -32,6 +32,10 @@
 - Alt text on all images
 - Relative paths for internal links
 
+## Changelog
+- When any API signature changes (new endpoints, removed endpoints, renamed fields, changed request/response shapes, new parameters, changed defaults), always add or suggest an entry in changelog.mdx
+- Entries should be dated and concise, describing what changed and any migration steps if breaking
+
 ## Git workflow
 - NEVER use --no-verify when committing
 - Ask how to handle uncommitted changes before starting
