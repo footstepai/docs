@@ -16,7 +16,7 @@ Every error response has the same structure:
 }
 ```
 
-The `error` field is a stable, machine-readable code you can match on in your code. The `message` field is a human-readable explanation that may change over time — don't parse it programmatically.
+The `error` field is a stable, machine-readable code you can match on in your code. The `message` field is a human-readable explanation that may change over time, so don't parse it programmatically.
 
 ## Error codes
 
@@ -35,7 +35,7 @@ These indicate a problem with the request. Fix the issue before retrying.
 
 ### Server errors (5xx)
 
-These indicate a problem on our side. These are usually transient — wait and retry.
+These indicate a problem on our side. They are usually transient and safe to retry.
 
 | HTTP status | Code | Description | Common cause |
 |-------------|------|-------------|--------------|
@@ -113,7 +113,7 @@ if not response.ok:
 
 ## Retry strategy
 
-Some errors are transient and safe to retry. Use exponential backoff with jitter to avoid thundering herd problems — where all your retries hit the server at the same time:
+Some errors are transient and safe to retry. Use exponential backoff with jitter to avoid thundering herd problems, where all your retries hit the server at the same time:
 
 ```javascript
 async function fetchWithRetry(url, options, maxRetries = 3) {
@@ -149,10 +149,10 @@ Make sure you're using the `x-api-key` header (not `Authorization` or `api-key`)
 </Accordion>
 
 <Accordion title="Getting 400 with valid-looking coordinates">
-Check that latitude is between -90 and 90, and longitude is between -180 and 180. A common mistake is swapping lat/lon — if your latitude is something like `51.5` but your longitude is `151.2`, the coordinates may point to an area with no road network data.
+Check that latitude is between -90 and 90, and longitude is between -180 and 180. A common mistake is swapping lat/lon. If your latitude is something like `51.5` but your longitude is `151.2`, the coordinates may point to an area with no road network data.
 </Accordion>
 
 <Accordion title="Getting 503 intermittently">
-The routing engine may be restarting during a deployment. These are transient — retry with backoff and they'll resolve within a few seconds. If `503` errors persist for more than a minute, contact [support@footstep.ai](mailto:support@footstep.ai).
+The routing engine may be restarting during a deployment. These are transient. Retry with backoff and they'll resolve within a few seconds. If `503` errors persist for more than a minute, contact [support@footstep.ai](mailto:support@footstep.ai).
 </Accordion>
 </AccordionGroup>

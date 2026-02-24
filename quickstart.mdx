@@ -3,13 +3,13 @@ title: "Quickstart"
 description: "Make your first API call in under a minute"
 ---
 
-Footstep is a routing API that adds terrain intelligence to every response. Send two coordinates and you get back directions, distance, duration, and a full elevation breakdown — ascent, descent, grade profiles, and a difficulty classification — all in one call.
+Footstep is a routing API that adds terrain intelligence to every response. Send two coordinates and you get back directions, distance, duration, and a full elevation breakdown (ascent, descent, grade profiles, and a difficulty classification) in one call.
 
 This guide walks you through your first request.
 
 ## Get an API key
 
-Sign up at [console.footstep.ai](https://console.footstep.ai) and create an API key. Your key will look like `sk_live_abc123...` — keep it safe, as it's used to authenticate every request.
+Sign up at [console.footstep.ai](https://console.footstep.ai) and create an API key. Your key will look like `sk_live_abc123...`. Keep it safe, as it's used to authenticate every request.
 
 <Warning>
 API keys are for server-side use only. Never expose them in frontend code, mobile apps, or anywhere a user could inspect network traffic.
@@ -17,7 +17,7 @@ API keys are for server-side use only. Never expose them in frontend code, mobil
 
 ## Your first request
 
-Every routing request needs at least two locations — a start and an end. Each location is a `lat`/`lon` pair. Here's a route from King's Cross to Tower Bridge in London:
+Every routing request needs at least two locations: a start and an end. Each location is a `lat`/`lon` pair. Here's a route from King's Cross to Tower Bridge in London:
 
 <CodeGroup>
 ```bash cURL
@@ -68,7 +68,7 @@ data = response.json()
 ```
 </CodeGroup>
 
-That's all you need. No transport mode, no options, no configuration — the defaults give you a car route with full terrain analytics.
+That's all you need. No transport mode, no options, no configuration. The defaults give you a car route with full terrain analytics.
 
 ## Understand the response
 
@@ -123,7 +123,7 @@ Here's what the key fields mean:
 | `legs[].steps[]` | Turn-by-turn directions with distance and time per manoeuvre |
 
 <Note>
-All field names include their unit — `distance_m` is always meters, `duration_s` is always seconds, `grade_percent` is always a percentage. This is true regardless of the `units` parameter you send in the request.
+All field names include their unit. `distance_m` is always meters, `duration_s` is always seconds, `grade_percent` is always a percentage. This is true regardless of the `units` parameter you send in the request.
 </Note>
 
 ## Change transport mode
@@ -143,16 +143,16 @@ The default mode is `auto` (car). You can switch to walking, cycling, or other m
 | Mode | Use case |
 |------|----------|
 | `auto` | Car routing (default) |
-| `pedestrian` | Walking and hiking — factors in terrain, avoids motorways |
-| `bicycle` | Cycling — considers surface type and hill gradients |
+| `pedestrian` | Walking and hiking. Factors in terrain, avoids motorways |
+| `bicycle` | Cycling. Considers surface type and hill gradients |
 | `bus` | Bus routing |
-| `truck` | Truck routing — respects vehicle dimensions and weight limits |
+| `truck` | Truck routing. Respects vehicle dimensions and weight limits |
 
 Each mode produces different routes and terrain analytics. A `pedestrian` route through hilly terrain will show significantly different `difficulty` and grade profiles compared to the same coordinates with `auto`.
 
 ## Try GeoJSON format
 
-By default, responses use the `footstep` format — compact JSON with encoded polyline geometry. If you're working with mapping libraries or GIS tools, you can request GeoJSON instead:
+By default, responses use the `footstep` format, which is compact JSON with encoded polyline geometry. If you're working with mapping libraries or GIS tools, you can request GeoJSON instead:
 
 ```json
 {

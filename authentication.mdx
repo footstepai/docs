@@ -7,7 +7,7 @@ Every request to the Footstep API must include an API key. This page explains ho
 
 ## How it works
 
-Pass your API key in the `x-api-key` header on every request. The API validates the key before processing — if it's missing, malformed, or invalid, the request is rejected immediately.
+Pass your API key in the `x-api-key` header on every request. The API validates the key before processing. If it's missing, malformed, or invalid, the request is rejected immediately.
 
 <CodeGroup>
 ```bash cURL
@@ -63,13 +63,13 @@ Keys can be in one of several states. The API checks the key's state on every re
 | State | HTTP status | Error message | What to do |
 |-------|-------------|---------------|------------|
 | Active | `200` | — | Key is working normally |
-| Suspended | `403` | `API key is suspended` | Contact support — your key has been temporarily disabled |
+| Suspended | `403` | `API key is suspended` | Contact support. Your key has been temporarily disabled |
 | Revoked | `403` | `API key has been revoked` | Generate a new key in the console. Revoked keys cannot be reactivated |
 | Not found | `403` | `Invalid API key` | Check for typos. If correct, the key may have been deleted |
 | Missing or malformed | `401` | `Missing or invalid API key format` | Ensure you're sending the `x-api-key` header with a valid `sk_live_*` key |
 
 <Note>
-A `401` means the request had no valid key at all. A `403` means the key was recognised but isn't allowed — it's been suspended, revoked, or doesn't exist.
+A `401` means the request had no valid key at all. A `403` means the key was recognised but isn't allowed: it's been suspended, revoked, or doesn't exist.
 </Note>
 
 ## Security best practices
@@ -78,8 +78,8 @@ A `401` means the request had no valid key at all. A `403` means the key was rec
 API keys are for server-side use only. Never expose them in frontend code, mobile apps, or browser JavaScript. Anyone who has your key can make requests on your behalf.
 </Warning>
 
-- **Use environment variables** — store keys in `FOOTSTEP_API_KEY` or your platform's secret manager, not in source code.
-- **Never include keys in query strings** — query strings appear in server logs, browser history, and CDN caches. Always use the `x-api-key` header.
-- **Rotate keys regularly** — generate a new key in the console, update your services, then revoke the old one.
-- **Use separate keys per environment** — different keys for development, staging, and production make it easier to rotate and audit.
-- **Restrict access** — only share keys with services that need them. If a key is compromised, revoke it immediately and generate a replacement.
+- **Use environment variables.** Store keys in `FOOTSTEP_API_KEY` or your platform's secret manager, not in source code.
+- **Never include keys in query strings.** Query strings appear in server logs, browser history, and CDN caches. Always use the `x-api-key` header.
+- **Rotate keys regularly.** Generate a new key in the console, update your services, then revoke the old one.
+- **Use separate keys per environment.** Different keys for development, staging, and production make it easier to rotate and audit.
+- **Restrict access.** Only share keys with services that need them. If a key is compromised, revoke it immediately and generate a replacement.

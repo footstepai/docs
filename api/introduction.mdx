@@ -5,7 +5,7 @@ description: 'Terrain-intelligent routing and spatial analysis API'
 
 ## Footstep Routing API
 
-The Routing API provides terrain-intelligent routing, elevation queries, and spatial analysis. Every routing response includes terrain analytics by default — ascent, descent, grade profiles, and difficulty classification — without any extra configuration.
+The Routing API provides terrain-intelligent routing, elevation queries, and spatial analysis. Every routing response includes terrain analytics by default: ascent, descent, grade profiles, and difficulty classification, without any extra configuration.
 
 ### Design philosophy
 
@@ -23,7 +23,7 @@ POST /v1/routing/route
 
 No transport mode, no options, no configuration required. The defaults give you a car route with terrain analytics, turn-by-turn directions, and an elevation profile.
 
-Power users can tune behaviour with optional parameters — `costing` to change transport mode, `costing_options` for mode-specific preferences (hill avoidance, walking speed, vehicle dimensions), `elevation_interval` to control elevation sampling density, and `language` for localised navigation instructions.
+Power users can tune behaviour with optional parameters: `costing` to change transport mode, `costing_options` for mode-specific preferences (hill avoidance, walking speed, vehicle dimensions), `elevation_interval` to control elevation sampling density, and `language` for localised navigation instructions.
 
 ### Response conventions
 
@@ -44,7 +44,7 @@ All endpoints are `POST` requests under `/v1/routing/`:
 | Endpoint | Description |
 |----------|-------------|
 | [`POST /route`](/api/endpoint/route) | Route between locations with terrain analytics and turn-by-turn directions |
-| [`POST /optimize`](/api/endpoint/optimize) | Travelling salesman — optimise visit order for multiple stops |
+| [`POST /optimize`](/api/endpoint/optimize) | Travelling salesman: optimise visit order for multiple stops |
 | [`POST /snap`](/api/endpoint/snap) | Map-match GPS traces to the road network |
 | [`POST /elevation`](/api/endpoint/elevation) | Elevation queries with computed summary statistics |
 | [`POST /isochrone`](/api/endpoint/isochrone) | Time or distance-based reachability polygons |
@@ -85,7 +85,7 @@ Every endpoint accepts a `format` parameter:
 | `footstep` (default) | `application/json` | App developers. Compact encoded polyline geometry, flat structure, optimised DX |
 | `geojson` | `application/geo+json` | GIS tools. Standard GeoJSON FeatureCollection with decoded coordinates |
 
-GeoJSON responses work directly with Leaflet, Mapbox GL, deck.gl, and QGIS — no transformation needed.
+GeoJSON responses work directly with Leaflet, Mapbox GL, deck.gl, and QGIS with no transformation needed.
 
 ```json
 {
