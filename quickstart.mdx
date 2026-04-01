@@ -1,11 +1,9 @@
 ---
 title: "Quickstart"
-description: "Make your first API call in under a minute"
+description: "First API calls for routing and geocoding"
 ---
 
-Send two coordinates, get back directions with full terrain analytics. Send text, get back coordinates with confidence scores. No SDK required.
-
-This guide walks you through your first requests.
+This guide covers routing between two coordinates and geocoding an address. You'll need an API key from [console.footstep.ai](https://console.footstep.ai).
 
 ## Get an API key
 
@@ -68,7 +66,7 @@ data = response.json()
 ```
 </CodeGroup>
 
-That's all you need. No transport mode, no options, no configuration. The defaults give you a car route with full terrain analytics.
+The defaults return a car route with terrain analytics. You can change this with the `travel` parameter.
 
 ## Understand the response
 
