@@ -3,9 +3,9 @@ title: "Quickstart"
 description: "Make your first API call in under a minute"
 ---
 
-Footstep is a routing API that adds terrain intelligence to every response. Send two coordinates and you get back directions, distance, duration, and a full elevation breakdown (ascent, descent, grade profiles, and a difficulty classification) in one call.
+Send two coordinates, get back directions with full terrain analytics. Send text, get back coordinates with confidence scores. No SDK required.
 
-This guide walks you through your first request.
+This guide walks you through your first requests.
 
 ## Get an API key
 
@@ -77,31 +77,31 @@ The response contains a `route` object with everything you need:
 ```json
 {
   "route": {
-    "distance_m": 5765,
-    "duration_s": 812,
+    "distance_meters": 5765,
+    "duration_seconds": 812,
     "terrain": {
-      "total_ascent_m": 12.4,
-      "total_descent_m": 8.1,
-      "max_elevation_m": 28,
-      "min_elevation_m": 5,
+      "total_ascent_meters": 12.4,
+      "total_descent_meters": 8.1,
+      "max_elevation_meters": 28,
+      "min_elevation_meters": 5,
       "avg_grade_percent": 1.2,
       "max_grade_percent": 4.5,
       "elevation_profile": [
-        { "distance_m": 0, "elevation_m": 22 },
-        { "distance_m": 500, "elevation_m": 18 },
-        { "distance_m": 1000, "elevation_m": 15 }
+        { "distance_meters": 0, "elevation_meters": 22 },
+        { "distance_meters": 500, "elevation_meters": 18 },
+        { "distance_meters": 1000, "elevation_meters": 15 }
       ],
       "difficulty": "flat"
     },
     "legs": [
       {
-        "distance_m": 5765,
-        "duration_s": 812,
+        "distance_meters": 5765,
+        "duration_seconds": 812,
         "steps": [
           {
             "instruction": "Drive north on Midland Road.",
-            "distance_m": 120,
-            "duration_s": 15
+            "distance_meters": 120,
+            "duration_seconds": 15
           }
         ]
       }
@@ -114,21 +114,21 @@ Here's what the key fields mean:
 
 | Field | What it tells you |
 |-------|-------------------|
-| `distance_m` | Total route distance in meters |
-| `duration_s` | Estimated travel time in seconds |
-| `terrain.total_ascent_m` | Total climbing over the route in meters |
-| `terrain.total_descent_m` | Total descending over the route in meters |
+| `distance_meters` | Total route distance in meters |
+| `duration_seconds` | Estimated travel time in seconds |
+| `terrain.total_ascent_meters` | Total climbing over the route in meters |
+| `terrain.total_descent_meters` | Total descending over the route in meters |
 | `terrain.elevation_profile` | Array of distance/elevation points for charting |
 | `terrain.difficulty` | Overall classification: `flat`, `rolling`, `hilly`, or `mountainous` |
 | `legs[].steps[]` | Turn-by-turn directions with distance and time per manoeuvre |
 
 <Note>
-All field names include their unit. `distance_m` is always meters, `duration_s` is always seconds, `grade_percent` is always a percentage. This is true regardless of the `units` parameter you send in the request.
+All field names include their unit. `distance_meters` is always meters, `duration_seconds` is always seconds, `grade_percent` is always a percentage. This is true regardless of the `units` parameter you send in the request.
 </Note>
 
-## Change transport mode
+## Change how you travel
 
-The default mode is `auto` (car). You can switch to walking, cycling, or other modes using the `costing` parameter:
+The default is `auto` (car). You can switch to walking, cycling, or other travel types using the `travel` parameter:
 
 ```json
 {
@@ -136,19 +136,19 @@ The default mode is `auto` (car). You can switch to walking, cycling, or other m
     { "lat": 51.5322, "lon": -0.1240 },
     { "lat": 51.5055, "lon": -0.0754 }
   ],
-  "costing": "pedestrian"
+  "travel": "pedestrian"
 }
 ```
 
-| Mode | Use case |
-|------|----------|
+| Travel | Use case |
+|--------|----------|
 | `auto` | Car routing (default) |
 | `pedestrian` | Walking and hiking. Factors in terrain, avoids motorways |
 | `bicycle` | Cycling. Considers surface type and hill gradients |
 | `bus` | Bus routing |
 | `truck` | Truck routing. Respects vehicle dimensions and weight limits |
 
-Each mode produces different routes and terrain analytics. A `pedestrian` route through hilly terrain will show significantly different `difficulty` and grade profiles compared to the same coordinates with `auto`.
+Each travel type produces different routes and terrain analytics. A `pedestrian` route through hilly terrain will show significantly different `difficulty` and grade profiles compared to the same coordinates with `auto`.
 
 ## Try GeoJSON format
 
@@ -166,16 +166,70 @@ By default, responses use the `footstep` format, which is compact JSON with enco
 
 This returns a standard [GeoJSON FeatureCollection](https://datatracker.ietf.org/doc/html/rfc7946) with decoded coordinate arrays. You can paste the response directly into [geojson.io](https://geojson.io) to visualise it, or load it into Leaflet, Mapbox GL, deck.gl, or QGIS without any transformation.
 
+## Try geocoding
+
+Geocoding converts text into coordinates. Search for any address, place, or landmark:
+
+<CodeGroup>
+```bash cURL
+curl "https://api.footstep.ai/v1/geocoding/search?text=Buckingham+Palace" \
+  -H "x-api-key: sk_live_your_key_here"
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "https://api.footstep.ai/v1/geocoding/search?text=Buckingham+Palace",
+  { headers: { "x-api-key": "sk_live_your_key_here" } }
+);
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.footstep.ai/v1/geocoding/search",
+    headers={"x-api-key": "sk_live_your_key_here"},
+    params={"text": "Buckingham Palace"},
+)
+
+data = response.json()
+```
+</CodeGroup>
+
+Every result includes a confidence score and the data source it came from:
+
+```json
+{
+  "results": [
+    {
+      "coordinates": { "lat": 51.5014, "lng": -0.1419 },
+      "label": "Buckingham Palace, London, England, United Kingdom",
+      "name": "Buckingham Palace",
+      "confidence": 0.95,
+      "layer": "venue",
+      "source": "openstreetmap"
+    }
+  ]
+}
+```
+
+Use `focus.point` to bias results towards a location (e.g. the user's city) and `boundary.country` to restrict to specific countries. See the [geocoding guide](/api/geocoding) for the full set of parameters and endpoints.
+
 ## Next steps
 
-<Columns cols={3}>
+<Columns cols={2}>
+  <Card title="Routing API" icon="route" href="/api/routing">
+    Terrain-intelligent routing, elevation, and spatial analysis.
+  </Card>
+  <Card title="Geocoding API" icon="magnifying-glass" href="/api/geocoding">
+    Search, reverse geocode, autocomplete, and batch processing.
+  </Card>
   <Card title="Authentication" icon="key" href="/authentication">
     How API keys work, key states, and security practices.
   </Card>
   <Card title="Errors" icon="triangle-exclamation" href="/errors">
     Error codes, what triggers them, and how to handle retries.
-  </Card>
-  <Card title="API reference" icon="rocket" href="/api/introduction">
-    Full documentation for all seven endpoints.
   </Card>
 </Columns>

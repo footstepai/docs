@@ -1,11 +1,11 @@
 ---
 title: "Footstep API"
-description: "Terrain-intelligent geospatial APIs"
+description: "Geospatial APIs with terrain intelligence built in"
 ---
 
 ## Getting started
 
-Footstep provides terrain-intelligent routing and spatial analysis APIs. Every response includes elevation analytics by default. Just send coordinates.
+Send coordinates, get directions with full terrain analytics. Send text, get coordinates with confidence scores. Every response is self-documenting. No configuration required.
 
 <Columns cols={3}>
   <Card title="Quickstart" icon="bolt" href="/quickstart">
@@ -19,17 +19,16 @@ Footstep provides terrain-intelligent routing and spatial analysis APIs. Every r
   </Card>
 </Columns>
 
-## Endpoints
+## Routing
+
+Directions, optimisation, elevation, and spatial analysis with terrain intelligence built in.
 
 <Columns cols={2}>
   <Card title="Route" icon="route" href="/api/endpoint/route">
     Turn-by-turn directions with terrain analytics.
   </Card>
   <Card title="Optimise" icon="arrows-rotate" href="/api/endpoint/optimize">
-    Travelling salesman: optimise visit order.
-  </Card>
-  <Card title="Snap" icon="map-pin" href="/api/endpoint/snap">
-    Map-match GPS traces to roads.
+    Find the best order to visit multiple stops.
   </Card>
   <Card title="Elevation" icon="mountain" href="/api/endpoint/elevation">
     Query elevation with computed summaries.
@@ -39,5 +38,24 @@ Footstep provides terrain-intelligent routing and spatial analysis APIs. Every r
   </Card>
   <Card title="Matrix" icon="table-cells" href="/api/endpoint/matrix">
     Time/distance matrices for logistics.
+  </Card>
+</Columns>
+
+## Geocoding
+
+Search for addresses, reverse geocode coordinates, and process address data at scale. Built on open data with no user tracking.
+
+<Columns cols={2}>
+  <Card title="Search" icon="magnifying-glass" href="/api/endpoint/search">
+    Text to coordinates. Any address, place, or landmark.
+  </Card>
+  <Card title="Reverse" icon="location-crosshairs" href="/api/endpoint/reverse">
+    Coordinates to address. Find what's at a lat/lng.
+  </Card>
+  <Card title="Autocomplete" icon="keyboard" href="/api/endpoint/autocomplete">
+    Typeahead suggestions as the user types.
+  </Card>
+  <Card title="Batch" icon="list-check" href="/api/endpoint/batch">
+    Geocode up to 1,000 addresses in one request.
   </Card>
 </Columns>

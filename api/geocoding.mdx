@@ -1,0 +1,114 @@
+---
+title: 'Introduction'
+description: 'Privacy-first geocoding built on open data'
+---
+
+## Footstep Geocoding API
+
+The Geocoding API converts between text and coordinates. Search for an address and get back coordinates, or send coordinates and get back an address. Built entirely on open data (OpenStreetMap, Who's on First, OpenAddresses, and GeoNames) with no user tracking.
+
+### Design philosophy
+
+Every request is one line. Send text, get coordinates:
+
+```bash
+curl "https://api.footstep.ai/v1/geocoding/search?text=Buckingham+Palace" \
+  -H "x-api-key: sk_live_your_key_here"
+```
+
+No configuration, no setup, no SDK required. Every result includes a confidence score (0-1) and the data source it came from, so you always know how reliable a match is and where the data originated.
+
+### Response conventions
+
+Every geocoding result uses the same shape:
+
+```json
+{
+  "coordinates": { "lat": 51.5014, "lng": -0.1419 },
+  "label": "Buckingham Palace, London, England, United Kingdom",
+  "name": "Buckingham Palace",
+  "country": "United Kingdom",
+  "country_code": "GBR",
+  "region": "England",
+  "locality": "London",
+  "confidence": 0.95,
+  "layer": "venue",
+  "source": "openstreetmap"
+}
+```
+
+| Field | What it tells you |
+|-------|-------------------|
+| `coordinates` | WGS 84 latitude and longitude |
+| `label` | Pre-formatted display string |
+| `confidence` | 0 to 1. How well this result matched your query |
+| `layer` | What type of place this is (see below) |
+| `source` | Which dataset this result came from |
+
+### Layers
+
+Filter results by type using the `layers` parameter:
+
+| Layer | Description | Example |
+|-------|-------------|---------|
+| `venue` | Named places: businesses, landmarks, parks | Buckingham Palace |
+| `address` | Street addresses | 10 Downing Street |
+| `street` | Street names without house numbers | Oxford Street |
+| `neighbourhood` | Neighbourhoods and suburbs | Shoreditch |
+| `locality` | Cities and towns | London |
+| `county` | Counties and districts | Greater London |
+| `region` | States, provinces, regions | England |
+| `country` | Countries | United Kingdom |
+
+### Data sources
+
+All data is open and auditable. No proprietary black box.
+
+| Source | What it provides |
+|--------|-----------------|
+| OpenStreetMap | Venues, addresses, streets, and place boundaries worldwide |
+| Who's on First | Administrative boundaries (cities, regions, countries) with stable identifiers |
+| OpenAddresses | Machine-readable street addresses from authoritative government sources |
+| GeoNames | Global gazetteer of populated places and geographic features |
+
+### Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [`GET /search`](/api/endpoint/search) | Text to coordinates. Search for any address, place, or landmark |
+| [`GET /structured-search`](/api/endpoint/structured-search) | Text to coordinates. Search by address components (street, city, postcode) |
+| [`GET /reverse`](/api/endpoint/reverse) | Coordinates to address. Find what's at a given lat/lng |
+| [`GET /autocomplete`](/api/endpoint/autocomplete) | Typeahead suggestions as the user types |
+| [`POST /batch`](/api/endpoint/batch) | Geocode up to 1,000 addresses in a single request |
+| [`GET /parse`](/api/endpoint/parse) | Break a free-text address into structured components |
+
+### When to use which
+
+| You want to... | Use |
+|-----------------|-----|
+| Build a search box with suggestions | [Autocomplete](/api/endpoint/autocomplete) |
+| Geocode a known address | [Search](/api/endpoint/search) |
+| Geocode address fields from a database | [Structured search](/api/endpoint/structured-search) |
+| Find what's at a map pin | [Reverse](/api/endpoint/reverse) |
+| Process a spreadsheet of addresses | [Batch](/api/endpoint/batch) |
+| Clean messy address data before geocoding | [Parse](/api/endpoint/parse) → [Structured search](/api/endpoint/structured-search) |
+
+### Focus and boundary
+
+Two shared parameters work across search and autocomplete:
+
+**`focus.point`** biases results towards a location without excluding distant matches. Useful when "Springfield" should prefer the one near your user, not the largest one globally.
+
+```
+/v1/geocoding/search?text=Springfield&focus.point.lat=39.78&focus.point.lon=-89.65
+```
+
+**`boundary.country`** restricts results to one or more countries. Pass ISO 3166-1 alpha-3 codes:
+
+```
+/v1/geocoding/search?text=London&boundary.country=GBR
+```
+
+### Authentication
+
+All endpoints require an API key passed via the `x-api-key` header. See the [authentication guide](/authentication) for details.

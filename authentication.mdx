@@ -62,7 +62,7 @@ Keys can be in one of several states. The API checks the key's state on every re
 
 | State | HTTP status | Error message | What to do |
 |-------|-------------|---------------|------------|
-| Active | `200` | — | Key is working normally |
+| Active | `200` | - | Key is working normally |
 | Suspended | `403` | `API key is suspended` | Contact support. Your key has been temporarily disabled |
 | Revoked | `403` | `API key has been revoked` | Generate a new key in the console. Revoked keys cannot be reactivated |
 | Not found | `403` | `Invalid API key` | Check for typos. If correct, the key may have been deleted |

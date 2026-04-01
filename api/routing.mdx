@@ -23,17 +23,17 @@ POST /v1/routing/route
 
 No transport mode, no options, no configuration required. The defaults give you a car route with terrain analytics, turn-by-turn directions, and an elevation profile.
 
-Power users can tune behaviour with optional parameters: `costing` to change transport mode, `costing_options` for mode-specific preferences (hill avoidance, walking speed, vehicle dimensions), `elevation_interval` to control elevation sampling density, and `language` for localised navigation instructions.
+Power users can tune behaviour with optional parameters: `travel` to change how you travel, `travel_options` for fine-tuning preferences (hill avoidance, walking speed, vehicle dimensions), `elevation_interval` to control elevation sampling density, and `language` for localised navigation instructions.
 
 ### Response conventions
 
 Every response uses self-documenting field names with explicit units:
 
-- `distance_m` — distance in meters
-- `duration_s` — duration in seconds
-- `grade_percent` — grade as a percentage
-- `speed_kph` — speed in km/h
-- `elevation_m` — elevation in meters
+- `distance_meters` - distance in meters
+- `duration_seconds` - duration in seconds
+- `grade_percent` - grade as a percentage
+- `speed_kph` - speed in km/h
+- `elevation_meters` - elevation in meters
 
 All values are in meters and seconds regardless of the `units` request parameter. The `units` field in the response echoes your request value for reference only.
 
@@ -44,7 +44,7 @@ All endpoints are `POST` requests under `/v1/routing/`:
 | Endpoint | Description |
 |----------|-------------|
 | [`POST /route`](/api/endpoint/route) | Route between locations with terrain analytics and turn-by-turn directions |
-| [`POST /optimize`](/api/endpoint/optimize) | Travelling salesman: optimise visit order for multiple stops |
+| [`POST /optimize`](/api/endpoint/optimize) | Find the best order to visit multiple stops |
 | [`POST /snap`](/api/endpoint/snap) | Map-match GPS traces to the road network |
 | [`POST /elevation`](/api/endpoint/elevation) | Elevation queries with computed summary statistics |
 | [`POST /isochrone`](/api/endpoint/isochrone) | Time or distance-based reachability polygons |
@@ -62,19 +62,19 @@ curl -X POST https://api.footstep.ai/v1/routing/route \
   -d '{"locations": [{"lat": 51.5322, "lon": -0.1240}, {"lat": 51.5055, "lon": -0.0754}]}'
 ```
 
-### Transport modes
+### Travel types
 
-All routing endpoints accept a `costing` parameter to select the transport mode:
+All routing endpoints accept a `travel` parameter:
 
-| Mode | Description |
-|------|-------------|
+| Travel | Description |
+|--------|-------------|
 | `auto` | Car routing (default). Respects one-way streets, turn restrictions, and road hierarchy |
 | `pedestrian` | Walking and hiking. Factors in terrain grade, avoids motorways, supports SAC hiking difficulty scale |
 | `bicycle` | Cycling. Considers surface type, hill gradients. Supports road, hybrid, cross, and mountain bike types |
 | `bus` | Bus routing. Similar to auto with bus-specific road access |
 | `truck` | Truck routing. Respects vehicle height, width, weight, and axle load restrictions |
 
-Each mode has its own `costing_options` for fine-tuning. For example, `pedestrian` supports `use_hills` (0 = avoid hills, 1 = prefer hills), `walking_speed` (0.5–25 km/h), and `max_hiking_difficulty` (0–6, SAC hiking scale). See the [route endpoint](/api/endpoint/route) for the full schema.
+Each travel type has its own `travel_options` for fine-tuning. For example, `pedestrian` supports `use_hills` (0 = avoid hills, 1 = prefer hills), `walking_speed` (0.5-25 km/h), and `max_hiking_difficulty` (0-6, SAC hiking scale). See the [route endpoint](/api/endpoint/route) for the full schema.
 
 ### Multi-format support
 
@@ -101,22 +101,22 @@ Routing responses include a `terrain` object at both the route and per-leg level
 ```json
 {
   "terrain": {
-    "total_ascent_m": 12.4,
-    "total_descent_m": 8.1,
-    "max_elevation_m": 28,
-    "min_elevation_m": 5,
+    "total_ascent_meters": 12.4,
+    "total_descent_meters": 8.1,
+    "max_elevation_meters": 28,
+    "min_elevation_meters": 5,
     "avg_grade_percent": 1.2,
     "max_grade_percent": 4.5,
     "elevation_profile": [
-      { "distance_m": 0, "elevation_m": 22 },
-      { "distance_m": 30, "elevation_m": 20 }
+      { "distance_meters": 0, "elevation_meters": 22 },
+      { "distance_meters": 30, "elevation_meters": 20 }
     ],
     "difficulty": "flat"
   }
 }
 ```
 
-The `elevation_profile` is an array of distance/elevation points sampled along the route. Control the sampling interval with the `elevation_interval` parameter (10–200 meters, default 30).
+The `elevation_profile` is an array of distance/elevation points sampled along the route. Control the sampling interval with the `elevation_interval` parameter (10-200 meters, default 30).
 
 The `difficulty` classification is based on average and maximum grade:
 

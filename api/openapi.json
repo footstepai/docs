@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Footstep Routing API",
-    "description": "Terrain-intelligent routing, elevation, and spatial analysis. Every response includes terrain analytics by default. All responses use self-documenting field names (distance_m, duration_s, grade_percent) and support two formats: footstep (default, compact) and geojson (standard GeoJSON).",
+    "title": "Footstep API",
+    "description": "Terrain-intelligent routing, geocoding, elevation, and spatial analysis. Every routing response includes terrain analytics by default. All responses use self-documenting field names (distance_meters, duration_seconds, grade_percent) and support two formats: footstep (default, compact) and geojson (standard GeoJSON).",
     "version": "1.0.0"
   },
   "servers": [
@@ -45,8 +45,8 @@
                       { "lat": 51.5322, "lon": -0.1240 },
                       { "lat": 51.5055, "lon": -0.0754 }
                     ],
-                    "costing": "pedestrian",
-                    "costing_options": { "pedestrian": { "use_hills": 0.2 } },
+                    "travel": "pedestrian",
+                    "travel_options": { "pedestrian": { "use_hills": 0.2 } },
                     "elevation_interval": 20
                   }
                 },
@@ -82,7 +82,7 @@
         "operationId": "getElevation",
         "summary": "Get elevation data for points or a path",
         "description": "Query elevation values for coordinates or an encoded polyline. Returns height values with a computed summary including ascent, descent, min/max/avg elevation.",
-        "tags": ["Analysis"],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -131,7 +131,7 @@
       "post": {
         "operationId": "optimizeRoute",
         "summary": "Optimise visit order for multiple stops",
-        "description": "Solve the travelling salesman problem: find the optimal order to visit locations. Returns the optimised route with terrain analytics and savings (distance and time) compared to the original order.",
+        "description": "Find the optimal order to visit multiple locations. Returns the optimised route with terrain analytics and savings (distance and time) compared to the original order.",
         "tags": ["Routing"],
         "requestBody": {
           "required": true,
@@ -217,8 +217,8 @@
       "post": {
         "operationId": "calculateIsochrone",
         "summary": "Calculate reachability polygons",
-        "description": "Generate time or distance-based reachability contours from a location. Default format returns structured contours with geometry. Use format=geojson for a standard GeoJSON FeatureCollection. Supports terrain-aware reachability via costing_options.",
-        "tags": ["Analysis"],
+        "description": "Generate time or distance-based reachability contours from a location. Default format returns structured contours with geometry. Use format=geojson for a standard GeoJSON FeatureCollection. Supports terrain-aware reachability via travel_options.",
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -229,7 +229,7 @@
                   "summary": "15-minute walking isochrone",
                   "value": {
                     "locations": [{ "lat": 51.5322, "lon": -0.1240 }],
-                    "costing": "pedestrian",
+                    "travel": "pedestrian",
                     "contours": [
                       { "time": 5, "color": "ff0000" },
                       { "time": 10, "color": "ffff00" },
@@ -241,7 +241,7 @@
                   "summary": "5km cycling range",
                   "value": {
                     "locations": [{ "lat": 51.5322, "lon": -0.1240 }],
-                    "costing": "bicycle",
+                    "travel": "bicycle",
                     "contours": [{ "distance": 5.0 }]
                   }
                 }
@@ -266,8 +266,8 @@
       "post": {
         "operationId": "calculateMatrix",
         "summary": "Calculate time/distance matrix",
-        "description": "Compute a time and distance matrix between sources and targets. Returns a 2D matrix indexed by [source][target] with distance_m and duration_s for each pair. Null cells indicate unreachable pairs. All distances are in meters regardless of request units.",
-        "tags": ["Analysis"],
+        "description": "Compute a time and distance matrix between sources and targets. Returns a 2D matrix indexed by [source][target] with distance_meters and duration_seconds for each pair. Null cells indicate unreachable pairs. All distances are in meters regardless of request units.",
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -296,7 +296,7 @@
             "description": "Time/distance matrix",
             "content": {
               "application/json": { "schema": { "$ref": "#/components/schemas/MatrixResponse" } },
-              "application/geo+json": { "schema": { "type": "object", "description": "GeoJSON FeatureCollection where each source-target pair is a Feature with straight-line LineString geometry. Properties include distance_m, duration_s, and source/target indices." } }
+              "application/geo+json": { "schema": { "type": "object", "description": "GeoJSON FeatureCollection where each source-target pair is a Feature with straight-line LineString geometry. Properties include distance_meters, duration_seconds, and source/target indices." } }
             }
           },
           "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
@@ -309,7 +309,7 @@
         "operationId": "locateOnRoad",
         "summary": "Snap coordinates to the nearest road",
         "description": "Check if coordinates are on a routable road and get the nearest snapped position. Returns distance, on-road status, and optionally edge metadata (road class, surface, speed).",
-        "tags": ["Analysis"],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -349,14 +349,606 @@
         }
       }
     },
-    "/v1/routing/valhalla-status": {
+    "/v1/geocoding/search": {
       "get": {
-        "operationId": "getValhallaStatus",
-        "summary": "Check routing engine status",
-        "description": "Check whether the Valhalla routing engine is configured and available.",
-        "tags": ["System"],
+        "operationId": "geocodingSearch",
+        "summary": "Search for a place or address",
+        "description": "Forward geocode: convert a text query (address, place name, landmark) into geographic coordinates. Results are ranked by relevance. Use focus.point to bias results towards a location. Use boundary.country to restrict to specific countries.",
+        "tags": ["Geocoding"],
+        "parameters": [
+          {
+            "name": "text",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Search text (address, place name, landmark)"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 40, "default": 10 },
+            "description": "Maximum number of results"
+          },
+          {
+            "name": "focus.point.lat",
+            "in": "query",
+            "schema": { "type": "number", "minimum": -90, "maximum": 90 },
+            "description": "Latitude to bias results towards"
+          },
+          {
+            "name": "focus.point.lon",
+            "in": "query",
+            "schema": { "type": "number", "minimum": -180, "maximum": 180 },
+            "description": "Longitude to bias results towards"
+          },
+          {
+            "name": "boundary.country",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes (e.g. GBR,USA)"
+          },
+          {
+            "name": "layers",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated layers to filter: venue, address, street, locality, region, country"
+          }
+        ],
         "responses": {
-          "200": { "description": "Valhalla status", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValhallaStatusResponse" } } } }
+          "200": {
+            "description": "Geocoding results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodingSearchResponse" },
+                "examples": {
+                  "basic": {
+                    "summary": "Search for London",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 51.5074, "lng": -0.1278 },
+                          "label": "London, England, United Kingdom",
+                          "name": "London",
+                          "country": "United Kingdom",
+                          "country_code": "GBR",
+                          "region": "England",
+                          "locality": "London",
+                          "confidence": 0.95,
+                          "layer": "locality",
+                          "source": "whosonfirst"
+                        }
+                      ],
+                      "query": { "text": "London", "size": 10 }
+                    }
+                  },
+                  "with_focus": {
+                    "summary": "Bias towards a location",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 39.7817, "lng": -89.6501 },
+                          "label": "Springfield, Illinois, United States",
+                          "name": "Springfield",
+                          "country": "United States",
+                          "country_code": "USA",
+                          "region": "Illinois",
+                          "locality": "Springfield",
+                          "confidence": 0.92,
+                          "layer": "locality",
+                          "source": "whosonfirst"
+                        }
+                      ],
+                      "query": { "text": "Springfield", "size": 10 }
+                    }
+                  },
+                  "with_country": {
+                    "summary": "Restrict to UK",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 51.5034, "lng": -0.1276 },
+                          "label": "10 Downing Street, London, England, United Kingdom",
+                          "name": "10 Downing Street",
+                          "country": "United Kingdom",
+                          "country_code": "GBR",
+                          "region": "England",
+                          "locality": "London",
+                          "confidence": 0.98,
+                          "layer": "address",
+                          "source": "openaddresses"
+                        }
+                      ],
+                      "query": { "text": "10 Downing Street", "size": 10 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/geocoding/reverse": {
+      "get": {
+        "operationId": "geocodingReverse",
+        "summary": "Reverse geocode coordinates",
+        "description": "Reverse geocode: convert geographic coordinates into a human-readable address or place name. Returns the nearest matching locations sorted by proximity.",
+        "tags": ["Geocoding"],
+        "parameters": [
+          {
+            "name": "point.lat",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number", "minimum": -90, "maximum": 90 },
+            "description": "Latitude of the point to reverse geocode"
+          },
+          {
+            "name": "point.lon",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number", "minimum": -180, "maximum": 180 },
+            "description": "Longitude of the point to reverse geocode"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 40, "default": 1 },
+            "description": "Maximum number of results"
+          },
+          {
+            "name": "boundary.circle.radius",
+            "in": "query",
+            "schema": { "type": "number" },
+            "description": "Search radius in kilometers"
+          },
+          {
+            "name": "layers",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated layers to filter: venue, address, street, locality, region, country"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reverse geocoding results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodingReverseResponse" },
+                "examples": {
+                  "basic": {
+                    "summary": "Reverse geocode central London",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 51.5074, "lng": -0.1278 },
+                          "label": "10 Downing Street, London, England, United Kingdom",
+                          "name": "10 Downing Street",
+                          "country": "United Kingdom",
+                          "country_code": "GBR",
+                          "region": "England",
+                          "locality": "London",
+                          "confidence": 0.9,
+                          "layer": "address",
+                          "source": "openstreetmap"
+                        }
+                      ],
+                      "query": { "lat": 51.5034, "lon": -0.1276, "size": 1 }
+                    }
+                  },
+                  "with_layers": {
+                    "summary": "Only return localities",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 51.5074, "lng": -0.1278 },
+                          "label": "London, England, United Kingdom",
+                          "name": "London",
+                          "country": "United Kingdom",
+                          "country_code": "GBR",
+                          "region": "England",
+                          "locality": "London",
+                          "confidence": 0.85,
+                          "layer": "locality",
+                          "source": "whosonfirst"
+                        }
+                      ],
+                      "query": { "lat": 51.5034, "lon": -0.1276, "size": 1 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/geocoding/autocomplete": {
+      "get": {
+        "operationId": "geocodingAutocomplete",
+        "summary": "Autocomplete place search",
+        "description": "Typeahead search: get suggestions as the user types. Optimised for low-latency responses. Use focus.point to bias results towards the user's current location.",
+        "tags": ["Geocoding"],
+        "parameters": [
+          {
+            "name": "text",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Partial text input for typeahead suggestions"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 40, "default": 10 },
+            "description": "Maximum number of results"
+          },
+          {
+            "name": "focus.point.lat",
+            "in": "query",
+            "schema": { "type": "number", "minimum": -90, "maximum": 90 },
+            "description": "Latitude to bias results towards"
+          },
+          {
+            "name": "focus.point.lon",
+            "in": "query",
+            "schema": { "type": "number", "minimum": -180, "maximum": 180 },
+            "description": "Longitude to bias results towards"
+          },
+          {
+            "name": "boundary.country",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes (e.g. GBR,USA)"
+          },
+          {
+            "name": "layers",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated layers to filter: venue, address, street, locality, region, country"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Autocomplete suggestions",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodingAutocompleteResponse" },
+                "examples": {
+                  "basic": {
+                    "summary": "Typeahead for 'Buck'",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 51.5014, "lng": -0.1419 },
+                          "label": "Buckingham Palace, London, England, United Kingdom",
+                          "name": "Buckingham Palace",
+                          "country": "United Kingdom",
+                          "country_code": "GBR",
+                          "region": "England",
+                          "locality": "London",
+                          "confidence": 0.9,
+                          "layer": "venue",
+                          "source": "openstreetmap"
+                        }
+                      ],
+                      "query": { "text": "Buck", "size": 10 }
+                    }
+                  },
+                  "with_focus": {
+                    "summary": "Bias towards user location",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 40.7484, "lng": -73.9857 },
+                          "label": "Empire State Building, New York, United States",
+                          "name": "Empire State Building",
+                          "country": "United States",
+                          "country_code": "USA",
+                          "region": "New York",
+                          "locality": "New York",
+                          "confidence": 0.88,
+                          "layer": "venue",
+                          "source": "openstreetmap"
+                        }
+                      ],
+                      "query": { "text": "Empire", "size": 10 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/geocoding/structured-search": {
+      "get": {
+        "operationId": "geocodingStructuredSearch",
+        "summary": "Search by address components",
+        "description": "Forward geocode using structured address components instead of free text. More precise than text search when you already have address fields separated (e.g. from a database or form). Provide as many fields as you have. The more you provide, the more accurate the result.",
+        "tags": ["Geocoding"],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "House number and street (e.g. '10 Downing Street')"
+          },
+          {
+            "name": "neighbourhood",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Neighbourhood or suburb"
+          },
+          {
+            "name": "locality",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "City or town"
+          },
+          {
+            "name": "county",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "County or district"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "State, province, or region"
+          },
+          {
+            "name": "postalcode",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Postal or ZIP code"
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "ISO 3166-1 alpha-3 country code (e.g. GBR, USA)"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 40, "default": 10 },
+            "description": "Maximum number of results"
+          },
+          {
+            "name": "layers",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated layers to filter: venue, address, street, locality, region, country"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Geocoding results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodingSearchResponse" },
+                "examples": {
+                  "full_address": {
+                    "summary": "Full UK address",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 51.5034, "lng": -0.1276 },
+                          "label": "10 Downing Street, London, England, United Kingdom",
+                          "name": "10 Downing Street",
+                          "country": "United Kingdom",
+                          "country_code": "GBR",
+                          "region": "England",
+                          "locality": "London",
+                          "confidence": 0.98,
+                          "layer": "address",
+                          "source": "openaddresses"
+                        }
+                      ],
+                      "query": { "text": "", "size": 10 }
+                    }
+                  },
+                  "city_country": {
+                    "summary": "City and country only",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 48.8566, "lng": 2.3522 },
+                          "label": "Paris, Île-de-France, France",
+                          "name": "Paris",
+                          "country": "France",
+                          "country_code": "FRA",
+                          "region": "Île-de-France",
+                          "locality": "Paris",
+                          "confidence": 0.95,
+                          "layer": "locality",
+                          "source": "whosonfirst"
+                        }
+                      ],
+                      "query": { "text": "", "size": 10 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/geocoding/batch": {
+      "post": {
+        "operationId": "geocodingBatch",
+        "summary": "Geocode up to 1,000 addresses in one request",
+        "description": "Batch geocode a list of addresses in a single request. Each item can be free text or structured address components. Results are returned per-item with the original index preserved, so failed items don't break the batch. Use this for spreadsheet imports, database enrichment, or any bulk geocoding task.",
+        "tags": ["Geocoding"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GeocodingBatchRequest" },
+              "examples": {
+                "free_text": {
+                  "summary": "Free-text batch",
+                  "value": {
+                    "items": [
+                      { "text": "Buckingham Palace, London" },
+                      { "text": "Eiffel Tower, Paris" },
+                      { "text": "Colosseum, Rome" }
+                    ]
+                  }
+                },
+                "structured": {
+                  "summary": "Structured batch",
+                  "value": {
+                    "items": [
+                      { "address": "10 Downing Street", "locality": "London", "country": "GBR" },
+                      { "address": "1600 Pennsylvania Ave", "locality": "Washington", "region": "DC", "country": "USA" }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch geocoding results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodingBatchResponse" },
+                "examples": {
+                  "success": {
+                    "summary": "Mixed results",
+                    "value": {
+                      "results": [
+                        {
+                          "index": 0,
+                          "results": [
+                            {
+                              "coordinates": { "lat": 51.5014, "lng": -0.1419 },
+                              "label": "Buckingham Palace, London, England, United Kingdom",
+                              "name": "Buckingham Palace",
+                              "country": "United Kingdom",
+                              "country_code": "GBR",
+                              "region": "England",
+                              "locality": "London",
+                              "confidence": 0.95,
+                              "layer": "venue",
+                              "source": "openstreetmap"
+                            }
+                          ]
+                        },
+                        {
+                          "index": 1,
+                          "results": [
+                            {
+                              "coordinates": { "lat": 48.8584, "lng": 2.2945 },
+                              "label": "Eiffel Tower, Paris, Île-de-France, France",
+                              "name": "Eiffel Tower",
+                              "country": "France",
+                              "country_code": "FRA",
+                              "region": "Île-de-France",
+                              "locality": "Paris",
+                              "confidence": 0.96,
+                              "layer": "venue",
+                              "source": "openstreetmap"
+                            }
+                          ]
+                        },
+                        {
+                          "index": 2,
+                          "results": [
+                            {
+                              "coordinates": { "lat": 41.8902, "lng": 12.4922 },
+                              "label": "Colosseum, Rome, Lazio, Italy",
+                              "name": "Colosseum",
+                              "country": "Italy",
+                              "country_code": "ITA",
+                              "region": "Lazio",
+                              "locality": "Rome",
+                              "confidence": 0.97,
+                              "layer": "venue",
+                              "source": "openstreetmap"
+                            }
+                          ]
+                        }
+                      ],
+                      "summary": { "total": 3, "matched": 3, "failed": 0 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/geocoding/parse": {
+      "get": {
+        "operationId": "geocodingParse",
+        "summary": "Parse a free-text address into components",
+        "description": "Break a free-text address into structured components (house number, road, city, state, postcode, country). Use this to normalise messy address data before passing it to structured search, or to understand what parts of an address were recognised.",
+        "tags": ["Geocoding"],
+        "parameters": [
+          {
+            "name": "text",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Free-text address to parse"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parsed address components",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodingParseResponse" },
+                "examples": {
+                  "uk_address": {
+                    "summary": "UK address",
+                    "value": {
+                      "input": "10 Downing Street, London SW1A 2AA, United Kingdom",
+                      "components": {
+                        "house_number": "10",
+                        "road": "Downing Street",
+                        "city": "London",
+                        "postcode": "SW1A 2AA",
+                        "country": "United Kingdom"
+                      }
+                    }
+                  },
+                  "us_address": {
+                    "summary": "US address",
+                    "value": {
+                      "input": "1600 Pennsylvania Avenue NW, Washington, DC 20500",
+                      "components": {
+                        "house_number": "1600",
+                        "road": "Pennsylvania Avenue NW",
+                        "city": "Washington",
+                        "state": "DC",
+                        "postcode": "20500"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
         }
       }
     }
@@ -385,9 +977,9 @@
         "default": "footstep",
         "description": "Response format. footstep = optimised for app developers (encoded polyline, flat structure). geojson = standard GeoJSON FeatureCollection (decoded coordinates, immediately usable in Leaflet/Mapbox GL/deck.gl)."
       },
-      "CostingOptions": {
+      "TravelOptions": {
         "type": "object",
-        "description": "Mode-specific tuning. Include only the key matching your costing mode.",
+        "description": "Fine-tuning options. Include only the key matching your travel type.",
         "properties": {
           "auto": {
             "type": "object",
@@ -508,7 +1100,7 @@
       },
       "Step": {
         "type": "object",
-        "required": ["type", "instruction", "street_names", "distance_m", "duration_s", "begin_shape_index", "end_shape_index", "travel_mode", "flags"],
+        "required": ["type", "instruction", "street_names", "distance_meters", "duration_seconds", "begin_shape_index", "end_shape_index", "travel_mode", "flags"],
         "description": "A turn-by-turn navigation step",
         "properties": {
           "type": { "$ref": "#/components/schemas/StepType" },
@@ -516,8 +1108,8 @@
           "verbal_alert": { "type": "string", "description": "Spoken alert before the step" },
           "verbal_instruction": { "type": "string", "description": "Spoken instruction at the step" },
           "street_names": { "type": "array", "items": { "type": "string" }, "description": "Street name(s) for this step" },
-          "distance_m": { "type": "number", "description": "Step distance in meters" },
-          "duration_s": { "type": "number", "description": "Step duration in seconds" },
+          "distance_meters": { "type": "number", "description": "Step distance in meters" },
+          "duration_seconds": { "type": "number", "description": "Step duration in seconds" },
           "begin_shape_index": { "type": "number", "description": "Index into the leg shape where this step starts" },
           "end_shape_index": { "type": "number", "description": "Index into the leg shape where this step ends" },
           "travel_mode": { "type": "string", "description": "Mode of travel: drive, pedestrian, bicycle, transit" },
@@ -532,18 +1124,18 @@
       "TerrainSummary": {
         "type": "object",
         "description": "Terrain analytics computed from elevation data. Included automatically in routing responses.",
-        "required": ["total_ascent_m", "total_descent_m", "max_elevation_m", "min_elevation_m", "avg_grade_percent", "max_grade_percent", "elevation_profile", "difficulty"],
+        "required": ["total_ascent_meters", "total_descent_meters", "max_elevation_meters", "min_elevation_meters", "avg_grade_percent", "max_grade_percent", "elevation_profile", "difficulty"],
         "properties": {
-          "total_ascent_m": { "type": "number", "description": "Total uphill gain in meters" },
-          "total_descent_m": { "type": "number", "description": "Total downhill loss in meters" },
-          "max_elevation_m": { "type": "number", "description": "Highest point" },
-          "min_elevation_m": { "type": "number", "description": "Lowest point" },
+          "total_ascent_meters": { "type": "number", "description": "Total uphill gain in meters" },
+          "total_descent_meters": { "type": "number", "description": "Total downhill loss in meters" },
+          "max_elevation_meters": { "type": "number", "description": "Highest point" },
+          "min_elevation_meters": { "type": "number", "description": "Lowest point" },
           "avg_grade_percent": { "type": "number", "description": "Average absolute grade %" },
           "max_grade_percent": { "type": "number", "description": "Maximum absolute grade %" },
           "elevation_profile": {
             "type": "array",
             "description": "Sampled elevation profile for charting",
-            "items": { "type": "object", "required": ["distance_m", "elevation_m"], "properties": { "distance_m": { "type": "number" }, "elevation_m": { "type": "number" } } }
+            "items": { "type": "object", "required": ["distance_meters", "elevation_meters"], "properties": { "distance_meters": { "type": "number" }, "elevation_meters": { "type": "number" } } }
           },
           "difficulty": { "type": "string", "enum": ["flat", "rolling", "hilly", "mountainous"], "description": "Terrain difficulty classification based on grade distribution" }
         }
@@ -559,11 +1151,11 @@
       },
       "Leg": {
         "type": "object",
-        "required": ["distance_m", "duration_s", "shape", "steps", "terrain", "flags", "bounds"],
+        "required": ["distance_meters", "duration_seconds", "shape", "steps", "terrain", "flags", "bounds"],
         "description": "A route leg between two waypoints",
         "properties": {
-          "distance_m": { "type": "number", "description": "Leg distance in meters" },
-          "duration_s": { "type": "number", "description": "Leg duration in seconds" },
+          "distance_meters": { "type": "number", "description": "Leg distance in meters" },
+          "duration_seconds": { "type": "number", "description": "Leg duration in seconds" },
           "shape": { "type": "string", "description": "Encoded polyline6 geometry" },
           "steps": { "type": "array", "items": { "$ref": "#/components/schemas/Step" }, "description": "Turn-by-turn navigation steps" },
           "terrain": { "$ref": "#/components/schemas/TerrainSummary" },
@@ -573,28 +1165,28 @@
       },
       "Route": {
         "type": "object",
-        "required": ["waypoints", "legs", "distance_m", "duration_s", "flags", "bounds", "terrain", "units"],
+        "required": ["waypoints", "legs", "distance_meters", "duration_seconds", "flags", "bounds", "terrain", "units"],
         "description": "A complete route with terrain analytics",
         "properties": {
           "waypoints": { "type": "array", "items": { "$ref": "#/components/schemas/Waypoint" } },
           "legs": { "type": "array", "items": { "$ref": "#/components/schemas/Leg" } },
-          "distance_m": { "type": "number", "description": "Total route distance in meters" },
-          "duration_s": { "type": "number", "description": "Total route duration in seconds" },
+          "distance_meters": { "type": "number", "description": "Total route distance in meters" },
+          "duration_seconds": { "type": "number", "description": "Total route duration in seconds" },
           "flags": { "$ref": "#/components/schemas/RouteFlags" },
           "bounds": { "$ref": "#/components/schemas/BoundingBox" },
           "terrain": { "$ref": "#/components/schemas/TerrainSummary" },
-          "units": { "type": "string", "description": "Echo of request units (informational only — response values are always in meters/seconds)" }
+          "units": { "type": "string", "description": "Echo of request units (informational only, response values are always in meters/seconds)" }
         }
       },
       "ElevationSummary": {
         "type": "object",
-        "required": ["total_ascent_m", "total_descent_m", "max_elevation_m", "min_elevation_m", "avg_elevation_m"],
+        "required": ["total_ascent_meters", "total_descent_meters", "max_elevation_meters", "min_elevation_meters", "avg_elevation_meters"],
         "properties": {
-          "total_ascent_m": { "type": "number" },
-          "total_descent_m": { "type": "number" },
-          "max_elevation_m": { "type": "number" },
-          "min_elevation_m": { "type": "number" },
-          "avg_elevation_m": { "type": "number" }
+          "total_ascent_meters": { "type": "number" },
+          "total_descent_meters": { "type": "number" },
+          "max_elevation_meters": { "type": "number" },
+          "min_elevation_meters": { "type": "number" },
+          "avg_elevation_meters": { "type": "number" }
         }
       },
       "Error": {
@@ -610,8 +1202,8 @@
         "required": ["locations"],
         "properties": {
           "locations": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 2, "maxItems": 20, "description": "Waypoints (min 2, max 20)" },
-          "costing": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto", "description": "Transport mode" },
-          "costing_options": { "$ref": "#/components/schemas/CostingOptions" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto", "description": "How to travel: auto (car), pedestrian, bicycle, bus, or truck" },
+          "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
           "units": { "type": "string", "enum": ["kilometers", "miles"], "default": "kilometers" },
           "language": { "type": "string", "default": "en-GB", "description": "Language for instructions" },
           "elevation_interval": { "type": "number", "minimum": 10, "maximum": 200, "default": 30, "description": "Elevation sampling interval in meters" },
@@ -644,7 +1236,7 @@
         "properties": {
           "shape": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" } },
           "height": { "type": "array", "items": { "type": "number" }, "description": "Elevations (when range=false)" },
-          "range_height": { "type": "array", "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }, "description": "[distance_m, elevation_m] tuples (when range=true)" },
+          "range_height": { "type": "array", "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }, "description": "[distance_meters, elevation_meters] tuples (when range=true)" },
           "summary": { "$ref": "#/components/schemas/ElevationSummary" }
         }
       },
@@ -653,8 +1245,8 @@
         "required": ["locations"],
         "properties": {
           "locations": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 4, "maxItems": 50, "description": "Locations (min 4 for TSP)" },
-          "costing": { "type": "string", "enum": ["auto", "bicycle", "pedestrian"], "default": "auto" },
-          "costing_options": { "$ref": "#/components/schemas/CostingOptions" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian"], "default": "auto" },
+          "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
           "units": { "type": "string", "enum": ["kilometers", "miles"], "default": "kilometers" },
           "elevation_interval": { "type": "number", "minimum": 10, "maximum": 200, "default": 30 },
           "format": { "$ref": "#/components/schemas/Format" }
@@ -668,12 +1260,12 @@
           "optimized_order": { "type": "array", "items": { "type": "number" }, "description": "Original location indices in optimised visit order" },
           "savings": {
             "type": "object",
-            "required": ["distance_saved_m", "distance_saved_percent", "time_saved_s", "time_saved_percent"],
+            "required": ["distance_saved_meters", "distance_saved_percent", "time_saved_seconds", "time_saved_percent"],
             "description": "Savings compared to original location order",
             "properties": {
-              "distance_saved_m": { "type": "number", "description": "Distance saved in meters" },
+              "distance_saved_meters": { "type": "number", "description": "Distance saved in meters" },
               "distance_saved_percent": { "type": "number", "description": "Percentage of distance saved" },
-              "time_saved_s": { "type": "number", "description": "Time saved in seconds" },
+              "time_saved_seconds": { "type": "number", "description": "Time saved in seconds" },
               "time_saved_percent": { "type": "number", "description": "Percentage of time saved" }
             }
           }
@@ -690,7 +1282,7 @@
             "maxItems": 20000
           },
           "encoded_polyline": { "type": "string" },
-          "costing": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto" },
           "output": { "type": "string", "enum": ["route", "attributes", "both"], "default": "route", "description": "route = directions with terrain, attributes = road details, both = combined" },
           "gps_accuracy": { "type": "number", "minimum": 1, "maximum": 100, "default": 5, "description": "GPS accuracy in meters" },
           "search_radius": { "type": "number", "minimum": 1, "maximum": 100, "default": 25, "description": "Search radius in meters" },
@@ -709,8 +1301,8 @@
             "description": "Present when output includes 'route'. Includes terrain analytics.",
             "properties": {
               "legs": { "type": "array", "items": { "$ref": "#/components/schemas/Leg" } },
-              "distance_m": { "type": "number", "description": "Total distance in meters" },
-              "duration_s": { "type": "number", "description": "Total duration in seconds" },
+              "distance_meters": { "type": "number", "description": "Total distance in meters" },
+              "duration_seconds": { "type": "number", "description": "Total duration in seconds" },
               "terrain": { "$ref": "#/components/schemas/TerrainSummary" }
             }
           },
@@ -719,10 +1311,10 @@
             "description": "Present when output includes 'attributes'. Road segment details.",
             "items": {
               "type": "object",
-              "required": ["names", "length_m"],
+              "required": ["names", "length_meters"],
               "properties": {
                 "names": { "type": "array", "items": { "type": "string" }, "description": "Road name(s)" },
-                "length_m": { "type": "number", "description": "Edge length in meters" },
+                "length_meters": { "type": "number", "description": "Edge length in meters" },
                 "speed_kph": { "type": "number", "description": "Speed limit in km/h" },
                 "road_class": { "type": "string", "description": "Road classification (motorway, primary, secondary, etc.)" },
                 "surface": { "type": "string", "description": "Road surface type (paved_smooth, paved, gravel, etc.)" },
@@ -735,12 +1327,12 @@
             "description": "Per-point match quality details",
             "items": {
               "type": "object",
-              "required": ["lat", "lon", "type", "distance_from_trace_m", "edge_index"],
+              "required": ["lat", "lon", "type", "distance_from_trace_meters", "edge_index"],
               "properties": {
                 "lat": { "type": "number" },
                 "lon": { "type": "number" },
                 "type": { "type": "string", "enum": ["matched", "interpolated", "unmatched"] },
-                "distance_from_trace_m": { "type": "number", "description": "Distance from original trace point in meters" },
+                "distance_from_trace_meters": { "type": "number", "description": "Distance from original trace point in meters" },
                 "edge_index": { "type": "number", "description": "Index into the edges array" }
               }
             }
@@ -752,8 +1344,8 @@
         "required": ["locations", "contours"],
         "properties": {
           "locations": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 1, "maxItems": 1, "description": "Single origin" },
-          "costing": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "pedestrian" },
-          "costing_options": { "$ref": "#/components/schemas/CostingOptions" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "pedestrian" },
+          "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
           "contours": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "object", "description": "Provide time (minutes) or distance (km)", "properties": { "time": { "type": "number", "minimum": 1, "maximum": 120 }, "distance": { "type": "number", "minimum": 0.1, "maximum": 200 }, "color": { "type": "string" } } } },
           "polygons": { "type": "boolean", "default": true },
           "denoise": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.5, "description": "0 = detailed, 1 = smoothed" },
@@ -763,11 +1355,11 @@
       },
       "IsochroneResponse": {
         "type": "object",
-        "required": ["origin", "costing", "contours"],
+        "required": ["origin", "travel", "contours"],
         "description": "Structured isochrone response with typed contours",
         "properties": {
           "origin": { "$ref": "#/components/schemas/Coordinate" },
-          "costing": { "type": "string", "description": "Transport mode used" },
+          "travel": { "type": "string", "description": "Travel type used" },
           "contours": {
             "type": "array",
             "items": {
@@ -795,8 +1387,8 @@
         "properties": {
           "sources": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 1, "maxItems": 50 },
           "targets": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 1, "maxItems": 50 },
-          "costing": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto" },
-          "costing_options": { "$ref": "#/components/schemas/CostingOptions" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto" },
+          "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
           "units": { "type": "string", "enum": ["kilometers", "miles"], "default": "kilometers" },
           "format": { "$ref": "#/components/schemas/Format" }
         }
@@ -817,10 +1409,10 @@
                 "oneOf": [
                   {
                     "type": "object",
-                    "required": ["distance_m", "duration_s"],
+                    "required": ["distance_meters", "duration_seconds"],
                     "properties": {
-                      "distance_m": { "type": "number", "description": "Distance in meters" },
-                      "duration_s": { "type": "number", "description": "Duration in seconds" }
+                      "distance_meters": { "type": "number", "description": "Distance in meters" },
+                      "duration_seconds": { "type": "number", "description": "Duration in seconds" }
                     }
                   },
                   { "type": "null" }
@@ -835,7 +1427,7 @@
         "required": ["locations"],
         "properties": {
           "locations": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 1, "maxItems": 100 },
-          "costing": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto", "description": "Filter edges by mode" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto", "description": "Filter edges by travel type" },
           "verbose": { "type": "boolean", "default": false, "description": "Include edge metadata" },
           "format": { "$ref": "#/components/schemas/Format" }
         }
@@ -848,11 +1440,11 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["input", "distance_m", "on_road"],
+              "required": ["input", "distance_meters", "on_road"],
               "properties": {
                 "input": { "$ref": "#/components/schemas/Coordinate" },
                 "snapped": { "$ref": "#/components/schemas/Coordinate", "description": "Snapped position (absent if not near road)" },
-                "distance_m": { "type": "number", "description": "Distance to nearest road in meters" },
+                "distance_meters": { "type": "number", "description": "Distance to nearest road in meters" },
                 "on_road": { "type": "boolean", "description": "Whether near a routable road" },
                 "edges": {
                   "type": "array",
@@ -865,7 +1457,7 @@
                       "road_class": { "type": "string" },
                       "speed_kph": { "type": "number" },
                       "surface": { "type": "string" },
-                      "elevation_m": { "type": "number" }
+                      "elevation_meters": { "type": "number" }
                     }
                   }
                 }
@@ -874,12 +1466,156 @@
           }
         }
       },
-      "ValhallaStatusResponse": {
+      "GeocodingCoordinate": {
         "type": "object",
+        "required": ["lat", "lng"],
         "properties": {
-          "configured": { "type": "boolean" },
-          "available": { "type": "boolean" },
-          "version": { "type": "string" }
+          "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+          "lng": { "type": "number", "minimum": -180, "maximum": 180 }
+        }
+      },
+      "GeocodingResult": {
+        "type": "object",
+        "required": ["coordinates", "label", "name", "confidence", "layer", "source"],
+        "properties": {
+          "coordinates": { "$ref": "#/components/schemas/GeocodingCoordinate" },
+          "label": { "type": "string", "description": "Full human-readable label (e.g. 'London, England, United Kingdom')" },
+          "name": { "type": "string", "description": "Short name of the place" },
+          "country": { "type": "string", "description": "Country name" },
+          "country_code": { "type": "string", "description": "ISO 3166-1 alpha-3 country code" },
+          "region": { "type": "string", "description": "Region/state/province" },
+          "county": { "type": "string", "description": "County/district" },
+          "locality": { "type": "string", "description": "City/town" },
+          "neighbourhood": { "type": "string", "description": "Neighbourhood/suburb" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Result confidence score (0-1)" },
+          "layer": { "type": "string", "description": "Result layer: venue, address, street, locality, region, country" },
+          "source": { "type": "string", "description": "Data source: whosonfirst, openstreetmap, openaddresses, geonames" }
+        }
+      },
+      "GeocodingSearchResponse": {
+        "type": "object",
+        "required": ["results", "query"],
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/GeocodingResult" } },
+          "query": {
+            "type": "object",
+            "required": ["text", "size"],
+            "properties": {
+              "text": { "type": "string" },
+              "size": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "GeocodingReverseResponse": {
+        "type": "object",
+        "required": ["results", "query"],
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/GeocodingResult" } },
+          "query": {
+            "type": "object",
+            "required": ["lat", "lon", "size"],
+            "properties": {
+              "lat": { "type": "number" },
+              "lon": { "type": "number" },
+              "size": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "GeocodingAutocompleteResponse": {
+        "type": "object",
+        "required": ["results", "query"],
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/GeocodingResult" } },
+          "query": {
+            "type": "object",
+            "required": ["text", "size"],
+            "properties": {
+              "text": { "type": "string" },
+              "size": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "GeocodingBatchRequest": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1000,
+            "description": "Addresses to geocode. Each item can use free text (text field) or structured components (address, locality, country, etc.).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": { "type": "string", "description": "Free-text address or place name" },
+                "address": { "type": "string", "description": "House number and street" },
+                "neighbourhood": { "type": "string" },
+                "locality": { "type": "string", "description": "City or town" },
+                "county": { "type": "string" },
+                "region": { "type": "string", "description": "State, province, or region" },
+                "postalcode": { "type": "string" },
+                "country": { "type": "string", "description": "ISO 3166-1 alpha-3 country code" }
+              }
+            }
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 1,
+            "description": "Maximum results per item"
+          }
+        }
+      },
+      "GeocodingBatchResponse": {
+        "type": "object",
+        "required": ["results", "summary"],
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["index", "results"],
+              "properties": {
+                "index": { "type": "integer", "description": "Original item index (0-based)" },
+                "results": { "type": "array", "items": { "$ref": "#/components/schemas/GeocodingResult" } },
+                "error": { "type": "string", "description": "Error message if this item failed" }
+              }
+            }
+          },
+          "summary": {
+            "type": "object",
+            "required": ["total", "matched", "failed"],
+            "properties": {
+              "total": { "type": "integer", "description": "Total items submitted" },
+              "matched": { "type": "integer", "description": "Items with at least one result" },
+              "failed": { "type": "integer", "description": "Items that returned an error" }
+            }
+          }
+        }
+      },
+      "GeocodingParseResponse": {
+        "type": "object",
+        "required": ["input", "components"],
+        "properties": {
+          "input": { "type": "string", "description": "The original input text" },
+          "components": {
+            "type": "object",
+            "description": "Parsed address components. Only fields that were detected are included.",
+            "properties": {
+              "house_number": { "type": "string" },
+              "road": { "type": "string" },
+              "neighbourhood": { "type": "string" },
+              "city": { "type": "string" },
+              "county": { "type": "string" },
+              "state": { "type": "string" },
+              "postcode": { "type": "string" },
+              "country": { "type": "string" }
+            }
+          }
         }
       }
     }

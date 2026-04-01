@@ -63,7 +63,7 @@ if (!response.ok) {
 
   switch (error) {
     case "bad_request":
-      // Fix the request — don't retry
+      // Fix the request, don't retry
       console.error("Invalid request:", message);
       break;
     case "unauthorized":
@@ -75,7 +75,7 @@ if (!response.ok) {
       // Back off and retry
       break;
     default:
-      // Server error — retry with backoff
+      // Server error, retry with backoff
       break;
   }
 }

@@ -27,26 +27,28 @@
         "tab": "API reference",
         "groups": [
           {
-            "group": "Overview",
-            "pages": [
-              "api/introduction"
-            ]
-          },
-          {
             "group": "Routing",
             "pages": [
+              "api/routing",
               "api/endpoint/route",
               "api/endpoint/optimize",
-              "api/endpoint/snap"
-            ]
-          },
-          {
-            "group": "Analysis",
-            "pages": [
               "api/endpoint/elevation",
               "api/endpoint/isochrone",
               "api/endpoint/matrix",
+              "api/endpoint/snap",
               "api/endpoint/locate"
+            ]
+          },
+          {
+            "group": "Geocoding",
+            "pages": [
+              "api/geocoding",
+              "api/endpoint/search",
+              "api/endpoint/structured-search",
+              "api/endpoint/reverse",
+              "api/endpoint/autocomplete",
+              "api/endpoint/batch",
+              "api/endpoint/parse"
             ]
           }
         ]
