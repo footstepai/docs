@@ -1,0 +1,116 @@
+---
+title: 'MCP Quickstart'
+description: 'Use Footstep with your AI assistant'
+---
+
+If you use an AI assistant like Claude, ChatGPT, Cursor, or Windsurf, you can connect it to Footstep to get directions, find places, compare routes, and more - all by asking in plain English.
+
+## What you can do
+
+### Plan a journey
+
+- "How do I walk from Kings Cross to Tower Bridge?"
+- "Directions to Buckingham Palace from my hotel"
+- "What's the fastest way to drive from Heathrow to Cambridge?"
+
+### Compare travel options
+
+- "Should I walk or cycle from the office to the station?"
+- "Compare driving vs cycling - which is hillier?"
+- "What's the flattest route between these two places?"
+
+### Find places
+
+- "Find coffee shops near Kings Cross"
+- "Are there any supermarkets within walking distance?"
+- "What restaurants are near 51.53, -0.12?"
+
+### Find stops on the way
+
+- "Are there any petrol stations on my route to Cambridge?"
+- "Find a coffee shop on the way that won't add more than 5 minutes"
+
+### Check reachability
+
+- "How far can I cycle in 20 minutes from Liverpool Street?"
+- "Show me everywhere I can walk to in 15 minutes from here"
+
+### Work with addresses
+
+- "Where is 10 Downing Street?"
+- "What address is at 51.5034, -0.1276?"
+- "Geocode these 5 addresses and tell me which ones are in London"
+
+### Analyse terrain and elevation
+
+- "What's the elevation profile between these two coordinates?"
+- "How much climbing is there on this walking route?"
+- "Is this route flat or hilly?"
+
+### Analyse a recorded activity
+
+- "Clean up this GPS trace from my bike ride"
+- "What roads did I travel on during this run?"
+- "Show me the terrain and surface quality of my recorded walk"
+
+### Optimise multiple stops
+
+- "Find the best order to visit these 8 delivery addresses"
+- "I need to visit 5 clients today - what's the most efficient route?"
+
+## How to set it up
+
+You need two things: a Footstep API key and an AI assistant that supports MCP.
+
+### 1. Get an API key
+
+Sign up at [footstep.ai](https://footstep.ai) and create an API key from your dashboard. It starts with `sk_live_`.
+
+### 2. Connect your assistant
+
+The setup depends on which assistant you use. In most cases you paste a small config block into a settings file. Nothing to install.
+
+**Claude Desktop** - Go to Settings > Developer > Edit Config, then paste:
+
+```json
+{
+  "mcpServers": {
+    "footstep": {
+      "url": "https://mcp.footstep.ai",
+      "headers": {
+        "x-api-key": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+**Cursor / Windsurf / VS Code** - Add a `.mcp.json` file to your project folder:
+
+```json
+{
+  "mcpServers": {
+    "footstep": {
+      "url": "https://mcp.footstep.ai",
+      "headers": {
+        "x-api-key": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+Replace `sk_live_your_key_here` with your actual API key.
+
+For other clients (OpenAI, Gemini, Vercel AI SDK), see the [full configuration guide](/mcp/configuration). You can also [run the server locally](/mcp/configuration#local-server) if you prefer.
+
+### 3. Start asking
+
+Once connected, just ask your assistant anything from the examples above. It will automatically use the right Footstep tool and explain the results.
+
+## Tips
+
+- **Be specific about how you want to travel.** "Walking directions" and "cycling directions" give different results - cycling accounts for bike lanes and road surfaces, walking accounts for footpaths and stairs.
+- **Mention terrain if you care about it.** Ask "what's the flattest route?" or "how hilly is this?" and the assistant will include elevation and difficulty information.
+- **Give coordinates if you have them.** You can mix place names and coordinates: "Directions from 51.53, -0.12 to Tower Bridge".
+- **Ask follow-up questions.** After getting directions, you can ask "is there a flatter alternative?" or "how about by bike instead?".

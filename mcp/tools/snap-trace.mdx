@@ -1,0 +1,19 @@
+---
+title: 'snap_trace'
+description: 'Clean up a GPS trace and get road details'
+---
+
+Map-match a recorded GPS trace (up to 20,000 points) to the road network. Returns the corrected path with a confidence score, plus road details like surface type, road class, speed limits, and terrain analytics.
+
+Useful for analysing recorded activities (runs, rides, walks) or cleaning noisy GPS data.
+
+## Example prompts
+
+- "Clean up this GPS trace from my bike ride"
+- "What roads did I actually travel on during this run?"
+- "Snap these GPS coordinates to roads and show me the surface types"
+- "Analyse my recorded walk - what was the terrain and road quality like?"
+
+## What you get back
+
+A confidence-scored snapped path, route with terrain analytics (ascent, descent, difficulty), and per-segment road attributes (surface type, road class, speed limit, grade). Also includes per-point match quality so you can see where GPS was noisy.

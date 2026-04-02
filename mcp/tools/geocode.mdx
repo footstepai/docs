@@ -1,0 +1,19 @@
+---
+title: 'geocode'
+description: 'Convert an address or place name to coordinates'
+---
+
+Forward geocode: turn a text query (address, place name, or landmark) into geographic coordinates. Results are ranked by relevance and include a confidence score.
+
+You can bias results towards a location or restrict to specific countries for better accuracy.
+
+## Example prompts
+
+- "Where is Buckingham Palace?"
+- "Find the coordinates for 10 Downing Street, London"
+- "Geocode 'Empire State Building' and tell me the lat/lng"
+- "What are the coordinates for Springfield? I mean the one in Illinois."
+
+## What you get back
+
+A list of matching locations, each with coordinates (lat/lng), a full label, country, region, locality, confidence score (0-1), and the result type (venue, address, street, locality, etc.).

@@ -1,0 +1,83 @@
+---
+title: 'Query'
+openapi: 'POST /v1/ai/query'
+---
+
+Send a natural language query and get back structured geospatial results. The endpoint figures out what you're asking for (directions, a location, reachability, etc.), resolves any text locations to coordinates, calls the appropriate backend, and returns the full result.
+
+## How intent is classified
+
+The endpoint maps queries to the backend that best fits:
+
+| Your query sounds like... | Intent | Backend called |
+|--------------------------|--------|----------------|
+| "Directions from A to B" | `route` | [/v1/routing/route](/api/endpoint/route) |
+| "Best order to visit these stops" | `optimize` | [/v1/routing/optimize](/api/endpoint/optimize) |
+| "How far can I walk in 30 minutes" | `isochrone` | [/v1/routing/isochrone](/api/endpoint/isochrone) |
+| "What's the elevation at..." | `elevation` | [/v1/routing/elevation](/api/endpoint/elevation) |
+| "Distance between A, B, and C" | `matrix` | [/v1/routing/matrix](/api/endpoint/matrix) |
+| "Where is..." / "Find..." | `geocode` | [/v1/geocoding/search](/api/endpoint/search) |
+| "What's at these coordinates" | `reverse_geocode` | [/v1/geocoding/reverse](/api/endpoint/reverse) |
+
+## Using context
+
+Pass `context.location` when your query uses relative terms like "nearest", "nearby", or "from here". Without it, the endpoint can't resolve those references.
+
+Pass `context.country` to disambiguate place names. "Springfield" with `country: "GBR"` resolves differently than with `country: "USA"`.
+
+```json
+{
+  "query": "Walking directions to the nearest park",
+  "context": {
+    "location": { "lat": 51.5322, "lon": -0.1240 },
+    "country": "GBR"
+  }
+}
+```
+
+## Response structure
+
+The response always includes:
+
+| Field | What it contains |
+|-------|-----------------|
+| `intent` | What the query was classified as (`route`, `geocode`, `isochrone`, etc.) |
+| `parameters` | The parameters inferred from the query and passed to the backend |
+| `result` | The full backend response (same schema as calling the endpoint directly) |
+| `summary` | A natural language summary of the result |
+
+The `result` field contains the exact same response you'd get calling the backend endpoint directly. If the intent is `route`, `result` contains a `RouteResponse`. If `geocode`, it contains a `GeocodingSearchResponse`. No new schemas to learn.
+
+## Error handling
+
+If the query is ambiguous or can't be resolved:
+
+```json
+{
+  "error": "ambiguous_query",
+  "message": "Could not determine a specific intent from your query.",
+  "suggestions": [
+    "Try: 'Directions from A to B'",
+    "Try: 'Where is [place name]?'",
+    "Try: 'How far can I drive in 30 minutes from [location]?'"
+  ]
+}
+```
+
+If a location in the query can't be geocoded, the response includes what was resolved and what failed:
+
+```json
+{
+  "error": "geocode_failed",
+  "message": "Could not find a location matching 'the old pub near the river'.",
+  "partial": {
+    "intent": "route",
+    "resolved_locations": [
+      { "text": "Kings Cross", "resolved": { "lat": 51.53, "lon": -0.12 } }
+    ],
+    "unresolved_locations": [
+      { "text": "the old pub near the river" }
+    ]
+  }
+}
+```

@@ -1,0 +1,17 @@
+---
+title: 'optimize_stops'
+description: 'Find the fastest order to visit multiple stops'
+---
+
+Given a list of stops, find the most efficient order to visit them all. Solves the travelling salesman problem and returns the optimised route with full terrain analytics, plus a breakdown of how much distance and time you saved compared to the original order.
+
+## Example prompts
+
+- "Find the best order to visit these 8 delivery addresses"
+- "I need to visit 5 clients today, what's the most efficient route?"
+- "Optimise this list of warehouse stops for a bike courier"
+- "Reorder these 12 locations to minimise driving time"
+
+## What you get back
+
+The optimised route (same detail as `get_directions`: distance, duration, steps, terrain) plus the reordered stop sequence and savings. Savings show distance saved in meters and as a percentage, and time saved in seconds and as a percentage.

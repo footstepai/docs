@@ -304,6 +304,99 @@
         }
       }
     },
+    "/v1/routing/compare": {
+      "post": {
+        "operationId": "compareRoutes",
+        "summary": "Compare travel modes between two locations",
+        "description": "Calculate routes between the same locations using multiple travel modes and return a side-by-side comparison. Includes distance, duration, and terrain difficulty for each mode, plus a summary showing which is fastest, shortest, and easiest. Useful for deciding how to travel.",
+        "tags": ["Routing"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CompareRoutesRequest" },
+              "examples": {
+                "walk_vs_cycle": {
+                  "summary": "Walking vs cycling",
+                  "value": {
+                    "locations": [
+                      { "lat": 51.5322, "lon": -0.1240 },
+                      { "lat": 51.5055, "lon": -0.0754 }
+                    ],
+                    "travel_modes": ["pedestrian", "bicycle"]
+                  }
+                },
+                "three_modes": {
+                  "summary": "Walk vs cycle vs drive",
+                  "value": {
+                    "locations": [
+                      { "lat": 51.5322, "lon": -0.1240 },
+                      { "lat": 51.5055, "lon": -0.0754 }
+                    ],
+                    "travel_modes": ["pedestrian", "bicycle", "auto"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Routes for each travel mode with comparison",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/CompareRoutesResponse" } }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Routing engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/routing/find-and-route": {
+      "post": {
+        "operationId": "findAndRoute",
+        "summary": "Geocode a destination and route to it",
+        "description": "Find a place by name or address, then calculate a route to it from your origin. Combines geocoding and routing in a single call. Returns the matched destination, the full route with terrain analytics, and alternative geocoding matches.",
+        "tags": ["Routing"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FindAndRouteRequest" },
+              "examples": {
+                "place_name": {
+                  "summary": "Route to a landmark",
+                  "value": {
+                    "origin": { "lat": 51.5322, "lon": -0.1240 },
+                    "destination": "Tower Bridge, London",
+                    "travel": "pedestrian"
+                  }
+                },
+                "with_country": {
+                  "summary": "With country hint",
+                  "value": {
+                    "origin": { "lat": 51.5322, "lon": -0.1240 },
+                    "destination": "10 Downing Street",
+                    "destination_country": "GBR",
+                    "travel": "auto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geocoded destination with route",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/FindAndRouteResponse" } }
+            }
+          },
+          "400": { "description": "Invalid request or destination not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Routing or geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
     "/v1/routing/locate": {
       "post": {
         "operationId": "locateOnRoad",
@@ -346,6 +439,58 @@
           },
           "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
           "503": { "description": "Routing engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/routing/search-along-route": {
+      "post": {
+        "operationId": "searchAlongRoute",
+        "summary": "Find places along a route",
+        "description": "Calculate a route between locations and search for places along the corridor. Results are ranked by how little detour they add. Useful for finding stops (petrol stations, restaurants, charging points) on the way to a destination.",
+        "tags": ["Routing"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SearchAlongRouteRequest" },
+              "examples": {
+                "coffee_on_way": {
+                  "summary": "Coffee shops on route",
+                  "value": {
+                    "locations": [
+                      { "lat": 51.5322, "lon": -0.1240 },
+                      { "lat": 51.5055, "lon": -0.0754 }
+                    ],
+                    "search": "coffee shop",
+                    "max_detour_seconds": 300
+                  }
+                },
+                "petrol_stations": {
+                  "summary": "Petrol stations on a drive",
+                  "value": {
+                    "locations": [
+                      { "lat": 51.5074, "lon": -0.1278 },
+                      { "lat": 52.2053, "lon": 0.1218 }
+                    ],
+                    "search": "petrol station",
+                    "travel": "auto",
+                    "max_detour_seconds": 600,
+                    "size": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Route with places found along the corridor",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SearchAlongRouteResponse" } }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Routing or geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
         }
       }
     },
@@ -895,6 +1040,90 @@
         }
       }
     },
+    "/v1/geocoding/places": {
+      "get": {
+        "operationId": "geocodingPlaces",
+        "summary": "Search for places and points of interest",
+        "description": "Search for places by category or keyword near a location. Unlike the text search endpoint (which finds specific addresses and named places), this is designed for discovery queries like 'coffee shops near me' or 'restaurants in Soho'. Results are ranked by proximity and relevance.",
+        "tags": ["Geocoding"],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "What to search for (e.g. 'coffee shop', 'restaurant', 'supermarket', 'train station', 'park')"
+          },
+          {
+            "name": "near.lat",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number", "minimum": -90, "maximum": 90 },
+            "description": "Latitude to search around"
+          },
+          {
+            "name": "near.lon",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number", "minimum": -180, "maximum": 180 },
+            "description": "Longitude to search around"
+          },
+          {
+            "name": "radius",
+            "in": "query",
+            "schema": { "type": "number", "minimum": 0.1, "maximum": 50, "default": 5 },
+            "description": "Search radius in kilometres"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 40, "default": 10 },
+            "description": "Maximum number of results"
+          },
+          {
+            "name": "boundary.country",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes (e.g. GBR,USA)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Places matching the query",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodingPlacesResponse" },
+                "examples": {
+                  "coffee_shops": {
+                    "summary": "Coffee shops near Kings Cross",
+                    "value": {
+                      "results": [
+                        {
+                          "coordinates": { "lat": 51.5318, "lng": -0.1243 },
+                          "label": "Caravan, Granary Square, London, England, United Kingdom",
+                          "name": "Caravan",
+                          "country": "United Kingdom",
+                          "country_code": "GBR",
+                          "region": "England",
+                          "locality": "London",
+                          "distance_meters": 120,
+                          "confidence": 0.92,
+                          "layer": "venue",
+                          "source": "openstreetmap"
+                        }
+                      ],
+                      "query": { "query": "coffee shop", "near": { "lat": 51.5322, "lon": -0.1240 }, "radius": 5, "size": 10 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
     "/v1/geocoding/parse": {
       "get": {
         "operationId": "geocodingParse",
@@ -949,6 +1178,107 @@
           },
           "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
           "503": { "description": "Geocoding engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/ai/query": {
+      "post": {
+        "operationId": "aiQuery",
+        "summary": "Natural language geospatial query",
+        "description": "Accept a natural language query and return structured geospatial results. The endpoint classifies intent (route, geocode, isochrone, etc.), extracts locations and parameters, calls the appropriate backend, and returns the full result with a natural language summary. Use context.location to help resolve relative references like 'nearest' or 'nearby'.",
+        "tags": ["AI"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AIQueryRequest" },
+              "examples": {
+                "route": {
+                  "summary": "Get walking directions",
+                  "value": {
+                    "query": "Walking route from Kings Cross to Tower Bridge"
+                  }
+                },
+                "geocode": {
+                  "summary": "Find a place",
+                  "value": {
+                    "query": "Where is Buckingham Palace?"
+                  }
+                },
+                "isochrone": {
+                  "summary": "Reachability query",
+                  "value": {
+                    "query": "How far can I cycle in 20 minutes from Liverpool Street station?"
+                  }
+                },
+                "with_context": {
+                  "summary": "With location context",
+                  "value": {
+                    "query": "Directions to the nearest train station",
+                    "context": {
+                      "location": { "lat": 51.5322, "lon": -0.1240 },
+                      "country": "GBR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Structured result from the resolved query",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AIQueryResponse" } }
+            }
+          },
+          "400": { "description": "Invalid or unresolvable query", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "AI or backend engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/ai/parse-address": {
+      "post": {
+        "operationId": "aiParseAddress",
+        "summary": "Correct and structure messy addresses",
+        "description": "Parse, correct, and standardize addresses using AI. Fixes typos, expands abbreviations, infers missing components (postcode, region, country), and returns structured address components with a confidence score. Each correction is itemised so you can see exactly what changed.",
+        "tags": ["AI"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AIParseAddressRequest" },
+              "examples": {
+                "messy": {
+                  "summary": "Typos and missing fields",
+                  "value": {
+                    "addresses": [
+                      { "text": "123 Main Stret, apt 4b, new york" },
+                      { "text": "10 downing st, london, uk" }
+                    ]
+                  }
+                },
+                "with_country": {
+                  "summary": "With country hint",
+                  "value": {
+                    "addresses": [
+                      { "text": "buckingham palace", "country": "GBR" }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Corrected and structured addresses",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AIParseAddressResponse" } }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "AI engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
         }
       }
     }
@@ -1175,7 +1505,8 @@
           "flags": { "$ref": "#/components/schemas/RouteFlags" },
           "bounds": { "$ref": "#/components/schemas/BoundingBox" },
           "terrain": { "$ref": "#/components/schemas/TerrainSummary" },
-          "units": { "type": "string", "description": "Echo of request units (informational only, response values are always in meters/seconds)" }
+          "units": { "type": "string", "description": "Echo of request units (informational only, response values are always in meters/seconds)" },
+          "narrative": { "type": "string", "description": "Natural language summary of the route including distance, duration, terrain, and key landmarks. Present when narrative=true in the request." }
         }
       },
       "ElevationSummary": {
@@ -1208,6 +1539,7 @@
           "language": { "type": "string", "default": "en-GB", "description": "Language for instructions" },
           "elevation_interval": { "type": "number", "minimum": 10, "maximum": 200, "default": 30, "description": "Elevation sampling interval in meters" },
           "alternates": { "type": "number", "minimum": 0, "maximum": 3, "default": 0, "description": "Number of alternate routes" },
+          "narrative": { "type": "boolean", "default": false, "description": "Include a natural language summary of the route. Uses AI generation, adds ~500ms latency." },
           "format": { "$ref": "#/components/schemas/Format" }
         }
       },
@@ -1249,6 +1581,7 @@
           "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
           "units": { "type": "string", "enum": ["kilometers", "miles"], "default": "kilometers" },
           "elevation_interval": { "type": "number", "minimum": 10, "maximum": 200, "default": 30 },
+          "narrative": { "type": "boolean", "default": false, "description": "Include a natural language summary of the optimised route. Uses AI generation, adds ~500ms latency." },
           "format": { "$ref": "#/components/schemas/Format" }
         }
       },
@@ -1614,6 +1947,222 @@
               "state": { "type": "string" },
               "postcode": { "type": "string" },
               "country": { "type": "string" }
+            }
+          }
+        }
+      },
+      "AIQueryRequest": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string", "maxLength": 1000, "description": "Natural language query (e.g. 'Walking route from Kings Cross to Tower Bridge', 'Where is Buckingham Palace?', 'How far can I drive in 30 minutes from Liverpool Street?')" },
+          "context": {
+            "type": "object",
+            "description": "Optional context to improve query understanding",
+            "properties": {
+              "location": { "$ref": "#/components/schemas/Coordinate", "description": "User's current location. Helps resolve relative references like 'nearest' or 'nearby'." },
+              "country": { "type": "string", "description": "ISO 3166-1 alpha-3 country code to bias geocoding (e.g. GBR, USA)" }
+            }
+          }
+        }
+      },
+      "AIQueryResponse": {
+        "type": "object",
+        "required": ["intent", "parameters", "result", "summary"],
+        "properties": {
+          "intent": { "type": "string", "enum": ["route", "optimize", "isochrone", "elevation", "matrix", "geocode", "reverse_geocode"], "description": "Classified intent of the query" },
+          "parameters": { "type": "object", "description": "Parameters inferred from the query and passed to the backend endpoint" },
+          "result": { "type": "object", "description": "Full response from the backend endpoint (RouteResponse, GeocodingSearchResponse, IsochroneResponse, etc.)" },
+          "summary": { "type": "string", "description": "Natural language summary of the result" }
+        }
+      },
+      "AIParseAddressRequest": {
+        "type": "object",
+        "required": ["addresses"],
+        "properties": {
+          "addresses": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "description": "Addresses to parse and correct",
+            "items": {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "text": { "type": "string", "description": "Free-text address (can be messy, incomplete, or contain typos)" },
+                "country": { "type": "string", "description": "ISO 3166-1 alpha-3 country code hint to improve parsing accuracy" }
+              }
+            }
+          }
+        }
+      },
+      "AIParseAddressResponse": {
+        "type": "object",
+        "required": ["results"],
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["index", "input", "corrected", "components", "corrections", "confidence"],
+              "properties": {
+                "index": { "type": "integer", "description": "Position in the input array" },
+                "input": { "type": "string", "description": "Original input text" },
+                "corrected": { "type": "string", "description": "Standardized, corrected full address" },
+                "components": {
+                  "type": "object",
+                  "description": "Structured address components",
+                  "properties": {
+                    "house_number": { "type": "string" },
+                    "unit": { "type": "string", "description": "Apartment, suite, floor, etc." },
+                    "road": { "type": "string" },
+                    "neighbourhood": { "type": "string" },
+                    "locality": { "type": "string", "description": "City or town" },
+                    "county": { "type": "string" },
+                    "region": { "type": "string", "description": "State, province, or region" },
+                    "postcode": { "type": "string" },
+                    "country": { "type": "string" },
+                    "country_code": { "type": "string", "description": "ISO 3166-1 alpha-3" }
+                  }
+                },
+                "corrections": {
+                  "type": "array",
+                  "description": "List of corrections applied. Empty array if input was clean.",
+                  "items": {
+                    "type": "object",
+                    "required": ["field", "type", "corrected"],
+                    "properties": {
+                      "field": { "type": "string", "description": "Which component was corrected" },
+                      "original": { "type": "string", "nullable": true, "description": "Original value (null if inferred from nothing)" },
+                      "corrected": { "type": "string", "description": "Corrected or inferred value" },
+                      "type": { "type": "string", "enum": ["typo", "abbreviation", "inferred", "reformatted", "removed"], "description": "What kind of correction was applied" }
+                    }
+                  }
+                },
+                "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in the corrected result (0-1)" }
+              }
+            }
+          }
+        }
+      },
+      "CompareRoutesRequest": {
+        "type": "object",
+        "required": ["locations", "travel_modes"],
+        "properties": {
+          "locations": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 2, "maxItems": 20, "description": "Waypoints (min 2, max 20)" },
+          "travel_modes": { "type": "array", "items": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"] }, "minItems": 2, "maxItems": 4, "description": "Travel modes to compare (2-4)" },
+          "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
+          "elevation_interval": { "type": "number", "minimum": 10, "maximum": 200, "default": 30, "description": "Elevation sampling interval in meters" },
+          "format": { "$ref": "#/components/schemas/Format" }
+        }
+      },
+      "CompareRoutesResponse": {
+        "type": "object",
+        "required": ["routes", "comparison"],
+        "properties": {
+          "routes": {
+            "type": "object",
+            "description": "Routes keyed by travel mode (e.g. { \"pedestrian\": Route, \"bicycle\": Route })",
+            "additionalProperties": { "$ref": "#/components/schemas/Route" }
+          },
+          "comparison": {
+            "type": "object",
+            "required": ["fastest", "shortest", "easiest", "summary"],
+            "properties": {
+              "fastest": { "type": "string", "description": "Travel mode with the shortest duration" },
+              "shortest": { "type": "string", "description": "Travel mode with the shortest distance" },
+              "easiest": { "type": "string", "description": "Travel mode with the lowest terrain difficulty" },
+              "summary": { "type": "string", "description": "Natural language comparison of the routes" }
+            }
+          }
+        }
+      },
+      "FindAndRouteRequest": {
+        "type": "object",
+        "required": ["origin", "destination"],
+        "properties": {
+          "origin": { "$ref": "#/components/schemas/Coordinate", "description": "Starting location" },
+          "destination": { "type": "string", "description": "Place name, address, or landmark to find and route to" },
+          "destination_country": { "type": "string", "description": "ISO 3166-1 alpha-3 country code hint for geocoding (e.g. GBR, USA)" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto" },
+          "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
+          "elevation_interval": { "type": "number", "minimum": 10, "maximum": 200, "default": 30 },
+          "narrative": { "type": "boolean", "default": false, "description": "Include a natural language route summary. Adds ~500ms." },
+          "format": { "$ref": "#/components/schemas/Format" }
+        }
+      },
+      "FindAndRouteResponse": {
+        "type": "object",
+        "required": ["destination", "route"],
+        "properties": {
+          "destination": { "$ref": "#/components/schemas/GeocodingResult", "description": "The geocoded destination that was routed to" },
+          "route": { "$ref": "#/components/schemas/Route", "description": "Route from origin to the geocoded destination" },
+          "alternatives": { "type": "array", "items": { "$ref": "#/components/schemas/GeocodingResult" }, "description": "Other geocoding matches (top 3) in case the primary result wasn't what you meant" }
+        }
+      },
+      "PlaceResult": {
+        "type": "object",
+        "required": ["coordinates", "label", "name", "distance_meters", "confidence", "layer", "source"],
+        "properties": {
+          "coordinates": { "$ref": "#/components/schemas/GeocodingCoordinate" },
+          "label": { "type": "string", "description": "Full human-readable label" },
+          "name": { "type": "string", "description": "Short name of the place" },
+          "country": { "type": "string" },
+          "country_code": { "type": "string", "description": "ISO 3166-1 alpha-3" },
+          "region": { "type": "string" },
+          "locality": { "type": "string", "description": "City or town" },
+          "distance_meters": { "type": "number", "description": "Distance from the search point in meters" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "layer": { "type": "string" },
+          "source": { "type": "string" }
+        }
+      },
+      "GeocodingPlacesResponse": {
+        "type": "object",
+        "required": ["results", "query"],
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/PlaceResult" } },
+          "query": {
+            "type": "object",
+            "properties": {
+              "query": { "type": "string" },
+              "near": { "$ref": "#/components/schemas/Coordinate" },
+              "radius": { "type": "number" },
+              "size": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "SearchAlongRouteRequest": {
+        "type": "object",
+        "required": ["locations", "search"],
+        "properties": {
+          "locations": { "type": "array", "items": { "$ref": "#/components/schemas/Coordinate" }, "minItems": 2, "maxItems": 20, "description": "Route waypoints (min 2, max 20)" },
+          "search": { "type": "string", "description": "What to search for along the route (e.g. 'coffee shop', 'petrol station', 'supermarket')" },
+          "travel": { "type": "string", "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"], "default": "auto" },
+          "travel_options": { "$ref": "#/components/schemas/TravelOptions" },
+          "max_detour_seconds": { "type": "number", "minimum": 60, "maximum": 3600, "default": 300, "description": "Maximum acceptable detour in seconds (1 min to 1 hour)" },
+          "size": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5, "description": "Maximum number of places to return" },
+          "format": { "$ref": "#/components/schemas/Format" }
+        }
+      },
+      "SearchAlongRouteResponse": {
+        "type": "object",
+        "required": ["route", "places"],
+        "properties": {
+          "route": { "$ref": "#/components/schemas/Route", "description": "The original route between the locations" },
+          "places": {
+            "type": "array",
+            "description": "Places found along the route, ranked by detour time",
+            "items": {
+              "type": "object",
+              "required": ["place", "detour_seconds", "detour_meters", "position_along_route_percent"],
+              "properties": {
+                "place": { "$ref": "#/components/schemas/PlaceResult" },
+                "detour_seconds": { "type": "number", "description": "How many seconds of detour this stop adds" },
+                "detour_meters": { "type": "number", "description": "How many meters of detour this stop adds" },
+                "position_along_route_percent": { "type": "number", "minimum": 0, "maximum": 100, "description": "Where along the route this place is (0 = start, 100 = end)" }
+              }
             }
           }
         }

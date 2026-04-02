@@ -1,0 +1,19 @@
+---
+title: 'search_along_route'
+description: 'Find places along a route ranked by detour time'
+---
+
+Calculate a route and search for places along the corridor. Results are ranked by how little detour they add to your journey. Useful for finding stops on the way to a destination without going too far off course.
+
+You can set the maximum acceptable detour (1 minute to 1 hour) to control how far off-route results can be.
+
+## Example prompts
+
+- "Find coffee shops on my way from Kings Cross to Cambridge"
+- "Are there any petrol stations along the route that won't add more than 5 minutes?"
+- "Show me restaurants between here and the airport with minimal detour"
+- "What supermarkets can I stop at on my drive to Oxford?"
+
+## What you get back
+
+The original route plus a list of places found along the corridor. Each place includes the detour it would add (in seconds and meters), and where along the route it sits (as a percentage from start to end). Results are ranked by detour time so the most convenient stops come first.

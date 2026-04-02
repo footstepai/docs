@@ -1,0 +1,17 @@
+---
+title: 'find_and_route'
+description: 'Find a place and get directions to it in one step'
+---
+
+Geocode a destination (address, place name, or landmark) and route to it from your current location. Combines geocoding and routing in a single call so the agent doesn't need to chain two separate tools.
+
+## Example prompts
+
+- "How do I get to the nearest train station from here?"
+- "Directions to Buckingham Palace from Kings Cross"
+- "Walking route to the British Museum from my hotel at 51.52, -0.13"
+- "Find 10 Downing Street and show me how to cycle there"
+
+## What you get back
+
+The geocoded destination (with coordinates, label, and confidence score), the full route (distance, duration, terrain, turn-by-turn steps), and a few alternative destination matches in case the top result wasn't what you meant.

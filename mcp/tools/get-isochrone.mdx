@@ -1,0 +1,23 @@
+---
+title: 'get_isochrone'
+description: 'Find everywhere reachable within a time or distance limit'
+---
+
+<Frame>
+  <img src="/images/isochrone.png" alt="Reachability contours" />
+</Frame>
+
+Generate reachability contours from a starting point. Shows how far you can travel within a given time limit (in minutes) or distance limit (in kilometres). Returns polygon boundaries you can display on a map.
+
+Supports multiple contours in one request, so you can show 5, 10, and 15-minute ranges together.
+
+## Example prompts
+
+- "How far can I walk in 15 minutes from Liverpool Street station?"
+- "Show me the area I can cycle to in 20 minutes from my office"
+- "What's within a 5km drive of this warehouse?"
+- "Compare 10-minute and 30-minute walking ranges from this location"
+
+## What you get back
+
+One or more contour polygons, each with its metric (time or distance), value, and GeoJSON geometry. The response also includes the origin point and travel type used.

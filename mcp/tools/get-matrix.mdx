@@ -1,0 +1,19 @@
+---
+title: 'get_matrix'
+description: 'Calculate travel times and distances between every combination of origins and destinations'
+---
+
+Compute a time and distance matrix between a set of origins and destinations. Returns every source-to-target pair with distance in meters and duration in seconds. Unreachable pairs come back as `null`.
+
+Useful for logistics, dispatching, and finding the closest location from a set of options.
+
+## Example prompts
+
+- "How long does it take to drive between each of these 4 warehouses?"
+- "Calculate travel times from our office to all 10 client locations"
+- "Which of these 3 restaurants is closest to my hotel by walking?"
+- "Build a distance matrix for these delivery origins and destinations"
+
+## What you get back
+
+A 2D matrix indexed by source and target, where each cell contains `distance_meters` and `duration_seconds`. Also returns the snapped source and target coordinates.

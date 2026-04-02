@@ -1,0 +1,23 @@
+---
+title: 'get_elevation'
+description: 'Get elevation data for a list of coordinates'
+---
+
+<Frame>
+  <img src="/images/elevation.png" alt="Elevation profile" />
+</Frame>
+
+Query elevation values for a set of coordinates or along a path. Returns heights in meters with a computed summary including total ascent, total descent, and min/max/average elevation.
+
+Optionally resample the input at a fixed interval for smoother elevation profiles.
+
+## Example prompts
+
+- "What's the elevation at the top of Primrose Hill?"
+- "Show me the elevation profile between these two coordinates"
+- "How much climbing is there on this path?"
+- "Get elevation data for these 10 GPS points"
+
+## What you get back
+
+Elevation values for each input point, plus a summary with total ascent, total descent, max/min/average elevation. When `range` mode is used, you get distance-elevation tuples for charting elevation profiles.

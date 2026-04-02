@@ -1,0 +1,50 @@
+---
+title: 'Introduction'
+description: 'Connect AI agents to Footstep'
+---
+
+<Frame>
+  <img src="/images/mcp-introduction.png" alt="Footstep MCP server" />
+</Frame>
+
+The Footstep MCP server lets AI agents call routing and geocoding tools directly. It implements the [Model Context Protocol](https://modelcontextprotocol.io), the open standard for connecting LLMs to external tools.
+
+## Connect
+
+Point your MCP client at the hosted server. No installation required.
+
+```
+https://mcp.footstep.ai
+```
+
+Pass your API key as a header or in the URL, depending on your client. See the [configuration guide](/mcp/configuration) for setup examples.
+
+<Tip>
+  If you prefer to run the server locally, install via npm: `npm install -g @footstep/mcp-server` or use `npx @footstep/mcp-server`. See [local setup](/mcp/configuration#local-server) for details.
+</Tip>
+
+## Supported clients
+
+MCP is an open standard. The Footstep MCP server works with any compatible client:
+
+| Client | Type | Remote | Local |
+|--------|------|--------|-------|
+| Claude Desktop / Code | AI assistant / CLI | Yes | Yes |
+| Cursor | IDE | Yes | Yes |
+| Windsurf | IDE | Yes | Yes |
+| Cline / Continue | VS Code extensions | Yes | Yes |
+| OpenAI Agents SDK | Python framework | Yes | Yes |
+| Gemini (via LangChain) | Python framework | Yes | Yes |
+| Vercel AI SDK | TypeScript framework | Yes | Yes |
+| Any MCP client | Custom agents, frameworks | Yes | Yes |
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="Configuration" icon="gear" href="/mcp/configuration">
+    Set up the MCP server with your client.
+  </Card>
+  <Card title="Tools" icon="wrench" href="/mcp/tools">
+    See what tools are available to your agent.
+  </Card>
+</Columns>

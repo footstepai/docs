@@ -1,0 +1,133 @@
+---
+title: 'Configuration'
+description: 'Set up the Footstep MCP server with your client'
+---
+
+Connect to the hosted server at `mcp.footstep.ai`. No installation, no Node.js required.
+
+## Claude Desktop
+
+Add to your `claude_desktop_config.json` (Settings > Developer > Edit Config):
+
+```json
+{
+  "mcpServers": {
+    "footstep": {
+      "url": "https://mcp.footstep.ai",
+      "headers": {
+        "x-api-key": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+## Cursor / Claude Code / Cline
+
+Add to your project's `.mcp.json` (or the equivalent MCP config for your client):
+
+```json
+{
+  "mcpServers": {
+    "footstep": {
+      "url": "https://mcp.footstep.ai",
+      "headers": {
+        "x-api-key": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+## OpenAI Agents SDK
+
+```python
+from agents import Agent
+from agents.mcp import MCPServerStreamableHttp
+
+footstep = MCPServerStreamableHttp(
+    url="https://mcp.footstep.ai",
+    headers={"x-api-key": "sk_live_your_key_here"},
+)
+
+agent = Agent(
+    name="travel-agent",
+    instructions="You help plan routes and find locations.",
+    mcp_servers=[footstep],
+)
+```
+
+## Google Gemini (via LangChain)
+
+```python
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langgraph.prebuilt import create_react_agent
+
+client = MultiServerMCPClient({
+    "footstep": {
+        "url": "https://mcp.footstep.ai",
+        "headers": {"x-api-key": "sk_live_your_key_here"},
+        "transport": "streamable_http",
+    }
+})
+
+tools = await client.get_tools()
+model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+agent = create_react_agent(model, tools)
+```
+
+## Vercel AI SDK
+
+```typescript
+import { experimental_createMCPClient as createMCPClient } from "ai";
+
+const client = await createMCPClient({
+  transport: {
+    type: "http",
+    url: "https://mcp.footstep.ai",
+    headers: { "x-api-key": "sk_live_your_key_here" },
+  },
+});
+
+const tools = await client.tools();
+// Pass tools to any model: OpenAI, Anthropic, Google, etc.
+```
+
+## Custom agents
+
+Any MCP client that supports Streamable HTTP transport can connect. Point it at `https://mcp.footstep.ai` and pass your API key in the `x-api-key` header.
+
+---
+
+## Local server
+
+If you prefer to run the server on your own machine (offline use, custom setups, or clients that only support stdio transport), install via npm:
+
+```bash
+npm install -g @footstep/mcp-server
+```
+
+Or run directly with npx (no install needed):
+
+```bash
+npx @footstep/mcp-server
+```
+
+Then use a stdio config instead:
+
+```json
+{
+  "mcpServers": {
+    "footstep": {
+      "command": "npx",
+      "args": ["@footstep/mcp-server"],
+      "env": {
+        "FOOTSTEP_API_KEY": "sk_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+The local server requires Node.js 18+. It communicates over stdio and passes your API key via the `FOOTSTEP_API_KEY` environment variable.

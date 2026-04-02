@@ -3,6 +3,10 @@ title: "Footstep API"
 description: "Geospatial APIs with terrain intelligence built in"
 ---
 
+<Frame>
+  <img src="/images/landing-page.png" alt="Footstep API" />
+</Frame>
+
 ## Getting started
 
 Routing with terrain analytics and geocoding built on open data. All responses use self-documenting field names with units included (`distance_meters`, `duration_seconds`).
@@ -57,5 +61,21 @@ Search for addresses, reverse geocode coordinates, and process address data at s
   </Card>
   <Card title="Batch" icon="list-check" href="/api/endpoint/batch">
     Geocode up to 1,000 addresses in one request.
+  </Card>
+</Columns>
+
+## AI
+
+Natural language queries, address intelligence, and MCP server for AI agents.
+
+<Columns cols={3}>
+  <Card title="Query" icon="message-bot" href="/api/endpoint/query">
+    Natural language to structured geospatial results.
+  </Card>
+  <Card title="Parse Address" icon="wand-magic-sparkles" href="/api/endpoint/parse-address">
+    Correct, standardize, and structure messy addresses.
+  </Card>
+  <Card title="MCP Server" icon="robot" href="/mcp">
+    Connect AI agents to Footstep.
   </Card>
 </Columns>

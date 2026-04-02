@@ -17,6 +17,7 @@
             "group": "Getting started",
             "pages": [
               "quickstart",
+              "mcp/getting-started",
               "authentication",
               "errors"
             ]
@@ -35,6 +36,9 @@
               "api/endpoint/elevation",
               "api/endpoint/isochrone",
               "api/endpoint/matrix",
+              "api/endpoint/compare",
+              "api/endpoint/find-and-route",
+              "api/endpoint/search-along-route",
               "api/endpoint/snap",
               "api/endpoint/locate"
             ]
@@ -48,7 +52,52 @@
               "api/endpoint/reverse",
               "api/endpoint/autocomplete",
               "api/endpoint/batch",
+              "api/endpoint/places",
               "api/endpoint/parse"
+            ]
+          },
+          {
+            "group": "AI",
+            "pages": [
+              "api/ai",
+              "api/endpoint/query",
+              "api/endpoint/parse-address"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "MCP Server",
+        "groups": [
+          {
+            "group": "MCP Server",
+            "pages": [
+              "mcp",
+              "mcp/configuration",
+              "mcp/tools"
+            ]
+          },
+          {
+            "group": "Routing tools",
+            "pages": [
+              "mcp/tools/get-directions",
+              "mcp/tools/optimize-stops",
+              "mcp/tools/compare-routes",
+              "mcp/tools/find-and-route",
+              "mcp/tools/get-isochrone",
+              "mcp/tools/get-matrix",
+              "mcp/tools/get-elevation",
+              "mcp/tools/snap-trace",
+              "mcp/tools/search-along-route"
+            ]
+          },
+          {
+            "group": "Geocoding tools",
+            "pages": [
+              "mcp/tools/geocode",
+              "mcp/tools/reverse-geocode",
+              "mcp/tools/batch-geocode",
+              "mcp/tools/search-places"
             ]
           }
         ]

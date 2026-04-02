@@ -3,6 +3,10 @@ title: 'Introduction'
 description: 'Terrain-intelligent routing and spatial analysis API'
 ---
 
+<Frame>
+  <img src="/images/routing.png" alt="Terrain-intelligent routing" />
+</Frame>
+
 ## Footstep Routing API
 
 The Routing API provides terrain-intelligent routing, elevation queries, and spatial analysis. Every routing response includes terrain analytics by default: ascent, descent, grade profiles, and difficulty classification, without any extra configuration.
@@ -142,3 +146,29 @@ Every route and leg includes a `flags` object indicating infrastructure used:
 ```
 
 Use these to inform users about tolls, filter routes, or display warnings in your UI.
+
+### Route narratives
+
+Pass `narrative: true` to get an AI-generated natural language summary of the route. Useful for accessibility descriptions, trip previews, and chatbot integrations.
+
+```json
+{
+  "locations": [
+    { "lat": 51.5322, "lon": -0.1240 },
+    { "lat": 51.5055, "lon": -0.0754 }
+  ],
+  "narrative": true
+}
+```
+
+The response includes a `narrative` field on the route object:
+
+```json
+{
+  "route": {
+    "narrative": "A 5.8km drive south through central London, about 14 minutes. Head south from King's Cross through Clerkenwell, then east along the river to Tower Bridge. Mostly flat with 12m total ascent. No tolls or motorways."
+  }
+}
+```
+
+This parameter is available on the [route](/api/endpoint/route) and [optimise](/api/endpoint/optimize) endpoints. Adds ~500ms latency due to AI generation.

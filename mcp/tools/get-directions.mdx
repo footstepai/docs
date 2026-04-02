@@ -1,0 +1,19 @@
+---
+title: 'get_directions'
+description: 'Get driving, walking, or cycling directions between locations'
+---
+
+Get turn-by-turn directions between two or more locations. Supports car, pedestrian, bicycle, bus, and truck routing. Every response includes terrain analytics (elevation gain, difficulty, grade profiles) by default.
+
+Your agent can also fine-tune the route: avoid hills, prefer lit streets, set vehicle dimensions for truck routing, or request alternate routes.
+
+## Example prompts
+
+- "Get me walking directions from Kings Cross to Tower Bridge"
+- "How do I drive from Heathrow to Cambridge avoiding tolls?"
+- "Plan a cycling route from Greenwich to Richmond Park that avoids hills"
+- "What's the flattest walking route between these two coordinates?"
+
+## What you get back
+
+A full route with distance, duration, and turn-by-turn steps for each leg. Terrain analytics include total ascent/descent, elevation profile, grade percentages, and a difficulty classification (flat, rolling, hilly, or mountainous). Route flags tell you if the route uses tolls, highways, or ferries. Pass `narrative: true` for an AI-generated plain English summary of the route.

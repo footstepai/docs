@@ -1,0 +1,17 @@
+---
+title: 'batch_geocode'
+description: 'Geocode up to 1,000 addresses in one call'
+---
+
+Geocode a list of addresses in a single request. Each address can be free text or structured components (street, city, country). Results are returned per-item with the original index preserved, so failed items don't break the batch.
+
+## Example prompts
+
+- "Geocode these 5 addresses and tell me which ones are in London"
+- "Find coordinates for all the addresses in this list"
+- "Batch geocode these office locations and tell me which country each is in"
+- "Process these 50 delivery addresses and flag any that couldn't be found"
+
+## What you get back
+
+Per-item geocoding results (same detail as `geocode`: coordinates, label, confidence, etc.) plus a summary showing total items, how many matched, and how many failed. Failed items include an error message.

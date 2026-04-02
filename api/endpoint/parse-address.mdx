@@ -1,0 +1,69 @@
+---
+title: 'Parse Address'
+openapi: 'POST /v1/ai/parse-address'
+---
+
+Send messy, incomplete, or malformed addresses and get back clean, structured, corrected results. Every correction is itemised so you can see exactly what changed and why.
+
+## What it corrects
+
+| Correction type | Example |
+|-----------------|---------|
+| `typo` | "Main Stret" to "Main Street" |
+| `abbreviation` | "downing st" to "Downing Street", "uk" to "United Kingdom" |
+| `inferred` | Missing postcode, region, or country filled in from context |
+| `reformatted` | "apt 4b" to "Apt 4B" (capitalization, formatting) |
+| `removed` | Duplicate or irrelevant fragments stripped out |
+
+## When to use this vs. `/parse`
+
+The standard [/parse](/api/endpoint/parse) endpoint is a deterministic parser. It breaks an address into components but doesn't correct errors or fill gaps.
+
+`/ai/parse-address` uses AI to understand what the address *should* be. Use it when:
+- Your input has typos or misspellings
+- Address fields are missing (no postcode, no country)
+- You're processing user-submitted data that hasn't been validated
+- You need confidence scores for data quality assessment
+- You want to standardize formatting across a dataset
+
+## Batch processing
+
+Send up to 100 addresses per request. Each result includes the original index so you can match results back to your input:
+
+```json
+{
+  "addresses": [
+    { "text": "123 Main Stret, new york" },
+    { "text": "10 downing st, london, uk" },
+    { "text": "buckingham palace" }
+  ]
+}
+```
+
+For more than 100 addresses, split into multiple requests.
+
+## Country hints
+
+Pass `country` on individual addresses to improve accuracy, especially for ambiguous inputs:
+
+```json
+{
+  "addresses": [
+    { "text": "123 Main Street", "country": "USA" },
+    { "text": "123 Main Street", "country": "GBR" }
+  ]
+}
+```
+
+The same input with different country hints can produce different results (different postcodes, regions, formatting conventions).
+
+## Confidence scores
+
+Each result has a `confidence` score from 0 to 1:
+
+| Range | Meaning |
+|-------|---------|
+| 0.9 - 1.0 | High confidence. Input was clean or corrections are well-supported. |
+| 0.7 - 0.9 | Moderate confidence. Some inference was needed. Review recommended. |
+| 0.5 - 0.7 | Low confidence. Significant guessing involved. Manual review suggested. |
+| Below 0.5 | Very low confidence. Input may be too ambiguous to correct reliably. |

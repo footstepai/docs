@@ -1,0 +1,50 @@
+---
+title: 'Tools'
+description: 'Routing and geocoding tools available to your agent'
+---
+
+The MCP server exposes 13 tools. Click any tool for details.
+
+### Routing
+
+| Tool | What it does |
+|------|-------------|
+| [`get_directions`](/mcp/tools/get-directions) | Get driving, walking, or cycling directions between locations. Returns distance, duration, turn-by-turn steps, and terrain analytics. |
+| [`optimize_stops`](/mcp/tools/optimize-stops) | Find the fastest order to visit multiple stops. Returns optimised route with distance/time savings. |
+| [`compare_routes`](/mcp/tools/compare-routes) | Compare walk vs bike vs drive between the same locations. Side-by-side distance, duration, and terrain difficulty. |
+| [`find_and_route`](/mcp/tools/find-and-route) | Find a place by name and get directions to it in one step. Combines geocoding and routing. |
+| [`get_isochrone`](/mcp/tools/get-isochrone) | Find everywhere reachable within a time or distance limit from a starting point. Returns a polygon boundary. |
+| [`get_matrix`](/mcp/tools/get-matrix) | Calculate travel times and distances between every combination of origins and destinations. |
+| [`get_elevation`](/mcp/tools/get-elevation) | Get elevation data for a list of coordinates. Returns heights and summary statistics. |
+| [`snap_trace`](/mcp/tools/snap-trace) | Clean up a GPS trace and get road surface, class, speed, and terrain details. |
+| [`search_along_route`](/mcp/tools/search-along-route) | Find places along a route ranked by how little detour they add. |
+
+### Geocoding
+
+| Tool | What it does |
+|------|-------------|
+| [`geocode`](/mcp/tools/geocode) | Convert an address or place name to coordinates. Returns lat/lng with confidence score. |
+| [`reverse_geocode`](/mcp/tools/reverse-geocode) | Convert coordinates to an address. Find what's at a given lat/lng. |
+| [`batch_geocode`](/mcp/tools/batch-geocode) | Geocode up to 1,000 addresses in one call. |
+| [`search_places`](/mcp/tools/search-places) | Find places and points of interest near a location. |
+
+## Example prompts
+
+Once connected, you can ask your AI agent things like:
+
+- "Get me walking directions from Kings Cross to Tower Bridge"
+- "Should I walk or cycle? Compare both options"
+- "Directions to the nearest train station from here"
+- "Find coffee shops near my hotel"
+- "Are there any petrol stations on my way to Cambridge?"
+- "What's the elevation profile between these two coordinates?"
+- "How far can I cycle in 15 minutes from Liverpool Street station?"
+- "Find the best order to visit these 8 delivery stops"
+- "Clean up this GPS trace from my bike ride and show me the terrain"
+- "Geocode these 5 addresses and tell me which ones are in London"
+
+The agent will call the appropriate Footstep tool and interpret the results for you.
+
+## Rate limits
+
+MCP tool calls use your API key and count against the same rate limits as direct API calls. See the [authentication guide](/authentication) for rate limit details.
