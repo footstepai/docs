@@ -33,8 +33,10 @@
 - Relative paths for internal links
 
 ## Changelog
-- When any API signature changes (new endpoints, removed endpoints, renamed fields, changed request/response shapes, new parameters, changed defaults), always add or suggest an entry in changelog.mdx
-- Entries should be dated and concise, describing what changed and any migration steps if breaking
+- When making changes to the docs, always ask whether a changelog entry is needed in changelog.mdx
+- This applies to new endpoints, removed endpoints, renamed fields, changed request/response shapes, new parameters, changed defaults, new MCP tools, and any other user-facing change
+- Entries are grouped by month and product area (MCP Server, Routing API, Geocoding API, AI API, Documentation)
+- Keep entries concise. Include migration steps if breaking
 
 ## Git workflow
 - NEVER use --no-verify when committing
