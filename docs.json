@@ -72,7 +72,7 @@
           {
             "group": "MCP Server",
             "pages": [
-              "mcp",
+              "mcp/introduction",
               "mcp/configuration",
               "mcp/tools"
             ]
