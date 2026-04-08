@@ -98,36 +98,3 @@ const tools = await client.tools();
 
 Any MCP client that supports Streamable HTTP transport can connect. Point it at `https://mcp.footstep.ai` and pass your API key in the `x-api-key` header.
 
----
-
-## Local server
-
-If you prefer to run the server on your own machine (offline use, custom setups, or clients that only support stdio transport), install via npm:
-
-```bash
-npm install -g @footstep/mcp-server
-```
-
-Or run directly with npx (no install needed):
-
-```bash
-npx @footstep/mcp-server
-```
-
-Then use a stdio config instead:
-
-```json
-{
-  "mcpServers": {
-    "footstep": {
-      "command": "npx",
-      "args": ["@footstep/mcp-server"],
-      "env": {
-        "FOOTSTEP_API_KEY": "sk_live_your_key_here"
-      }
-    }
-  }
-}
-```
-
-The local server requires Node.js 18+. It communicates over stdio and passes your API key via the `FOOTSTEP_API_KEY` environment variable.
