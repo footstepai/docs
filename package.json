@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "mint dev"
+    "dev": "mint dev",
+    "postinstall": "cp node_modules/@footstep-internal/api-spec/openapi.json api/openapi.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@footstep-internal/api-spec": "^1.0.0",
     "mint": "^4.2.466"
   }
 }

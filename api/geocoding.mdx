@@ -36,7 +36,7 @@ Every geocoding result uses the same shape:
   "region": "England",
   "locality": "London",
   "confidence": 0.95,
-  "layer": "venue",
+  "place_type": "venue",
   "source": "openstreetmap"
 }
 ```
@@ -46,14 +46,14 @@ Every geocoding result uses the same shape:
 | `coordinates` | WGS 84 latitude and longitude |
 | `label` | Pre-formatted display string |
 | `confidence` | 0 to 1. How well this result matched your query |
-| `layer` | What type of place this is (see below) |
+| `place_type` | What type of place this is (see below) |
 | `source` | Which dataset this result came from |
 
-### Layers
+### Place Types
 
-Filter results by type using the `layers` parameter:
+Filter results by type using the `place_types` parameter:
 
-| Layer | Description | Example |
+| Place Type | Description | Example |
 |-------|-------------|---------|
 | `venue` | Named places: businesses, landmarks, parks | Buckingham Palace |
 | `address` | Street addresses | 10 Downing Street |
