@@ -1,0 +1,69 @@
+---
+title: 'Introduction'
+description: 'Spatial probability predictions powered by Footstep Nova'
+---
+
+<Note>
+  **Beta** — The Predict API is in beta. Request and response schemas may change between versions. Contact support@footstep.ai for access and feedback.
+</Note>
+
+## Predict API
+
+The Predict API generates spatial probability distributions for missing person scenarios. Given a search area, subject profile, and environmental conditions, it returns per-hex probabilities across an [H3](https://h3geo.org/) grid — telling you where to look first.
+
+## Models
+
+### Footstep Nova family
+
+Footstep Nova is a family of spatial prediction models purpose-built for missing person scenarios. Nova models combine terrain analysis, land use classification, points of interest, weather conditions, and time-of-day signals to predict the most likely locations for a subject based on their behavioural profile.
+
+Nova supports multiple behavioural profiles. Each model accounts for how different subject types interact with their environment — a despondent individual moves differently to someone with dementia.
+
+#### footstep-nova-1
+
+The first release in the Nova family. Nova 1 delivers profile-aware, weather-aware spatial predictions across flexible search areas.
+
+---
+
+## Key capabilities
+
+- **Profile-aware predictions** — select a behavioural profile that matches your subject. Each profile produces a distinct probability distribution based on how that subject type interacts with the environment.
+- **Directional search** — when the initial direction of travel is known, results are automatically focused to a directional cone, reducing noise and prioritising the most relevant area.
+- **Weather-aware** — the model factors in temperature, precipitation, and wind conditions. Weather is fetched automatically or can be overridden for historical analysis.
+- **Flexible search areas** — define your area as a circle, polygon, or buffered path. The API handles hex grid generation and clipping.
+
+## How to use it
+
+1. Choose a **profile** matching the subject's behavioural category.
+2. Define a **search area** — circle (centre + radius), polygon (GeoJSON), or buffered path.
+3. Provide **subject parameters** — age, optional direction of travel, and date/time.
+4. The API returns a ranked list of hexagons with probabilities. Higher probability hexes should be searched first.
+
+## Endpoint
+
+| Endpoint | Description |
+|----------|-------------|
+| [`POST /v1/predict`](/api/endpoint/predict) | Generate spatial predictions for a given profile and search area. |
+
+## Area types
+
+| Type | Fields | Max size |
+|------|--------|----------|
+| `circle` | `center` (lat/lng) + `radius_m` | 5 km radius |
+| `polygon` | GeoJSON `Polygon` geometry | 25 km² |
+| `path` | GeoJSON `LineString` geometry + `buffer_m` | 500 m buffer |
+
+## Weather
+
+By default, the API fetches weather conditions automatically based on the search area centre and the provided `datetime`. You can:
+
+- **Override weather** — pass a `weather` object with `temperature_c`, `precipitation_mmh`, `wind_speed_mps`, and `wind_direction_deg`.
+- **Disable weather** — set `disableWeather: true` to use neutral defaults.
+
+## Confidence
+
+The response includes a `confidence` level (`high`, `medium`, or `low`) indicating how well the model performs in the region of the search area.
+
+## Authentication
+
+The Predict API uses the same `x-api-key` header as all other endpoints. See the [authentication guide](/authentication) for details.

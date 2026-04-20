@@ -57,11 +57,18 @@
             ]
           },
           {
-            "group": "AI",
+            "group": "Natural Language",
             "pages": [
               "api/ai",
               "api/endpoint/query",
               "api/endpoint/parse-address"
+            ]
+          },
+          {
+            "group": "Predict",
+            "pages": [
+              "api/predict",
+              "api/endpoint/predict"
             ]
           }
         ]

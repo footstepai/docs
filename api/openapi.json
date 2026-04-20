@@ -1281,6 +1281,91 @@
           "503": { "description": "AI engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
         }
       }
+    },
+    "/v1/predict": {
+      "post": {
+        "operationId": "predict",
+        "summary": "Generate spatial predictions",
+        "description": "Predict probability distributions across H3 hexagons for a given behavioural profile and search area. Define a search area (circle, polygon, or buffered path), provide subject parameters, and receive per-hex probabilities ranked by likelihood. Weather data is fetched automatically unless overridden or disabled.",
+        "tags": ["Predict"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PredictRequest" },
+              "examples": {
+                "circle": {
+                  "summary": "Directional search (cone)",
+                  "value": {
+                    "profile": "despondent",
+                    "area": {
+                      "type": "circle",
+                      "center": { "lat": 51.5074, "lng": -0.1278 },
+                      "radius_m": 2000
+                    },
+                    "params": {
+                      "age_years": 75,
+                      "initial_bearing_deg": 180,
+                      "datetime": "2025-06-15T14:00:00Z"
+                    }
+                  }
+                },
+                "polygon": {
+                  "summary": "Custom polygon area",
+                  "value": {
+                    "profile": "despondent",
+                    "area": {
+                      "type": "polygon",
+                      "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[[-0.13, 51.50], [-0.12, 51.50], [-0.12, 51.51], [-0.13, 51.51], [-0.13, 51.50]]]
+                      }
+                    },
+                    "params": {
+                      "age_years": 68,
+                      "initial_bearing_deg": 90,
+                      "datetime": "2025-01-10T08:30:00Z",
+                      "disableWeather": false
+                    }
+                  }
+                },
+                "with_weather": {
+                  "summary": "Manual weather override",
+                  "value": {
+                    "profile": "despondent",
+                    "area": {
+                      "type": "circle",
+                      "center": { "lat": 51.5074, "lng": -0.1278 },
+                      "radius_m": 1000
+                    },
+                    "params": {
+                      "age_years": 80,
+                      "initial_bearing_deg": 0,
+                      "datetime": "2025-12-20T22:00:00Z",
+                      "weather": {
+                        "temperature_c": 2.5,
+                        "precipitation_mmh": 0.5,
+                        "wind_speed_mps": 8.0,
+                        "wind_direction_deg": 270
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prediction results with per-hex probabilities",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PredictResponse" } }
+            }
+          },
+          "400": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Prediction engine unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
     }
   },
   "components": {
@@ -2165,6 +2250,133 @@
               }
             }
           }
+        }
+      },
+      "PredictRequest": {
+        "type": "object",
+        "required": ["profile", "area", "params"],
+        "properties": {
+          "profile": { "type": "string", "minLength": 1, "description": "Behavioural profile identifier (e.g. \"despondent\", \"dementia_alzheimers\")" },
+          "area": {
+            "description": "Search area — circle, polygon, or buffered path",
+            "discriminator": { "propertyName": "type" },
+            "oneOf": [
+              { "$ref": "#/components/schemas/CircleArea" },
+              { "$ref": "#/components/schemas/PolygonArea" },
+              { "$ref": "#/components/schemas/PathArea" }
+            ]
+          },
+          "params": { "$ref": "#/components/schemas/PredictParams" }
+        }
+      },
+      "CircleArea": {
+        "type": "object",
+        "required": ["type", "center", "radius_m"],
+        "properties": {
+          "type": { "type": "string", "enum": ["circle"] },
+          "center": {
+            "type": "object",
+            "required": ["lat", "lng"],
+            "properties": {
+              "lat": { "type": "number", "minimum": -90, "maximum": 90, "description": "Latitude of the circle centre" },
+              "lng": { "type": "number", "minimum": -180, "maximum": 180, "description": "Longitude of the circle centre" }
+            }
+          },
+          "radius_m": { "type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 5000, "description": "Search radius in metres (max 5 km)" }
+        }
+      },
+      "PolygonArea": {
+        "type": "object",
+        "description": "Polygon search area. Maximum area 25 km².",
+        "required": ["type", "geometry"],
+        "properties": {
+          "type": { "type": "string", "enum": ["polygon"] },
+          "geometry": {
+            "type": "object",
+            "required": ["type", "coordinates"],
+            "description": "GeoJSON Polygon geometry (max 25 km²)",
+            "properties": {
+              "type": { "type": "string", "enum": ["Polygon"] },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PathArea": {
+        "type": "object",
+        "required": ["type", "geometry", "buffer_m"],
+        "properties": {
+          "type": { "type": "string", "enum": ["path"] },
+          "geometry": {
+            "type": "object",
+            "required": ["type", "coordinates"],
+            "description": "GeoJSON LineString geometry",
+            "properties": {
+              "type": { "type": "string", "enum": ["LineString"] },
+              "coordinates": {
+                "type": "array",
+                "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+              }
+            }
+          },
+          "buffer_m": { "type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 500, "description": "Buffer distance in metres around the path (max 500 m)" }
+        }
+      },
+      "PredictParams": {
+        "type": "object",
+        "required": ["age_years", "datetime"],
+        "properties": {
+          "age_years": { "type": "number", "exclusiveMinimum": true, "minimum": 0, "description": "Subject age in years" },
+          "initial_bearing_deg": { "type": "number", "minimum": 0, "maximum": 360, "description": "Initial direction of movement in degrees (0 = north, 90 = east). When provided, results are filtered to a directional cone centred on the bearing." },
+          "datetime": { "type": "string", "format": "date-time", "description": "Date and time for the prediction (ISO 8601). Used for weather lookup and time-of-day features." },
+          "weather": { "$ref": "#/components/schemas/Weather" },
+          "disableWeather": { "type": "boolean", "default": false, "description": "Skip automatic weather fetch. When true, neutral weather defaults are used unless weather is provided manually." }
+        }
+      },
+      "Weather": {
+        "type": "object",
+        "required": ["temperature_c", "precipitation_mmh", "wind_speed_mps", "wind_direction_deg"],
+        "description": "Manual weather override. When provided, the API skips the automatic weather lookup.",
+        "properties": {
+          "temperature_c": { "type": "number", "description": "Temperature in degrees Celsius" },
+          "precipitation_mmh": { "type": "number", "minimum": 0, "description": "Precipitation rate in mm/hour" },
+          "wind_speed_mps": { "type": "number", "minimum": 0, "description": "Wind speed in metres per second" },
+          "wind_direction_deg": { "type": "number", "minimum": 0, "maximum": 360, "description": "Wind direction in degrees (0 = north)" }
+        }
+      },
+      "PredictResponse": {
+        "type": "object",
+        "required": ["profile", "model_version", "results", "summary", "confidence"],
+        "properties": {
+          "profile": { "type": "string", "description": "The profile used for this prediction" },
+          "model_version": { "type": "string", "description": "Model version that produced the prediction" },
+          "results": {
+            "type": "array",
+            "description": "Per-hex predictions sorted by probability (highest first)",
+            "items": {
+              "type": "object",
+              "required": ["hex", "probability"],
+              "properties": {
+                "hex": { "type": "string", "description": "H3 hex index" },
+                "probability": { "type": "number", "minimum": 0, "maximum": 1, "description": "Predicted probability for this hex" }
+              }
+            }
+          },
+          "summary": {
+            "type": "object",
+            "required": ["hex_count", "processing_time_ms"],
+            "properties": {
+              "hex_count": { "type": "integer", "description": "Number of hexagons evaluated" },
+              "processing_time_ms": { "type": "number", "description": "Server-side processing time in milliseconds" }
+            }
+          },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"], "description": "Model confidence level for the search area" }
         }
       }
     }

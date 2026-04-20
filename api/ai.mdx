@@ -3,24 +3,20 @@ title: 'Introduction'
 description: 'Natural language queries and address intelligence'
 ---
 
-## AI Endpoints
+## Natural Language Endpoints
 
-The AI endpoints accept unstructured input and return structured geospatial results. Send natural language or messy address data, get back clean coordinates, routes, and corrected addresses.
-
-### How it works
-
-AI endpoints use large language models to understand your input, then call the appropriate routing or geocoding backend. You get the same structured responses as the standard endpoints, plus a natural language summary and metadata about what was inferred.
+The natural language endpoints accept unstructured input and return structured geospatial results. Send plain text or messy address data, get back clean coordinates, routes, and corrected addresses.
 
 ### Endpoints
 
 | Endpoint | Description |
 |----------|-------------|
-| [`POST /query`](/api/endpoint/query) | Natural language to structured geospatial results. Send text like "Walking route from Kings Cross to Tower Bridge" and get back a route. |
-| [`POST /parse-address`](/api/endpoint/parse-address) | Correct, standardize, and structure messy addresses. Fixes typos, expands abbreviations, infers missing fields. |
+| [`POST /v1/ai/query`](/api/endpoint/query) | Natural language to structured geospatial results. Send text like "Walking route from Kings Cross to Tower Bridge" and get back a route. |
+| [`POST /v1/ai/parse-address`](/api/endpoint/parse-address) | Correct, standardize, and structure messy addresses. Fixes typos, expands abbreviations, infers missing fields. |
 
 ### Route narratives
 
-The standard [route](/api/endpoint/route) and [optimise](/api/endpoint/optimize) endpoints also support AI-generated summaries. Pass `narrative: true` to get a human-readable description of the route:
+The standard [route](/api/endpoint/route) and [optimise](/api/endpoint/optimize) endpoints also support natural language summaries. Pass `narrative: true` to get a human-readable description of the route:
 
 ```json
 {
@@ -44,14 +40,4 @@ The response includes a `narrative` field:
 
 ### Authentication
 
-All AI endpoints require an API key via the `x-api-key` header, same as every other endpoint. See the [authentication guide](/authentication) for details.
-
-### Latency
-
-AI endpoints add latency compared to standard endpoints because they involve LLM processing:
-
-- `/query`: 1-3 seconds (intent classification + geocoding + backend call + summary generation)
-- `/parse-address`: 1-2 seconds for small batches, up to 10 seconds for 100 addresses
-- `narrative: true` on route endpoints: adds ~500ms to the standard response time
-
-For latency-sensitive applications, use the standard endpoints directly.
+All endpoints require an API key via the `x-api-key` header. See the [authentication guide](/authentication) for details.
