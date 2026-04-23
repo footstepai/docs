@@ -1,0 +1,19 @@
+---
+title: 'predict'
+description: 'Generate spatial probability predictions for missing person scenarios'
+---
+
+Generate spatial probability distributions for missing person scenarios. Given a search area, behavioural profile, and environmental conditions, returns per-hex scores across an H3 grid — telling you where to look first.
+
+Supports three area types: circle (centre + radius), polygon (GeoJSON), or buffered path (LineString + buffer). Weather is fetched automatically unless overridden or disabled.
+
+## Example prompts
+
+- "Predict the most likely locations for a despondent 75-year-old last seen heading south from this point"
+- "Run a prediction for a dementia patient, age 80, in this 2km radius area"
+- "Generate a search priority map for this polygon area, the subject was last seen at 10pm"
+- "Predict with heavy rain and strong wind conditions for this search area"
+
+## What you get back
+
+A list of H3 hexagons ranked by score (0–30, highest first), along with the model version used, total hex count, processing time, and a confidence level indicating how well the model performs in that region.

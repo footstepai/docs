@@ -2358,13 +2358,13 @@
           "model_version": { "type": "string", "description": "Model version that produced the prediction" },
           "results": {
             "type": "array",
-            "description": "Per-hex predictions sorted by probability (highest first)",
+            "description": "Per-hex predictions sorted by score (highest first)",
             "items": {
               "type": "object",
-              "required": ["hex", "probability"],
+              "required": ["hex", "score"],
               "properties": {
                 "hex": { "type": "string", "description": "H3 hex index" },
-                "probability": { "type": "number", "minimum": 0, "maximum": 1, "description": "Predicted probability for this hex" }
+                "score": { "type": "integer", "minimum": 0, "maximum": 30, "description": "Quantized probability score (0\u201330). Higher = more likely." }
               }
             }
           },
