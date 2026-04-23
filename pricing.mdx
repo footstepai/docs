@@ -1,0 +1,51 @@
+---
+title: "Pricing"
+description: "Pay-as-you-go pricing for every endpoint"
+---
+
+Pay only for successful API calls. Every new account starts with £5 credit.
+
+## API pricing
+
+| API | Price |
+|-----|-------|
+| **Geocoding** — [search](/api/endpoint/search), [reverse](/api/endpoint/reverse), [autocomplete](/api/endpoint/autocomplete), [structured search](/api/endpoint/structured-search), [places](/api/endpoint/places), [parse](/api/endpoint/parse), [locate](/api/endpoint/locate) | **£0.50** per 1,000 requests |
+| **Routing** — [route](/api/endpoint/route), [optimise](/api/endpoint/optimize), [elevation](/api/endpoint/elevation), [isochrone](/api/endpoint/isochrone), [matrix](/api/endpoint/matrix), [snap](/api/endpoint/snap), [compare](/api/endpoint/compare), [find & route](/api/endpoint/find-and-route), [search along route](/api/endpoint/search-along-route), [batch geocode](/api/endpoint/batch) | **£2.00** per 1,000 requests |
+| **Natural Language** — [query](/api/endpoint/query), [address correction](/api/endpoint/parse-address) | **£25.00** per 1,000 requests |
+| **Predict** — [spatial probability model](/api/endpoint/predict) | **£1.00** per request |
+
+<Tip>
+All prices in GBP. Only successful responses (2xx/3xx) are billed — failed requests are never charged.
+</Tip>
+
+## How it works
+
+1. **Sign up** at [console.footstep.ai](https://console.footstep.ai) — your account is credited with £5
+2. **Make API calls** — usage is metered per request at the rates above
+3. **Top up** your balance when you need to, or enable auto-recharge
+
+<Note>
+MCP tool calls are billed at the same rate as the underlying API endpoint.
+</Note>
+
+## Billing details
+
+- Usage is tracked per API key and deducted in near real-time
+- When your balance reaches zero, requests return `402 Payment Required`
+- Set up [auto-recharge](https://console.footstep.ai) in the console to top up automatically
+- All prices exclude VAT where applicable
+
+## Volume pricing
+
+Sustained usage above 1 million requests per month? [Contact us](mailto:support@footstep.ai) for volume pricing.
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get your API key and make your first request in minutes.
+  </Card>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how to authenticate your API calls.
+  </Card>
+</Columns>

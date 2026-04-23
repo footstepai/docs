@@ -19,6 +19,7 @@
               "quickstart",
               "mcp/getting-started",
               "authentication",
+              "pricing",
               "errors"
             ]
           }
@@ -105,6 +106,12 @@
               "mcp/tools/reverse-geocode",
               "mcp/tools/batch-geocode",
               "mcp/tools/search-places"
+            ]
+          },
+          {
+            "group": "Predict tools",
+            "pages": [
+              "mcp/tools/predict"
             ]
           }
         ]
