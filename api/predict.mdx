@@ -3,9 +3,9 @@ title: 'Introduction'
 description: 'Spatial probability predictions powered by Footstep Nova'
 ---
 
-<Note>
-  **Beta** — The Predict API is in beta. Request and response schemas may change between versions. Contact support@footstep.ai for access and feedback.
-</Note>
+<Warning>
+  **Research Preview** — The Predict API is a research preview. Predictions are generated from behavioural models that have not yet been fully validated against real-world outcomes. This endpoint is not intended for use as the sole or primary basis for operational search and rescue decisions. Access is granted on request — contact support@footstep.ai to get started.
+</Warning>
 
 ## Predict API
 
@@ -64,6 +64,8 @@ By default, the API fetches weather conditions automatically based on the search
 
 The response includes a `confidence` level (`high`, `medium`, or `low`) indicating how well the model performs in the region of the search area.
 
-## Authentication
+## Access
 
-The Predict API uses the same `x-api-key` header as all other endpoints. See the [authentication guide](/authentication) for details.
+The Predict API is available on request. Contact support@footstep.ai to enable it on your account.
+
+Once enabled, authentication works the same as all other endpoints — pass your `x-api-key` header. See the [authentication guide](/authentication) for details.
