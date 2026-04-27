@@ -20,7 +20,7 @@ curl "https://api.footstep.ai/v1/geocoding/search?text=Buckingham+Palace" \
   -H "x-api-key: sk_live_your_key_here"
 ```
 
-No configuration, no setup, no SDK required. Every result includes a confidence score (0-1) and the data source it came from, so you always know how reliable a match is and where the data originated.
+Every result includes a confidence score (0-1), so you always know how reliable a match is.
 
 ### Response conventions
 
@@ -36,8 +36,7 @@ Every geocoding result uses the same shape:
   "region": "England",
   "locality": "London",
   "confidence": 0.95,
-  "place_type": "venue",
-  "source": "openstreetmap"
+  "place_type": "venue"
 }
 ```
 
@@ -47,7 +46,6 @@ Every geocoding result uses the same shape:
 | `label` | Pre-formatted display string |
 | `confidence` | 0 to 1. How well this result matched your query |
 | `place_type` | What type of place this is (see below) |
-| `source` | Which dataset this result came from |
 
 ### Place Types
 
