@@ -3,15 +3,19 @@ title: 'search_places'
 description: 'Find places and points of interest near a location'
 ---
 
-Search for places by category or keyword near a location. Unlike `geocode` (which finds specific addresses and named places), this is designed for discovery queries like "coffee shops near me" or "restaurants in Soho". Results are ranked by proximity.
+Search for places by category or keyword near a location. Unlike `geocode` (which resolves a single specific address or landmark to coordinates), this is designed for discovery queries like "coffee shops near me" or "restaurants in Soho". Results are ranked by proximity.
+
+`query` accepts both **categories** (cafe, restaurant, supermarket, park, gym, atm, pharmacy, hotel, hospital, fuel, library, museum, …) and **specific names** (Costa, Tesco, Black Sheep Coffee, Tower Bridge). Categories are expanded internally to multilingual synonyms — "cafe" also catches "coffee", "café", "kaffee", etc. Hybrid queries like "italian restaurant" combine the literal phrase with the category synonyms.
+
+For "find X near Y" queries, pass `near` as a place name and the search center is geocoded for you — there is no need to call `geocode` first. If you already have coordinates, pass `lat` and `lon` instead.
 
 ## Example prompts
 
-- "Find coffee shops near Kings Cross"
-- "What restaurants are within 1km of my hotel?"
-- "Are there any supermarkets near 51.53, -0.12?"
-- "Show me parks within walking distance of Tower Bridge"
+- "Find coffee shops near Kings Cross" → `search_places(query="coffee shop", near="Kings Cross, London")`
+- "What restaurants are within 1km of my hotel?" → `search_places(query="restaurant", lat=..., lon=..., radius=1)`
+- "Are there any supermarkets near 51.53, -0.12?" → `search_places(query="supermarket", lat=51.53, lon=-0.12)`
+- "Show me parks within walking distance of Tower Bridge" → `search_places(query="park", near="Tower Bridge, London")`
 
 ## What you get back
 
-A list of matching places, each with coordinates, name, full label, distance from the search point in meters, and a confidence score. Results are sorted by proximity.
+A list of matching places, each with coordinates, name, full label, distance from the search point in meters, and a confidence score. Results are sorted by proximity. The `query.near` field of the response shows the resolved coordinates so you can see what center was used.

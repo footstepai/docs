@@ -114,3 +114,40 @@ Once connected, just ask your assistant anything from the examples above. It wil
 - **Mention terrain if you care about it.** Ask "what's the flattest route?" or "how hilly is this?" and the assistant will include elevation and difficulty information.
 - **Give coordinates if you have them.** You can mix place names and coordinates: "Directions from 51.53, -0.12 to Tower Bridge".
 - **Ask follow-up questions.** After getting directions, you can ask "is there a flatter alternative?" or "how about by bike instead?".
+
+## Map-rendering clients
+
+By default, geometry-bearing tools (`get_directions`, `find_and_route`, `compare_routes`, `optimize_stops`, `search_along_route`, `snap_trace`, `get_isochrone`) return lean responses with polylines and polygons stripped out. Standalone agents like Claude Desktop can't render maps, so paying for that geometry in tokens is wasteful.
+
+If you're building a chat app that renders Footstep results on a map (Mapbox, MapLibre, Leaflet, etc.), set `include_geometry: true` on every tool call so the response carries the geometry your renderer needs. The simplest way to do this with the Vercel AI SDK is a one-line middleware that injects the flag for every call:
+
+```ts
+import { experimental_createMCPClient } from "ai";
+
+const mcpClient = await experimental_createMCPClient({
+  transport: {
+    type: "sse",
+    url: "https://mcp.footstep.ai",
+    headers: { "x-api-key": process.env.FOOTSTEP_API_KEY! },
+  },
+});
+
+const rawTools = await mcpClient.tools();
+
+// Inject `include_geometry: true` on every Footstep tool call so the
+// response includes polygons / polylines for map rendering.
+const tools = Object.fromEntries(
+  Object.entries(rawTools).map(([name, tool]) => [
+    name,
+    {
+      ...tool,
+      execute: (args: Record<string, unknown>, opts: unknown) =>
+        tool.execute({ ...args, include_geometry: true }, opts),
+    },
+  ]),
+);
+```
+
+Tools that don't carry geometry (`geocode`, `reverse_geocode`, `search_places`, `batch_geocode`, `get_matrix`, `get_elevation`, `predict`) ignore the flag — they have no geometry to add.
+
+For isochrones specifically, the response also includes a `reachable_places` array per contour (named venues, neighbourhoods, landmarks inside the polygon) regardless of the flag — that's LLM-friendly content for both standalone and map-rendering clients. See [`get_isochrone`](/mcp/tools/get-isochrone) for details.

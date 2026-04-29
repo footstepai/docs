@@ -15,3 +15,11 @@ Geocode a destination (address, place name, or landmark) and route to it from yo
 ## What you get back
 
 The geocoded destination (with coordinates, label, and confidence score), the full route (distance, duration, terrain, turn-by-turn steps), and a few alternative destination matches in case the top result wasn't what you meant.
+
+## Rendering on a map: `include_geometry`
+
+By default this tool returns a lean response — the encoded polyline of the route and the sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.
+
+If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the route polyline and elevation profile per leg alongside the same summary fields. The map renders the geometry; the LLM still reasons over the summary.
+
+Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.

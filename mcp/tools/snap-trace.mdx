@@ -17,3 +17,11 @@ Useful for analysing recorded activities (runs, rides, walks) or cleaning noisy 
 ## What you get back
 
 A confidence-scored snapped path, route with terrain analytics (ascent, descent, difficulty), and per-segment road attributes (surface type, road class, speed limit, grade). Also includes per-point match quality so you can see where GPS was noisy.
+
+## Rendering on a map: `include_geometry`
+
+By default this tool returns a lean response — the matched polyline, per-point match details, and sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.
+
+If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the matched polyline, per-point match details, and elevation profile alongside the same summary fields. The map renders the geometry; the LLM still reasons over the summary.
+
+Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.

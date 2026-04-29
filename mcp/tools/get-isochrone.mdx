@@ -11,13 +11,31 @@ Generate reachability contours from a starting point. Shows how far you can trav
 
 Supports multiple contours in one request, so you can show 5, 10, and 15-minute ranges together.
 
+For "what's reachable from X" queries, pass `from` as a place name and the origin is geocoded for you — there is no need to call `geocode` first. If you already have coordinates, pass `location` instead.
+
 ## Example prompts
 
-- "How far can I walk in 15 minutes from Liverpool Street station?"
-- "Show me the area I can cycle to in 20 minutes from my office"
-- "What's within a 5km drive of this warehouse?"
-- "Compare 10-minute and 30-minute walking ranges from this location"
+- "How far can I walk in 15 minutes from Liverpool Street station?" → `get_isochrone(from="Liverpool Street station, London", contours=[{time: 15}], travel="pedestrian")`
+- "Show me the area I can cycle to in 20 minutes from my office" → `get_isochrone(location={lat: ..., lon: ...}, contours=[{time: 20}], travel="bicycle")`
+- "What's within a 5km drive of this warehouse?" → `get_isochrone(location={lat: ..., lon: ...}, contours=[{distance: 5}], travel="auto")`
+- "Compare 10-minute and 30-minute walking ranges from Kings Cross" → `get_isochrone(from="Kings Cross, London", contours=[{time: 10}, {time: 30}], travel="pedestrian")`
 
 ## What you get back
 
-One or more contour polygons, each with its metric (time or distance), value, and GeoJSON geometry. The response also includes the origin point and travel type used.
+By default each contour is returned as a vertex-count + bbox summary plus a list of named anchors inside the polygon (see below) — the polygon coordinates are dropped because they're noise for an LLM that can't render them. Pass `include_geometry: true` (described below) to get the full polygon for map rendering. The response also includes the origin point and travel type used.
+
+## `reachable_places` — named anchors inside the polygon
+
+For each contour, the response includes a `reachable_places` array: named venues, neighbourhoods, parks, stations, and landmarks that fall inside the polygon, ranked by confidence. This turns a polygon (which an LLM can't render) into something an LLM can actually speak:
+
+> "In 15 minutes on foot from Kings Cross you can reach Russell Square, Holborn, Camden Town and Bloomsbury."
+
+This is best-effort enrichment: if no named anchors can be resolved for a contour, `reachable_places` is omitted and the rest of the response goes through unchanged.
+
+## Rendering on a map: `include_geometry`
+
+By default this tool returns a lean response — the polygon coordinates are stripped out (replaced with a vertex count + bbox summary) so standalone LLM agents (which can't render maps) don't pay for them in tokens.
+
+If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the full GeoJSON `geometry` block per contour alongside the same summary fields and `reachable_places`. The map renders the polygon; the LLM still reasons over the summary.
+
+Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.
