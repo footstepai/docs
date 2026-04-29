@@ -3317,8 +3317,8 @@
             "type": "number",
             "minimum": 1,
             "maximum": 100,
-            "default": 5,
-            "description": "GPS accuracy in meters"
+            "default": 10,
+            "description": "Expected GPS accuracy in meters. Default 10 reflects typical urban phone GPS; bump higher for noisy traces, lower for high-quality recordings."
           },
           "search_radius": {
             "type": "number",
@@ -3332,6 +3332,16 @@
             "minimum": 10,
             "maximum": 200,
             "default": 30
+          },
+          "shape_match": {
+            "type": "string",
+            "enum": [
+              "edge_walk",
+              "map_snap",
+              "walk_or_snap"
+            ],
+            "default": "walk_or_snap",
+            "description": "Matching strategy. `edge_walk` requires the trace to follow exact road edges (high-quality data only). `map_snap` is strict per-point snapping. `walk_or_snap` (default) is forgiving — falls back to walking the closest edges when an exact snap fails, which matches typical phone-GPS behaviour."
           },
           "format": {
             "$ref": "#/components/schemas/Format"
@@ -4542,7 +4552,11 @@
             "items": {
               "$ref": "#/components/schemas/GeocodingResult"
             },
-            "description": "Other geocoding matches (top 3) in case the primary result wasn't what you meant"
+            "description": "Other geocoding matches (up to 3) in case the primary result wasn't what you meant. Filtered to the same country as the primary match with a minimum confidence threshold; absent when nothing useful survives the filter."
+          },
+          "narrative": {
+            "type": "string",
+            "description": "AI-generated 1-3 sentence summary of the route. Present only when `narrative: true` was requested and the LLM service was available."
           }
         }
       },

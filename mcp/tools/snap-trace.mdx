@@ -18,6 +18,12 @@ Useful for analysing recorded activities (runs, rides, walks) or cleaning noisy 
 
 A confidence-scored snapped path, route with terrain analytics (ascent, descent, difficulty), and per-segment road attributes (surface type, road class, speed limit, grade). Also includes per-point match quality so you can see where GPS was noisy.
 
+## Matching strictness
+
+The tool defaults to a forgiving matching mode (`walk_or_snap`) that handles typical phone-GPS noise — if a point falls a few metres off the nearest road, the tool walks the closest edge rather than rejecting the whole trace. This matches the realistic 5–15 m accuracy of urban GPS recordings.
+
+For high-quality traces (cyclometer downloads, surveying-grade data) or when you want strict per-point snapping, the REST API exposes `shape_match` (`edge_walk` / `map_snap` / `walk_or_snap`) and `gps_accuracy`. Defaults are sensible for most cases — only override when you have a specific reason.
+
 ## Rendering on a map: `include_geometry`
 
 By default this tool returns a lean response — the matched polyline, per-point match details, and sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.
