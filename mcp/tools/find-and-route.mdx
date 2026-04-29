@@ -16,6 +16,11 @@ Geocode a destination (address, place name, or landmark) and route to it from yo
 
 The geocoded destination (with coordinates, label, and confidence score), the full route (distance, duration, terrain, turn-by-turn steps), and a few alternative destination matches in case the top result wasn't what you meant.
 
+## Tips for landmark destinations
+
+- **Qualify with city context** — `"Big Ben, London"` resolves more reliably than `"Big Ben"`.
+- **Plain street addresses don't need extra context.**
+
 ## Rendering on a map: `include_geometry`
 
 By default this tool returns a lean response — the encoded polyline of the route and the sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.

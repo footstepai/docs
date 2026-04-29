@@ -17,3 +17,10 @@ You can bias results towards a location or restrict to specific countries for be
 ## What you get back
 
 A list of matching locations, each with coordinates (lat/lng), a full label, country, region, locality, confidence score (0-1), and the result type (venue, address, street, locality, etc.).
+
+## Tips for landmark queries
+
+- **Qualify with city context.** `"Big Ben, London"` resolves much more reliably than `"Big Ben"` alone — the comma form lets the parser treat the city as administrative context.
+- **Plain street addresses don't need extra context** — `"10 Downing Street, London"` is enough.
+
+If you're driving the tool from an LLM, mentioning these hints in the system prompt often improves results without any code changes.
