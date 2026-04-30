@@ -14,7 +14,7 @@ Geocode a destination (address, place name, or landmark) and route to it from yo
 
 ## What you get back
 
-The geocoded destination (with coordinates, label, and confidence score), the full route (distance, duration, terrain, turn-by-turn steps), and up to three alternative destination matches when the top result wasn't unambiguous. Alternatives are filtered to the same country as the primary match and require a minimum confidence, so cross-country noise (e.g. "London, ON, Canada" when you searched in the UK) is dropped.
+The geocoded destination (label, coordinates, country code, place type, confidence), the route (distance, duration, terrain, turn-by-turn steps), and up to three alternative destination matches when the top result wasn't unambiguous. Alternatives are filtered to the same country as the primary match with a minimum confidence threshold, so cross-country noise (e.g. "London, ON, Canada" when you searched in the UK) is dropped.
 
 Pass `narrative: true` for an AI-generated 1-3 sentence summary of the route alongside the structured data.
 

@@ -3078,7 +3078,7 @@
             "items": {
               "$ref": "#/components/schemas/Route"
             },
-            "description": "Alternate routes (same shape as primary route)"
+            "description": "Alternate routes (same shape as primary route). Populated only when `alternates >= 1` was requested AND viable alternate routings were found; absent otherwise."
           },
           "narrative": {
             "type": "string",

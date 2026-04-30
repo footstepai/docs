@@ -20,12 +20,14 @@ Supports comparing 2-4 modes in one call: walking, cycling, driving, bus, and tr
 
 ## What you get back
 
-A route for each travel mode (with full distance, duration, terrain analytics, and turn-by-turn steps) plus a comparison showing which mode is fastest, shortest, and easiest by terrain. Includes a natural language summary like "Cycling is 3 min faster than walking but has 40m more climbing."
+A summary per travel mode (distance, duration, terrain analytics) plus a comparison block showing which mode is fastest, shortest, and easiest by terrain. Includes a natural language summary like "Cycling is 3 min faster than walking but has 40m more climbing."
+
+For step-by-step directions on a chosen mode, call `get_directions` after comparing.
 
 ## Rendering on a map: `include_geometry`
 
-By default this tool returns a lean response — each per-mode polyline and the sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.
+By default the response is lean — turn-by-turn steps, polylines, and sample-by-sample elevation profiles are stripped out.
 
-If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the route polyline and elevation profile per mode alongside the same summary fields. The map renders the geometry; the LLM still reasons over the summary.
+If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries each mode's full step list, polyline, and elevation profile alongside the same summary fields.
 
 Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.

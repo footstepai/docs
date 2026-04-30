@@ -14,12 +14,14 @@ Given a list of stops, find the most efficient order to visit them all. Solves t
 
 ## What you get back
 
-The optimised route (same detail as `get_directions`: distance, duration, steps, terrain) plus the reordered stop sequence and savings. Savings show distance saved in meters and as a percentage, and time saved in seconds and as a percentage.
+The reordered stop sequence (`optimized_order`), savings vs the original order (distance saved in meters + as a percentage, time saved in seconds + as a percentage), and the optimised route's totals (distance, duration, terrain).
+
+For step-by-step directions through the optimised order, call `get_directions` with the reordered waypoints.
 
 ## Rendering on a map: `include_geometry`
 
-By default this tool returns a lean response — the encoded polyline of the optimised route and the sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.
+By default the response is lean — turn-by-turn steps, the encoded polyline, and the sample-by-sample elevation profile are stripped out.
 
-If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the route polyline and elevation profile per leg alongside the same summary fields. The map renders the geometry; the LLM still reasons over the summary.
+If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the full step list, route polyline, and per-leg elevation profile alongside the same summary fields.
 
 Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.

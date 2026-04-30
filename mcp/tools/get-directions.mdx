@@ -16,7 +16,15 @@ Your agent can also fine-tune the route: avoid hills, prefer lit streets, set ve
 
 ## What you get back
 
-A full route with distance, duration, and turn-by-turn steps for each leg. Terrain analytics include total ascent/descent, elevation profile, grade percentages, and a difficulty classification (flat, rolling, hilly, or mountainous). Route flags tell you if the route uses tolls, highways, or ferries. Pass `narrative: true` for an AI-generated plain English summary of the route.
+A full route with distance, duration, and turn-by-turn steps. Terrain analytics include total ascent/descent, elevation profile, grade percentages, and a difficulty classification (flat, rolling, hilly, or mountainous). Route flags tell you if the route uses tolls, highways, or ferries. Pass `narrative: true` for an AI-generated plain English summary of the route.
+
+For 2-waypoint routes, the route's totals/terrain/flags are reported once at the top level — the single leg only carries `steps` (and the polyline when `include_geometry: true`). Multi-waypoint routes (3+ waypoints) keep the per-leg breakdown so you can see distance/terrain per segment.
+
+## Alternate routes: `alternates`
+
+Set `alternates: 1-3` to ask Valhalla for alternative routings. When found, the response carries an `alternates` array of full route objects (same shape as `route`), each with their own distance, duration, terrain analytics, and turn-by-turn steps. The LLM can reason about "which is flatter?" or "which avoids the highway?" by comparing them.
+
+Alternates aren't always available — for short urban routes there often isn't a meaningfully different option. The `alternates` field is omitted when Valhalla returns none.
 
 ## Rendering on a map: `include_geometry`
 

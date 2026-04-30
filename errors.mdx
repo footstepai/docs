@@ -31,7 +31,23 @@ These indicate a problem with the request. Fix the issue before retrying.
 | `403` | `forbidden` | Invalid, suspended, or revoked API key | Key was deleted, suspended by admin, or doesn't exist |
 | `404` | `not_found` | Endpoint does not exist | Typo in the URL path, or using an unsupported HTTP method |
 | `408` | `request_timeout` | Request took too long to process | Very long routes, complex optimisation problems, or temporary server load |
-| `429` | `too_many_requests` | Rate limit exceeded | Too many requests in a short window. Back off and retry |
+| `429` | `too_many_requests` | Rate limit exceeded | Per-product per-second cap exceeded for your API key. Back off and retry — the response body's `retryAfter` field gives the milliseconds until the next request will succeed. See per-product caps below. |
+
+### Rate limits per product
+
+Each product has its own per-second budget per API key. Hitting one cap does not affect the others — a customer using the routing API at full speed has full geocoding capacity available in parallel.
+
+| Product | Default cap | Endpoints |
+|---------|-------------|-----------|
+| Geocoding | **10 req/sec** | `/v1/geocoding/*`, `/v1/routing/find-and-route`, `/v1/routing/search-along-route` |
+| Routing | **20 req/sec** | `/v1/routing/route`, `/matrix`, `/isochrone`, `/snap`, `/locate`, `/elevation`, `/optimize`, `/compare` |
+| AI | **5 req/sec** | `/v1/ai/*` |
+| Predict | **2 req/sec** | `/v1/predict` |
+| Telemetry | **50 req/sec** | `/v1/telemetry/*` |
+
+Note that `/v1/routing/find-and-route` and `/v1/routing/search-along-route` count against the **geocoding** cap, not the routing cap, because they internally perform a geocode.
+
+When you exceed a cap, the response is `429 too_many_requests` with a `retryAfter` field giving the milliseconds until your next request will succeed.
 
 ### Server errors (5xx)
 
