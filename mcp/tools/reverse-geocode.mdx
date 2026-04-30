@@ -16,4 +16,6 @@ You can filter by place type (venue, address, street, locality) to control the l
 
 ## What you get back
 
-The nearest location(s) with coordinates, a full label, country, region, district (e.g. borough or municipality), locality, neighbourhood, confidence score, and result type. By default returns a single result; you can ask for more.
+The nearest location(s) with coordinates, a full label, country, region, district (e.g. borough or municipality), locality, neighbourhood, optional confidence score (omitted when 1.0), and result type. By default returns a single result; you can ask for more.
+
+When you request multiple results and they all share the same country / region, those fields are hoisted into a top-level `context` object so they aren't repeated on every row.

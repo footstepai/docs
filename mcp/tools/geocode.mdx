@@ -16,7 +16,9 @@ You can bias results towards a location or restrict to specific countries for be
 
 ## What you get back
 
-A list of matching locations, each with coordinates (lat/lng), a full label, country, region, district (borough or municipality, e.g. "City of Westminster"), locality, confidence score (0-1), and the result type (venue, address, street, locality, etc.).
+A list of matching locations, each with coordinates (lat/lng), a full label, country, region, district (borough or municipality, e.g. "City of Westminster"), locality, optional confidence score (omitted when 1.0; present when below), and the result type (venue, address, street, locality, etc.).
+
+When all results share the same country / country_code / region, those fields are hoisted to a top-level `context` object so they aren't repeated on every result. Read shared admin from `context`, per-result variation from `results[i]`.
 
 ## Tips for landmark queries
 

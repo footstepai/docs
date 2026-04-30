@@ -32,6 +32,8 @@ For each contour, the response includes a `reachable_places` array: named venues
 
 This is best-effort enrichment: if no named anchors can be resolved for a contour, `reachable_places` is omitted and the rest of the response goes through unchanged.
 
+When all places inside a contour share the same country / region, those fields are hoisted to a per-contour `reachable_places_context` object instead of being repeated on every place.
+
 ## Rendering on a map: `include_geometry`
 
 By default this tool returns a lean response — the polygon coordinates are stripped out (replaced with a vertex count + bbox summary) so standalone LLM agents (which can't render maps) don't pay for them in tokens.

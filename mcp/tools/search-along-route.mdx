@@ -18,6 +18,8 @@ You can set the maximum acceptable detour (1 minute to 1 hour) to control how fa
 
 A list of places found along the corridor plus the route's totals (distance, duration, terrain). Each place includes the detour it would add (in seconds and meters), and where along the route it sits (as a percentage from start to end). Results are ranked by detour time so the most convenient stops come first.
 
+When all candidate places share the same country / region (the typical case for an in-corridor search), those fields are hoisted to a top-level `places_context` object instead of being repeated on every place.
+
 ## Rendering on a map: `include_geometry`
 
 By default the response is lean — turn-by-turn steps, the route polyline, and the sample-by-sample elevation profile are stripped out.

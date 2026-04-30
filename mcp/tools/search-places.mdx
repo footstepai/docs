@@ -18,4 +18,6 @@ For "find X near Y" queries, pass `near` as a place name and the search center i
 
 ## What you get back
 
-A list of matching places, each with coordinates, name, full label, distance from the search point in meters, and a confidence score. Results are sorted by proximity.
+A list of matching places, each with coordinates, name, full label, distance from the search point in meters, and (when below 1.0) a confidence score. Results are sorted by proximity.
+
+When every result is in the same country / region (the typical case for a proximity search), those admin fields are hoisted to a top-level `context` object instead of being repeated on each row. So the response shape is `{ results: [...], context?: { country, country_code, region } }` — read shared admin from `context`, per-result fields from `results[i]`.
