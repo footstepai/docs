@@ -21,4 +21,6 @@ Supports three area types: circle (centre + radius), polygon (GeoJSON), or buffe
 
 ## What you get back
 
-A list of H3 hexagons ranked by score (0–30, highest first), along with the model version used, total hex count, processing time, and a confidence level indicating how well the model performs in that region.
+- `top_results` — the top 25 H3 hexagons ranked by probability (highest first), each with `h12` and `probability`.
+- `summary` — overall counts: total hexes scored, average probability, and processing time.
+- `coverage` — `top_n` (how many rows are returned), `total_count` (how many were scored), `coverage_percent` (probability mass held by the returned rows), and `truncated` (false when every scored hex was returned). Use `coverage_percent` to gauge how concentrated the prediction is — a high value means the top hexes hold most of the likelihood; a low value means the search area is genuinely diffuse.
