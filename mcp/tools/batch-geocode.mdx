@@ -17,7 +17,7 @@ Geocode a list of addresses in a single request. Each address can be free text o
 An array of results aligned with the input addresses. Each entry is `{ match, error? }`:
 
 - `match` — the top geocoded result (same shape as `geocode` returns: coordinates, label, name, district, locality, etc.) or `null` when nothing matched. Confidence is omitted when 1.0.
-- `error` — present only when geocoding that row failed (network, validation, etc.); other rows continue normally
+- `error` — present only when geocoding that row failed; other rows continue normally. One of `timeout`, `upstream_unavailable`, `rate_limited`, `invalid_input`, or `unknown` — branch on this rather than parsing free text. The `match` is `null` whenever `error` is set.
 
 When all matches share the same country / region (e.g. a batch of UK-only addresses), those fields are hoisted to a top-level `context` object instead of being repeated on every match. Mixed-country batches keep the per-row admin fields.
 
