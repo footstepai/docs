@@ -16,7 +16,7 @@ Your agent can also fine-tune the route: avoid hills, prefer lit streets, set ve
 
 ## What you get back
 
-A full route with distance, duration, and turn-by-turn steps. Terrain analytics include total ascent/descent, elevation profile, grade percentages, and a difficulty classification (flat, rolling, hilly, or mountainous). Route flags tell you if the route uses tolls, highways, or ferries.
+A full route with distance, duration, and turn-by-turn steps. Terrain analytics include total ascent/descent, elevation profile, grade percentages, and a difficulty classification (flat, rolling, hilly, or mountainous). Route flags (`has_toll`, `has_highway`, `has_ferry`) tell you if the route uses any of those — and are omitted entirely when none apply (the common case in urban routing). Only the truthy entries are emitted, so absence of a flag means it doesn't apply.
 
 All numeric distance / duration fields are always in meters / seconds regardless of the request `units` (which only affects the natural-language `narrative` summary). Pass `narrative: true` for an AI-generated plain-English summary of the route — the response then also includes a `narrative_units` field telling you which units the summary was rendered in (`kilometers` or `miles`).
 
