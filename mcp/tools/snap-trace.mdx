@@ -18,6 +18,8 @@ Useful for analysing recorded activities (runs, rides, walks) or cleaning noisy 
 
 A confidence-scored snapped path, route with terrain analytics (ascent, descent, difficulty), and per-segment road attributes (surface type, road class, speed limit, grade). Also includes per-point match quality so you can see where GPS was noisy.
 
+Consecutive segments that share the same street names, road class, and surface are returned as a single edge — a long stretch of one road shows up once, not many times. Lengths sum across merged edges; `speed_kph` and `grade_percent` are length-weighted averages. The split is preserved whenever any of those attributes differ.
+
 ## Matching strictness
 
 The tool defaults to a forgiving matching mode (`walk_or_snap`) that handles typical phone-GPS noise — if a point falls a few metres off the nearest road, the tool walks the closest edge rather than rejecting the whole trace. This matches the realistic 5–15 m accuracy of urban GPS recordings.

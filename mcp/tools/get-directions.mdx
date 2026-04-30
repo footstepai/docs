@@ -24,9 +24,9 @@ For 2-waypoint routes, the route's totals/terrain/flags are reported once at the
 
 ## Alternate routes: `alternates`
 
-Set `alternates: 1-3` to ask Valhalla for alternative routings. When found, the response carries an `alternates` array of full route objects (same shape as `route`), each with their own distance, duration, terrain analytics, and turn-by-turn steps. The LLM can reason about "which is flatter?" or "which avoids the highway?" by comparing them.
+Set `alternates: 1-3` to request alternative routings. When found, the response carries an `alternates` array of full route objects (same shape as `route`), each with their own distance, duration, terrain analytics, and turn-by-turn steps. The LLM can reason about "which is flatter?" or "which avoids the highway?" by comparing them.
 
-Alternates aren't always available — for short urban routes there often isn't a meaningfully different option. The `alternates` field is omitted when Valhalla returns none.
+Alternates aren't always available — for short urban routes there often isn't a meaningfully different option. The `alternates` field is omitted when none are available.
 
 ## Rendering on a map: `include_geometry`
 
