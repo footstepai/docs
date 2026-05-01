@@ -26,13 +26,11 @@ By default each contour is returned as a vertex-count + bbox summary plus a list
 
 ## `reachable_places` — named anchors inside the polygon
 
-For each contour, the response includes a `reachable_places` array: named venues, neighbourhoods, parks, stations, and landmarks that fall inside the polygon, ranked by confidence. This turns a polygon (which an LLM can't render) into something an LLM can actually speak:
+For each contour, the response includes a `reachable_places` array: named venues, neighbourhoods, parks, stations, and landmarks that fall inside the polygon, ranked by `confidence` (highest first). This turns a polygon (which an LLM can't render) into something an LLM can actually speak:
 
 > "In 15 minutes on foot from Kings Cross you can reach Russell Square, Holborn, Camden Town and Bloomsbury."
 
-This is best-effort enrichment: if no named anchors can be resolved for a contour, `reachable_places` is omitted and the rest of the response goes through unchanged.
-
-When all places inside a contour share the same country / region, those fields are hoisted to a per-contour `reachable_places_context` object instead of being repeated on every place.
+Each place carries `name`, `label`, `place_type`, `confidence`, and `coordinates`. This is best-effort enrichment: if no named anchors can be resolved for a contour, `reachable_places` is omitted and the rest of the response goes through unchanged.
 
 ## Rendering on a map: `include_geometry`
 

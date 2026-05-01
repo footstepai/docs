@@ -16,4 +16,6 @@ Useful for logistics, dispatching, and finding the closest location from a set o
 
 ## What you get back
 
-A 2D matrix indexed by source and target, where each cell contains `distance_meters` and `duration_seconds`. Also returns the snapped source and target coordinates.
+A 2D matrix indexed by source and target, where each cell contains `distance_meters` and `duration_seconds`. Unreachable pairs come back as `null`. The matrix preserves the order of your input — `matrix[i][j]` is the route from `sources[i]` to `targets[j]`.
+
+If you need to verify how a coordinate snapped to the road network, call [`/v1/routing/locate`](/api/endpoint/locate) — that's the dedicated tool for snap diagnostics.

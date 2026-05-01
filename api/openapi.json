@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Footstep API",
-    "description": "Terrain-intelligent routing, geocoding, elevation, and spatial analysis. Every routing response includes terrain analytics by default. All responses use self-documenting field names (distance_meters, duration_seconds, grade_percent) and support two formats: footstep (default, compact) and geojson (standard GeoJSON).",
+    "description": "Terrain-intelligent routing, geocoding, elevation, and spatial analysis. Every routing response includes terrain analytics by default. Routing endpoints support two response formats: footstep (default, compact) and geojson (standard GeoJSON).",
     "version": "1.0.0"
   },
   "servers": [
@@ -967,9 +967,9 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 40,
-              "default": 10
+              "default": 5
             },
-            "description": "Maximum number of results"
+            "description": "Maximum number of results. The top match is the strongest hit; ask for more only when you need disambiguation candidates"
           },
           {
             "name": "focus.point.lat",
@@ -1490,9 +1490,9 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 40,
-              "default": 10
+              "default": 5
             },
-            "description": "Maximum number of results"
+            "description": "Maximum number of results. The top match is the strongest hit; ask for more only when you need disambiguation candidates"
           },
           {
             "name": "place_types",
@@ -1815,9 +1815,9 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 40,
-              "default": 10
+              "default": 5
             },
-            "description": "Maximum number of results"
+            "description": "Maximum number of results. Ask for more only when you genuinely want a longer candidate list"
           },
           {
             "name": "boundary.country",
@@ -2631,22 +2631,15 @@
           "stay_right",
           "stay_left",
           "merge",
+          "merge_right",
+          "merge_left",
           "roundabout_enter",
           "roundabout_exit",
           "ferry_enter",
           "ferry_exit",
-          "transit",
-          "transit_transfer",
-          "transit_remain_on",
-          "transit_connection_start",
-          "transit_connection_transfer",
-          "transit_connection_destination",
-          "post_transit_connection_destination",
-          "merge_right",
-          "merge_left",
           "unknown"
         ],
-        "description": "Human-readable step type (e.g. slight_right, roundabout_enter)"
+        "description": "Turn-by-turn manoeuvre type. Grouped by category in the docs (direction / continuation / start-end / highway / roundabout / ferry / fallback)."
       },
       "ExitSign": {
         "type": "object",
@@ -3415,11 +3408,31 @@
                 },
                 "road_class": {
                   "type": "string",
-                  "description": "Road classification (motorway, primary, secondary, etc.)"
+                  "enum": [
+                    "motorway",
+                    "trunk",
+                    "primary",
+                    "secondary",
+                    "tertiary",
+                    "unclassified",
+                    "residential",
+                    "service"
+                  ],
+                  "description": "Road classification (motorway, trunk, primary, secondary, tertiary, unclassified, residential, service)"
                 },
                 "surface": {
                   "type": "string",
-                  "description": "Road surface type (paved_smooth, paved, gravel, etc.)"
+                  "enum": [
+                    "paved_smooth",
+                    "paved",
+                    "paved_rough",
+                    "compacted",
+                    "dirt",
+                    "gravel",
+                    "ground",
+                    "impassable"
+                  ],
+                  "description": "Surface type (paved_smooth, paved, paved_rough, compacted, dirt, gravel, ground, impassable)"
                 },
                 "grade_percent": {
                   "type": "number",
@@ -3700,26 +3713,10 @@
       "MatrixResponse": {
         "type": "object",
         "required": [
-          "sources",
-          "targets",
           "matrix"
         ],
         "description": "Time/distance matrix with explicit units",
         "properties": {
-          "sources": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Coordinate"
-            },
-            "description": "Flattened source coordinates"
-          },
-          "targets": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Coordinate"
-            },
-            "description": "Flattened target coordinates"
-          },
           "matrix": {
             "type": "array",
             "description": "2D matrix indexed as matrix[source_index][target_index]. null = unreachable pair.",
@@ -3836,13 +3833,35 @@
                         }
                       },
                       "road_class": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "motorway",
+                          "trunk",
+                          "primary",
+                          "secondary",
+                          "tertiary",
+                          "unclassified",
+                          "residential",
+                          "service"
+                        ],
+                        "description": "Road classification (motorway, trunk, primary, secondary, tertiary, unclassified, residential, service)"
                       },
                       "speed_kph": {
                         "type": "number"
                       },
                       "surface": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "paved_smooth",
+                          "paved",
+                          "paved_rough",
+                          "compacted",
+                          "dirt",
+                          "gravel",
+                          "ground",
+                          "impassable"
+                        ],
+                        "description": "Surface type (paved_smooth, paved, paved_rough, compacted, dirt, gravel, ground, impassable)"
                       },
                       "elevation_meters": {
                         "type": "number"

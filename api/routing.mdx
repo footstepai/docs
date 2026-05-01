@@ -29,17 +29,9 @@ No transport mode, no options, no configuration required. The defaults give you 
 
 Power users can tune behaviour with optional parameters: `travel` to change how you travel, `travel_options` for fine-tuning preferences (hill avoidance, walking speed, vehicle dimensions), `elevation_interval` to control elevation sampling density, and `language` for localised navigation instructions.
 
-### Response conventions
+### Units
 
-Every response uses self-documenting field names with explicit units:
-
-- `distance_meters` - distance in meters
-- `duration_seconds` - duration in seconds
-- `grade_percent` - grade as a percentage
-- `speed_kph` - speed in km/h
-- `elevation_meters` - elevation in meters
-
-All values are in meters and seconds regardless of the `units` request parameter. The `units` field in the response echoes your request value for reference only.
+Numeric fields are always in SI base units regardless of the `units` request parameter — distances in meters, durations in seconds, elevations in meters, grades as a percentage, speeds in km/h. The `units` request parameter only affects the natural-language `narrative` summary; the response echoes that value back in `narrative_units` for reference.
 
 ### Endpoints
 

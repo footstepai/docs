@@ -18,6 +18,24 @@ Your agent can also fine-tune the route: avoid hills, prefer lit streets, set ve
 
 A full route with distance, duration, and turn-by-turn steps. Terrain analytics include total ascent/descent, elevation profile, grade percentages, and a difficulty classification (flat, rolling, hilly, or mountainous). Route flags (`has_toll`, `has_highway`, `has_ferry`) tell you if the route uses any of those — and are omitted entirely when none apply (the common case in urban routing). Only the truthy entries are emitted, so absence of a flag means it doesn't apply.
 
+Each step carries `instruction`, `distance_meters`, `duration_seconds`, `travel_mode`, `type`, and `streets`. The `streets` array lists the named roads the step traverses; it's omitted on unnamed manoeuvres (forks, "destination on the left", some roundabout exits) so absence means "no street name to attach", not an empty list. Step-level `ferry`/`toll`/`highway` flags are emitted only when true.
+
+### Step type values
+
+`type` is one of a fixed set of manoeuvre kinds. Grouped by category:
+
+| Category | Values |
+|----------|--------|
+| **Start / end** | `start`, `start_left`, `start_right`, `destination`, `destination_left`, `destination_right` |
+| **Direction** | `left`, `right`, `slight_left`, `slight_right`, `sharp_left`, `sharp_right`, `u_turn_left`, `u_turn_right` |
+| **Continuation** | `continue`, `becomes`, `stay_straight`, `stay_left`, `stay_right` |
+| **Highway** | `merge`, `merge_left`, `merge_right`, `ramp_straight`, `ramp_left`, `ramp_right`, `exit_left`, `exit_right` |
+| **Roundabout** | `roundabout_enter`, `roundabout_exit` |
+| **Ferry** | `ferry_enter`, `ferry_exit` |
+| **Fallback** | `none`, `unknown` |
+
+Treat the enum as a closed set — these are the only values an `auto`, `pedestrian`, `bicycle`, `bus`, or `truck` route will produce. The `none` and `unknown` values are present for completeness and shouldn't appear in normal output.
+
 All numeric distance / duration fields are always in meters / seconds regardless of the request `units` (which only affects the natural-language `narrative` summary). Pass `narrative: true` for an AI-generated plain-English summary of the route — the response then also includes a `narrative_units` field telling you which units the summary was rendered in (`kilometers` or `miles`).
 
 For 2-waypoint routes, the route's totals/terrain/flags are reported once at the top level — the single leg only carries `steps` (and the polyline when `include_geometry: true`). Multi-waypoint routes (3+ waypoints) keep the per-leg breakdown so you can see distance/terrain per segment.

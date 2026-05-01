@@ -21,8 +21,8 @@ Supports three area types: circle (centre + radius), polygon (GeoJSON), or buffe
 
 ## What you get back
 
-- `top_results` — the top 50 H3 hexagons ranked by probability (highest first), each with `h12` and `probability`.
-- `summary` — overall counts: total hexes scored, average probability, and processing time.
-- `coverage` — `top_n` (how many rows are returned), `total_count` (how many were scored), `coverage_percent` (probability mass held by the returned rows), and `truncated` (false when every scored hex was returned). Use `coverage_percent` to gauge how concentrated the prediction is — a high value means the top hexes hold most of the likelihood; a low value means the search area is genuinely diffuse.
+- `top_results` — the top 50 H3 hexagons ranked by score (highest first). Each row carries `hex`, `score`, and the cell centroid as `lat`/`lng` so the result can be chained directly into `search_places`, `reverse_geocode`, `get_directions`, etc. without a separate h3-to-coordinates step.
+- `summary` — `hex_count` (total hexes scored) and `processing_time_ms`.
+- `coverage` — `top_n` (how many rows are returned), `total_count` (how many were scored), `coverage_percent` (score mass held by the returned rows), and `truncated` (false when every scored hex was returned). Use `coverage_percent` to gauge how concentrated the prediction is — a high value means the top hexes hold most of the likelihood; a low value means the search area is genuinely diffuse.
 
-For map clients rendering a probability heatmap, set `include_hexes: true` on the request to receive every scored hex (raw `{h12, probability}` rows) instead of just the top 50. The map app converts h12 → polygon and applies its own styling. LLM agents that can't render maps should leave this off.
+For map clients rendering a probability heatmap, set `include_hexes: true` on the request to receive every scored hex instead of just the top 50. In this mode each row carries only `hex` and `score` — `lat`/`lng` are omitted because the full grid would double the response and map clients can convert hex IDs to centroids themselves. LLM agents that need to chain into other tools should leave this off.

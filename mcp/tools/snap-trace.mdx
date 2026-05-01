@@ -20,6 +20,35 @@ A confidence-scored snapped path, route with terrain analytics (ascent, descent,
 
 Consecutive segments that share the same street names, road class, and surface are returned as a single edge — a long stretch of one road shows up once, not many times. Lengths sum across merged edges; `speed_kph` and `grade_percent` are length-weighted averages. The split is preserved whenever any of those attributes differ.
 
+### Edge attributes
+
+Each edge carries:
+
+- **`road_class`** — one of `motorway`, `trunk`, `primary`, `secondary`, `tertiary`, `unclassified`, `residential`, `service`. Roughly mirrors OSM's `highway=*` hierarchy from biggest road type to smallest. `service` covers alleys, parking aisles, and driveways.
+- **`surface`** — one of `paved_smooth`, `paved`, `paved_rough`, `compacted`, `dirt`, `gravel`, `ground`, `impassable`. `compacted` is a firm gravel/dirt mix; `ground` is natural untreated terrain.
+- `names` — array of street names for the edge (often empty on unnamed paths).
+- `length_meters`, `speed_kph`, `grade_percent` — numeric attributes.
+
+Unknown values from the underlying engine are dropped rather than passed through, so any string you see in `road_class` or `surface` is from the lists above.
+
+### Low-confidence matches
+
+When `confidence` is below 0.5 — meaning the trace couldn't be reliably matched to the road network (sparse points, off-road, or noisy GPS) — the response includes:
+
+- `match_quality: "low"` — a flag saying the match isn't trustworthy.
+- `match_quality_reason` — a short string explaining why the LLM should not quote distance/duration figures as ground truth.
+- `terrain` is **omitted**. Ascent/descent/difficulty derived from a partial match disagree with reality often enough that surfacing them as authoritative numbers does more harm than good.
+
+`distance_meters`, `duration_seconds`, and `edges` are still returned so you can inspect what was matched — they're useful diagnostics, just not numbers to quote. For high-confidence matches (≥ 0.5) none of these fields appear and the regular `terrain` block is included.
+
+## When a trace can't be matched
+
+Some inputs can't produce a meaningful match — too few points, points spaced too widely, or points too far from any road. The endpoint returns **422 Unprocessable Entity** with a message describing the cause (e.g. `"Insufficient number of trace points"`, `"No suitable edges near input location"`). Treat 422 as a "fix the input" signal rather than retrying. Common fixes:
+
+- **Sparse traces** — provide more points (every few seconds, not every minute) or include `time` on each point.
+- **Off-road points** — relax `gps_accuracy` or `search_radius` so the matcher can snap further from the recorded location.
+- **Single-mode mismatch** — if a phone trace was recorded while indoors or in a tunnel, try `shape_match: "walk_or_snap"` (the default) rather than strict `map_snap`.
+
 ## Matching strictness
 
 The tool defaults to a forgiving matching mode (`walk_or_snap`) that handles typical phone-GPS noise — if a point falls a few metres off the nearest road, the tool walks the closest edge rather than rejecting the whole trace. This matches the realistic 5–15 m accuracy of urban GPS recordings.
