@@ -1,0 +1,33 @@
+---
+title: 'parse_address'
+description: 'Clean and structure messy free-text addresses'
+---
+
+Correct and structure messy address strings. Fixes typos, expands abbreviations (`st` → `Street`, `ave` → `Avenue`), and infers missing fields like postcode, region, or country. Use this as a pre-step before geocoding when your input data is dirty; pass clean addresses straight to `geocode` or `batch_geocode`.
+
+## Example prompts
+
+- "Clean up these 30 customer addresses before I geocode them"
+- "What's the proper formatted version of '10 downing st london uk'?"
+- "Parse and standardise this list of addresses, then tell me which ones are in the UK"
+- "Fix the typos in these addresses and break them into structured fields"
+
+## What you get back
+
+An array of results aligned with the input addresses. Each entry contains:
+
+- `corrected` — the standardised, fully formatted address.
+- `components` — structured fields (`house_number`, `unit`, `road`, `neighbourhood`, `locality`, `county`, `region`, `postcode`, `country`, `country_code`). Only populated fields are included.
+- `corrections` — itemised list of changes made, each with `field`, `original` (or `null` if inferred), `corrected`, and `type` (one of `typo`, `abbreviation`, `inferred`, `reformatted`, `removed`). Omitted entirely when the input was already clean.
+- `confidence` — score between 0 and 1. Omitted when 1.0; present when the parser was uncertain.
+
+When every row resolves to the same country (or region), those fields are hoisted to a top-level `context` object instead of being repeated on each row. Mixed-country batches keep the per-row admin fields.
+
+## When to use this vs `geocode`
+
+- Your input is **clean** (real addresses, complete and well-formed) — skip `parse_address` and call `geocode` / `batch_geocode` directly.
+- Your input is **messy** (typos, abbreviations, missing fields, inconsistent capitalisation) — call `parse_address` first, then geocode the `corrected` string. Cleaner input gives better geocoding hit rates and lets you flag low-confidence rows before spending geocoding budget on them.
+
+## Limits
+
+Up to 100 addresses per call.

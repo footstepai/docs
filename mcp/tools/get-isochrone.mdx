@@ -26,11 +26,15 @@ By default each contour is returned as a vertex-count + bbox summary plus a list
 
 ## `reachable_places` — named anchors inside the polygon
 
-For each contour, the response includes a `reachable_places` array: named venues, neighbourhoods, parks, stations, and landmarks that fall inside the polygon, ranked by `confidence` (highest first). This turns a polygon (which an LLM can't render) into something an LLM can actually speak:
+For each contour, the response includes a `reachable_places` array: named venues, neighbourhoods, parks, stations, and landmarks that fall inside the polygon, ordered by relevance. This turns a polygon (which an LLM can't render) into something an LLM can actually speak:
 
 > "In 15 minutes on foot from Kings Cross you can reach Russell Square, Holborn, Camden Town and Bloomsbury."
 
-Each place carries `name`, `label`, `place_type`, `confidence`, and `coordinates`. This is best-effort enrichment: if no named anchors can be resolved for a contour, `reachable_places` is omitted and the rest of the response goes through unchanged.
+Each place carries `name`, `label`, `place_type`, and `coordinates`. This is best-effort enrichment: if no named anchors can be resolved for a contour, `reachable_places` is omitted and the rest of the response goes through unchanged.
+
+## Contour ordering
+
+Contours are returned **sorted ascending by `value`** — the smallest reach first, regardless of input order. So `contours: [{time: 10}, {time: 5}]` and `contours: [{time: 5}, {time: 10}]` both produce a response with the 5-minute contour at index 0.
 
 ## Rendering on a map: `include_geometry`
 

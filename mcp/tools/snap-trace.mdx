@@ -35,11 +35,10 @@ Unknown values from the underlying engine are dropped rather than passed through
 
 When `confidence` is below 0.5 — meaning the trace couldn't be reliably matched to the road network (sparse points, off-road, or noisy GPS) — the response includes:
 
-- `match_quality: "low"` — a flag saying the match isn't trustworthy.
-- `match_quality_reason` — a short string explaining why the LLM should not quote distance/duration figures as ground truth.
-- `terrain` is **omitted**. Ascent/descent/difficulty derived from a partial match disagree with reality often enough that surfacing them as authoritative numbers does more harm than good.
+- `match_quality: "low"` — a flag indicating the match is unreliable.
+- `match_quality_reason` — a short human-readable explanation.
 
-`distance_meters`, `duration_seconds`, and `edges` are still returned so you can inspect what was matched — they're useful diagnostics, just not numbers to quote. For high-confidence matches (≥ 0.5) none of these fields appear and the regular `terrain` block is included.
+`distance_meters`, `duration_seconds`, `edges`, and `terrain` are still populated so you can see what the engine reconstructed. The disclaimer travels alongside the data — treat numbers as approximate when `match_quality` is set, exact when it isn't.
 
 ## When a trace can't be matched
 

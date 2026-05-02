@@ -1,9 +1,9 @@
 ---
 title: 'Tools'
-description: 'Routing, geocoding, and prediction tools available to your agent'
+description: 'Routing, geocoding, AI, and prediction tools available to your agent'
 ---
 
-The MCP server exposes 14 tools. Click any tool for details.
+The MCP server exposes 15 tools. Click any tool for details.
 
 ### Routing
 
@@ -28,6 +28,12 @@ The MCP server exposes 14 tools. Click any tool for details.
 | [`batch_geocode`](/mcp/tools/batch-geocode) | Geocode up to 1,000 addresses in one call. |
 | [`search_places`](/mcp/tools/search-places) | Find places and points of interest near a location. |
 
+### AI
+
+| Tool | What it does |
+|------|-------------|
+| [`parse_address`](/mcp/tools/parse-address) | Clean up messy free-text addresses. Fixes typos, expands abbreviations, and infers missing fields. Useful as a pre-step before geocoding. |
+
 ### Predict
 
 | Tool | What it does |
@@ -48,6 +54,7 @@ Once connected, you can ask your AI agent things like:
 - "Find the best order to visit these 8 delivery stops"
 - "Clean up this GPS trace from my bike ride and show me the terrain"
 - "Geocode these 5 addresses and tell me which ones are in London"
+- "Clean up this messy CSV of customer addresses before geocoding them"
 
 The agent will call the appropriate Footstep tool and interpret the results for you.
 

@@ -7,7 +7,7 @@ description: 'Get elevation data for a list of coordinates'
   <img src="/images/elevation.webp" alt="Elevation profile" />
 </Frame>
 
-Query elevation values for a set of coordinates or along a path. Returns heights in meters with a computed summary including total ascent, total descent, and min/max/average elevation.
+Query elevation values for a set of coordinates or along a path. Returns heights in meters with a computed summary.
 
 Optionally resample the input at a fixed interval for smoother elevation profiles.
 
@@ -20,4 +20,11 @@ Optionally resample the input at a fixed interval for smoother elevation profile
 
 ## What you get back
 
-Elevation values for each input point, plus a summary with total ascent, total descent, max/min/average elevation. When `range` mode is used, you get distance-elevation tuples for charting elevation profiles.
+Elevation values for each input point, plus a summary with `max_elevation_meters`, `min_elevation_meters`, and `avg_elevation_meters`.
+
+### `range: true` for paths
+
+Pass `range: true` when your input is an ordered path (a route, a hike, a GPS trace). The response then carries:
+
+- `range_height` — `[distance_meters, elevation_meters]` tuples for charting an elevation profile.
+- `total_ascent_meters` and `total_descent_meters` — cumulative climb and drop along the path. Included only in `range` mode.

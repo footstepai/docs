@@ -109,6 +109,12 @@
             ]
           },
           {
+            "group": "AI tools",
+            "pages": [
+              "mcp/tools/parse-address"
+            ]
+          },
+          {
             "group": "Predict tools",
             "pages": [
               "mcp/tools/predict"

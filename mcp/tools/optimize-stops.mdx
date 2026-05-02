@@ -14,7 +14,9 @@ Given a list of stops, find the most efficient order to visit them all. Solves t
 
 ## What you get back
 
-The reordered stop sequence (`optimized_order`), savings vs the original order (distance saved in meters + as a percentage, time saved in seconds + as a percentage), and the optimised route's totals (distance, duration, terrain).
+The reordered stop sequence (`optimized_order`), savings vs the original order, and the optimised route's totals (distance, duration, terrain).
+
+When the input order was already optimal, `savings` is omitted and `already_optimal: true` is returned instead — a single boolean rather than a row of zeros.
 
 For step-by-step directions through the optimised order, call `get_directions` with the reordered waypoints.
 

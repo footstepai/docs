@@ -2950,19 +2950,20 @@
       },
       "ElevationSummary": {
         "type": "object",
+        "description": "Elevation statistics for the requested points. `total_ascent_meters` and `total_descent_meters` are included only when `range: true` was requested.",
         "required": [
-          "total_ascent_meters",
-          "total_descent_meters",
           "max_elevation_meters",
           "min_elevation_meters",
           "avg_elevation_meters"
         ],
         "properties": {
           "total_ascent_meters": {
-            "type": "number"
+            "type": "number",
+            "description": "Cumulative climb along the path. Present when `range: true`."
           },
           "total_descent_meters": {
-            "type": "number"
+            "type": "number",
+            "description": "Cumulative drop along the path. Present when `range: true`."
           },
           "max_elevation_meters": {
             "type": "number"
@@ -3358,6 +3359,17 @@
             "maximum": 1,
             "description": "Match confidence score (0-1)"
           },
+          "match_quality": {
+            "type": "string",
+            "enum": [
+              "low"
+            ],
+            "description": "Present when the match is unreliable. Currently the only value is `low` (confidence below 0.5). Distance, duration, edges, and terrain are still populated but should be treated as approximate."
+          },
+          "match_quality_reason": {
+            "type": "string",
+            "description": "Human-readable explanation of why match_quality is set. Present whenever match_quality is set."
+          },
           "route": {
             "type": "object",
             "description": "Present when output includes 'route'. Includes terrain analytics.",
@@ -3614,14 +3626,13 @@
                 },
                 "reachable_places": {
                   "type": "array",
-                  "description": "Named anchors (venues, neighbourhoods, landmarks) within this contour, ranked by confidence. Best-effort enrichment; may be absent if no named anchors can be resolved.",
+                  "description": "Named anchors (venues, neighbourhoods, landmarks) within this contour, ordered by relevance. Best-effort enrichment; may be absent if no named anchors can be resolved.",
                   "items": {
                     "type": "object",
                     "required": [
                       "name",
                       "label",
                       "place_type",
-                      "confidence",
                       "coordinates"
                     ],
                     "properties": {
@@ -3633,9 +3644,6 @@
                       },
                       "place_type": {
                         "type": "string"
-                      },
-                      "confidence": {
-                        "type": "number"
                       },
                       "coordinates": {
                         "type": "object",
