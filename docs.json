@@ -109,7 +109,7 @@
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Natural Language tools",
             "pages": [
               "mcp/tools/parse-address"
             ]
