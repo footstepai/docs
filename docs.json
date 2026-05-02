@@ -164,6 +164,18 @@
       "measurementId": "G-ZB92BQHQJ6"
     }
   },
+  "seo": {
+    "metatags": {
+      "og:site_name": "Footstep",
+      "og:type": "website",
+      "twitter:card": "summary_large_image"
+    }
+  },
+  "errors": {
+    "404": {
+      "redirect": true
+    }
+  },
   "footer": {
     "socials": {}
   }
