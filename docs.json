@@ -168,7 +168,8 @@
     "metatags": {
       "og:site_name": "Footstep",
       "og:type": "website",
-      "twitter:card": "summary_large_image"
+      "twitter:card": "summary_large_image",
+      "twitter:site": "@footstepai"
     }
   },
   "errors": {
@@ -177,6 +178,10 @@
     }
   },
   "footer": {
-    "socials": {}
+    "socials": {
+      "x": "https://x.com/footstepai",
+      "github": "https://github.com/footstepai",
+      "linkedin": "https://www.linkedin.com/company/footstepai"
+    }
   }
 }
