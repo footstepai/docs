@@ -145,10 +145,19 @@
   "navbar": {
     "links": [
       {
+        "label": "Pricing",
+        "href": "https://footstep.ai/pricing"
+      },
+      {
         "label": "Feedback",
         "href": "https://footstep.featurebase.app/"
       }
-    ]
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get an API key",
+      "href": "https://console.footstep.ai"
+    }
   },
   "contextual": {
     "options": [
@@ -182,6 +191,16 @@
       "x": "https://x.com/footstepai",
       "github": "https://github.com/footstepai",
       "linkedin": "https://www.linkedin.com/company/footstepai"
-    }
+    },
+    "links": [
+      {
+        "header": "Footstep",
+        "items": [
+          { "label": "Home", "href": "https://footstep.ai" },
+          { "label": "Pricing", "href": "https://footstep.ai/pricing" },
+          { "label": "Contact", "href": "https://footstep.ai/contact" }
+        ]
+      }
+    ]
   }
 }
