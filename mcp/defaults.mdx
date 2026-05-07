@@ -1,0 +1,95 @@
+---
+title: 'Response defaults & controls'
+description: 'How rich-by-default works and how to tune what each tool returns'
+---
+
+Footstep's MCP tools default to **rich responses** — render-ready GeoJSON layers, full hex grids, and elevation summaries are all included unless you opt out. This page describes the philosophy and the flags that tune it.
+
+## Rich-by-default
+
+Every renderer-aware tool returns:
+
+- **Summary fields** — distances, durations, narratives, terrain summaries, turn-by-turn steps (always present)
+- **`render` envelope** — framework-agnostic GeoJSON layer descriptors a map client can drop directly into deck.gl, MapLibre, Leaflet, Mapbox, Cesium, etc. (controlled by `include_render`)
+- **Full hex grid** for predictions (controlled by `include_hexes`)
+
+All geometry in MCP responses lives in the `render` envelope as GeoJSON. There is no separate polyline encoding to decode — clients consume `render[].data` directly.
+
+The default is rich because:
+
+- **Renderer-aware agents** (Claude Artifacts, ChatGPT Canvas, custom mapping apps, Footstep-built clients) get a complete answer they can drop into a map without per-tool extraction logic.
+- **Token-conscious LLM agents** that only want summaries pass `compact: true` once and pay nothing for geometry.
+- The historical "lean defaults" caused renderer-aware agents to silently truncate work — the model would build a 4-point straight line from `bounds` corners because no flag was set. We've inverted that failure mode: by default the answer looks complete; opting out is explicit.
+
+## Flag matrix
+
+Every renderer-aware tool accepts these flags:
+
+| Flag | Default | What it controls |
+|---|---|---|
+| `include_render` | `true` | The `render` envelope — framework-agnostic GeoJSON layer descriptors. All geometry lives here. |
+| `include_hexes` | `true` | The full hex grid (`cells`) on `get_prediction`. The top results stay regardless. |
+| `include_elevation_samples` | `false` | Per-sample elevation profile array on routing tools (~500 samples per route). Off even at rich defaults — niche even for renderers. |
+| `compact` | `false` | When `true`, sets all three above to `false` — no render envelope, no hex grid, no elevation samples. Equivalent to opting out of every rich-mode field at once. |
+
+### Notes on individual flags
+
+**`include_elevation_samples` defaults `false` even at rich defaults.** Summary fields (total ascent, max elevation, average grade) are *the* answer for elevation; the per-sample array is an opt-in for clients building dedicated elevation charts.
+
+**`compact: true` is sugar for setting all three false.** Token-conscious LLM agents that don't render maps should pass `compact: true` once on every call.
+
+**There is no `include_geometry` flag.** All geometry in MCP responses lives in the `render` envelope as GeoJSON. There is no separate raw-polyline form. (The REST API still has its own `format: footstep | geojson` switch — that's an independent contract.)
+
+## Examples
+
+### Rich response (default)
+
+```json
+{
+  "tool": "get_directions",
+  "arguments": {
+    "locations": [{ "lat": 51.5, "lon": -0.1 }, { "lat": 55.95, "lon": -3.19 }]
+  }
+}
+```
+
+Returns summary fields plus a `render` envelope with a GeoJSON `linestring` layer ready to drop into a map.
+
+### Compact response
+
+```json
+{
+  "tool": "get_directions",
+  "arguments": {
+    "locations": [{ "lat": 51.5, "lon": -0.1 }, { "lat": 55.95, "lon": -3.19 }],
+    "compact": true
+  }
+}
+```
+
+Returns summary fields only — distance, duration, narrative, terrain summary, turn-by-turn steps. No render envelope. Smallest possible payload.
+
+### Elevation-chart client
+
+```json
+{
+  "tool": "get_directions",
+  "arguments": {
+    "locations": [...],
+    "include_elevation_samples": true
+  }
+}
+```
+
+Adds the per-sample elevation profile to the structured response.
+
+## Per-tool flag availability
+
+| Flag | Routing tools | Geocoding tools | `get_prediction` | `get_isochrone` |
+|---|---|---|---|---|
+| `include_render` | ✓ | ✓ | ✓ | ✓ |
+| `include_hexes` | — | — | ✓ | — |
+| `include_elevation_samples` | ✓ | — | — | — |
+| `compact` | ✓ | ✓ | ✓ | ✓ |
+
+Tools without any geometry component (`get_matrix`, `parse_address`, etc.) have no flags — their response is summary-only by definition.

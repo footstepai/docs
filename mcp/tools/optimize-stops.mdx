@@ -20,10 +20,6 @@ When the input order was already optimal, `savings` is omitted and `already_opti
 
 For step-by-step directions through the optimised order, call `get_directions` with the reordered waypoints.
 
-## Rendering on a map: `include_geometry`
+## Map rendering
 
-By default the response is lean — turn-by-turn steps, the encoded polyline, and the sample-by-sample elevation profile are stripped out.
-
-If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the full step list, route polyline, and per-leg elevation profile alongside the same summary fields.
-
-Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.
+Responses include a `render` envelope with a `linestring` layer for the optimised route plus a `point` layer for the ordered stops. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) for the full flag matrix and [render envelopes](/mcp/render-envelopes) for the layer schema.

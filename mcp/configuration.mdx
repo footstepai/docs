@@ -98,3 +98,15 @@ const tools = await client.tools();
 
 Any MCP client that supports Streamable HTTP transport can connect. Point it at `https://mcp.footstep.ai` and pass your API key in the `x-api-key` header.
 
+<Note>
+The MCP server also accepts the standard `Authorization: Bearer <key>` form, so MCP SDKs that default to Bearer authentication work without configuration changes. `x-api-key` remains the recommended header.
+</Note>
+
+## Reading responses
+
+Tool results are returned in the MCP `structuredContent` field as parsed JSON — no `JSON.parse` step required. See [response shape](/mcp/response-shape) for the full envelope and the [error code reference](/mcp/response-shape#error-codes).
+
+## Tuning what you get back
+
+Every renderer-aware tool defaults to **rich responses** — geometry, render-ready GeoJSON layers, and full result sets are all included. Token-conscious LLM agents pass `compact: true` to suppress geometry and render envelopes; renderer-aware clients keep the defaults. See [response defaults & controls](/mcp/defaults).
+

@@ -54,10 +54,6 @@ The tool defaults to a forgiving matching mode (`walk_or_snap`) that handles typ
 
 For high-quality traces (cyclometer downloads, surveying-grade data) or when you want strict per-point snapping, the REST API exposes `shape_match` (`edge_walk` / `map_snap` / `walk_or_snap`) and `gps_accuracy`. Defaults are sensible for most cases — only override when you have a specific reason.
 
-## Rendering on a map: `include_geometry`
+## Map rendering
 
-By default this tool returns a lean response — the matched polyline, per-point match details, and sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.
-
-If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the matched polyline, per-point match details, and elevation profile alongside the same summary fields. The map renders the geometry; the LLM still reasons over the summary.
-
-Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.
+Responses include a `render` envelope with a `linestring` layer for the snapped trace. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).

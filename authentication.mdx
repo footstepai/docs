@@ -9,6 +9,10 @@ Every request to the Footstep API must include an API key. This page explains ho
 
 Pass your API key in the `x-api-key` header on every request. The API validates the key before processing. If it's missing, malformed, or invalid, the request is rejected immediately.
 
+<Note>
+The MCP server also accepts the standard `Authorization: Bearer <key>` form for compatibility with MCP SDKs whose default is Bearer authentication. Either header is fine; `x-api-key` is the recommended form across all Footstep surfaces.
+</Note>
+
 <CodeGroup>
 ```bash cURL
 curl -X POST https://api.footstep.ai/v1/routing/route \

@@ -38,7 +38,7 @@ Treat the enum as a closed set — these are the only values an `auto`, `pedestr
 
 All numeric distance / duration fields are always in meters / seconds regardless of the request `units` (which only affects the natural-language `narrative` summary). Pass `narrative: true` for an AI-generated plain-English summary of the route — the response then also includes a `narrative_units` field telling you which units the summary was rendered in (`kilometers` or `miles`).
 
-For 2-waypoint routes, the route's totals/terrain/flags are reported once at the top level — the single leg only carries `steps` (and the polyline when `include_geometry: true`). Multi-waypoint routes (3+ waypoints) keep the per-leg breakdown so you can see distance/terrain per segment.
+For 2-waypoint routes, the route's totals/terrain/flags are reported once at the top level — the single leg only carries `steps`. Multi-waypoint routes (3+ waypoints) keep the per-leg breakdown so you can see distance/terrain per segment. Geometry for the route lives in the `render` envelope as a GeoJSON `linestring` layer.
 
 ## Alternate routes: `alternates`
 
@@ -46,10 +46,6 @@ Set `alternates: 1-3` to request alternative routings. When found, the response 
 
 Alternates aren't always available — for short urban routes there often isn't a meaningfully different option. The `alternates` field is omitted when none are available.
 
-## Rendering on a map: `include_geometry`
+## Map rendering
 
-By default this tool returns a lean response — the encoded polyline of the route and the sample-by-sample elevation profile are stripped out so standalone LLM agents (which can't render maps) don't pay for them in tokens.
-
-If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries the route polyline and elevation profile per leg alongside the same summary fields. The map renders the geometry; the LLM still reasons over the summary.
-
-Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.
+Responses include a `render` envelope with a `linestring` layer for the route. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).

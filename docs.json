@@ -82,6 +82,8 @@
             "pages": [
               "mcp/introduction",
               "mcp/configuration",
+              "mcp/response-shape",
+              "mcp/defaults",
               "mcp/tools"
             ]
           },
@@ -117,7 +119,7 @@
           {
             "group": "Predict tools",
             "pages": [
-              "mcp/tools/predict"
+              "mcp/tools/get-prediction"
             ]
           }
         ]

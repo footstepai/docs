@@ -24,10 +24,6 @@ A summary per travel mode (distance, duration, terrain analytics) plus a compari
 
 For step-by-step directions on a chosen mode, call `get_directions` after comparing.
 
-## Rendering on a map: `include_geometry`
+## Map rendering
 
-By default the response is lean — turn-by-turn steps, polylines, and sample-by-sample elevation profiles are stripped out.
-
-If your client renders results on a map (Mapbox, MapLibre, Leaflet, etc.), pass `include_geometry: true`. The response then carries each mode's full step list, polyline, and elevation profile alongside the same summary fields.
-
-Setting `include_geometry: true` on every call from a map-rendering client is tedious. See the [getting-started guide](/mcp/getting-started#map-rendering-clients) for a one-line Vercel AI SDK middleware that injects the flag automatically.
+Responses include a `render` envelope with one `linestring` layer per mode (style hints carry the mode name and a recommended colour for distinct styling). Pass `compact: true` for summary-only responses (the comparison block + per-mode totals only). See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).

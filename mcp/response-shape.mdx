@@ -1,0 +1,80 @@
+---
+title: 'Response shape'
+description: 'How MCP tool results are structured, including errors'
+---
+
+Every Footstep MCP tool returns a result in the same envelope. This page describes the wire shape so your client can read responses without per-tool conditionals.
+
+## Result envelope
+
+Tool results are delivered via the [MCP `structuredContent` field](https://modelcontextprotocol.io/specification/draft/server/tools#structured-content). The value is a parsed JSON object — your client reads it directly, no `JSON.parse` step required.
+
+```json
+{
+  "structuredContent": {
+    "destination": { "name": "London Bridge", "coordinates": { "lat": 51.508, "lng": -0.087 } },
+    "route": { "distance_meters": 4312, "duration_seconds": 723, "narrative": "..." },
+    "render": [
+      { "kind": "linestring", "label": "Route", "data": { ... }, "bbox": [...] }
+    ]
+  }
+}
+```
+
+Use any MCP client that supports `structuredContent` (e.g. `@modelcontextprotocol/sdk` ≥ 1.0).
+
+## Errors
+
+Hard failures (the tool ran but couldn't compute a result) are returned with MCP's `isError: true` flag and a structured error object in `structuredContent`:
+
+```json
+{
+  "isError": true,
+  "structuredContent": {
+    "error": {
+      "code": "no_route_found",
+      "message": "No route found between the supplied points.",
+      "details": { "origin": [-0.124, 51.532], "destination": [-3.187, 55.953] }
+    }
+  }
+}
+```
+
+Soft cases (the tool ran and produced a valid empty answer — for example, `geocode` with a query that matches no places) are **not** errors. They return a normal success response with empty arrays:
+
+```json
+{
+  "structuredContent": {
+    "results": []
+  }
+}
+```
+
+This separation lets clients pattern-match on `error.code` for branching UX — "ask the user to clarify" vs "retry with backoff" vs "suggest an alternative travel mode" — without parsing free-text messages.
+
+## Error codes
+
+| Code | Meaning | Recommended client action |
+|---|---|---|
+| `invalid_input` | Schema validation failed | Fix the request, retry |
+| `out_of_bounds` | Coordinate outside service area | Surface region limit to user |
+| `unroutable_point` | Origin or destination not on routable network | Suggest nearest road or alternative point |
+| `no_route_found` | Endpoints valid but no path computable | Suggest alternative travel mode or different endpoints |
+| `geocode_ambiguous` | Multiple high-confidence matches | Ask user to clarify; `details.candidates` carries options |
+| `prediction_no_signal` | `get_prediction` ran but produced a degenerate result | Surface "insufficient data" to user |
+| `prediction_unsupported` | `get_prediction` lacks required inputs | Fix request, retry |
+| `upstream_timeout` | Underlying service didn't respond in time | Retry with backoff (idempotent calls only) |
+| `upstream_error` | Generic upstream failure | Retry with backoff |
+| `rate_limited` | Quota exceeded | Back off; `details.retry_after_seconds` indicates wait |
+
+The `error.details` field is optional and carries code-specific structured information (candidate matches for `geocode_ambiguous`, retry timing for `rate_limited`, the offending field for `invalid_input`, etc.).
+
+## What's in `structuredContent`
+
+The keys you'll see depend on the tool. Most renderer-aware tools share three groups:
+
+- **Summary fields** — `distance_meters`, `duration_seconds`, `narrative`, `terrain`, `bounds`-equivalent inside `render[].bbox`, etc. Always present unless the response is an error.
+- **Raw geometry** — `legs[].shape` (polylines), `contours[].geometry` (polygons), `top_results` (hex rows), etc. Controlled by [response defaults](/mcp/defaults).
+- **`render` envelope** — framework-agnostic layer descriptors ready to drop into a map library. Controlled by `include_render` (default `true`). Detailed in the [render envelopes](/mcp/render-envelopes) reference.
+
+See per-tool reference pages for the exact keys each tool returns.

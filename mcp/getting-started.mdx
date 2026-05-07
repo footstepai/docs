@@ -117,9 +117,28 @@ Once connected, just ask your assistant anything from the examples above. It wil
 
 ## Map-rendering clients
 
-By default, geometry-bearing tools (`get_directions`, `find_and_route`, `compare_routes`, `optimize_stops`, `search_along_route`, `snap_trace`, `get_isochrone`) return lean responses with polylines and polygons stripped out. Standalone agents like Claude Desktop can't render maps, so paying for that geometry in tokens is wasteful.
+If you're building a chat app that renders Footstep results on a map (deck.gl, MapLibre, Leaflet, Mapbox, Cesium…), the response is already shaped for you.
 
-If you're building a chat app that renders Footstep results on a map (Mapbox, MapLibre, Leaflet, etc.), set `include_geometry: true` on every tool call so the response carries the geometry your renderer needs. The simplest way to do this with the Vercel AI SDK is a one-line middleware that injects the flag for every call:
+Every renderer-aware tool returns a `render` array of framework-agnostic GeoJSON layer descriptors — drop them straight into your map library, no decoder required:
+
+```ts
+const result = await tools.get_directions.execute({
+  locations: [{ lat: 51.5, lon: -0.1 }, { lat: 55.95, lon: -3.19 }],
+});
+
+for (const layer of result.render ?? []) {
+  // layer.kind: "linestring" | "point" | "polygon" | "h3-cells" | …
+  // layer.data: GeoJSON Feature / FeatureCollection (or kind-specific shape)
+  // layer.bbox: [minLng, minLat, maxLng, maxLat]
+  myMap.addLayer(layer);
+}
+```
+
+See [render envelopes](/mcp/render-envelopes) for the full kind taxonomy and per-library examples.
+
+## Token-conscious LLM agents
+
+Standalone chat agents that don't render maps (Claude Desktop, terminal CLIs, text-only chatbots) can pass `compact: true` on every tool call to suppress geometry, render envelopes, elevation samples, and full hex grids — leaving only summary fields:
 
 ```ts
 import { experimental_createMCPClient } from "ai";
@@ -134,20 +153,17 @@ const mcpClient = await experimental_createMCPClient({
 
 const rawTools = await mcpClient.tools();
 
-// Inject `include_geometry: true` on every Footstep tool call so the
-// response includes polygons / polylines for map rendering.
+// Set `compact: true` on every tool call to receive summary-only responses.
 const tools = Object.fromEntries(
   Object.entries(rawTools).map(([name, tool]) => [
     name,
     {
       ...tool,
       execute: (args: Record<string, unknown>, opts: unknown) =>
-        tool.execute({ ...args, include_geometry: true }, opts),
+        tool.execute({ ...args, compact: true }, opts),
     },
   ]),
 );
 ```
 
-Tools that don't carry geometry (`geocode`, `reverse_geocode`, `search_places`, `batch_geocode`, `get_matrix`, `get_elevation`, `predict`) ignore the flag — they have no geometry to add.
-
-For isochrones specifically, the response also includes a `reachable_places` array per contour (named venues, neighbourhoods, landmarks inside the polygon) regardless of the flag — that's LLM-friendly content for both standalone and map-rendering clients. See [`get_isochrone`](/mcp/tools/get-isochrone) for details.
+See [response defaults & controls](/mcp/defaults) for the full flag matrix.
