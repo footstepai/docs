@@ -3,7 +3,7 @@ title: 'Render envelopes'
 description: 'Drop Footstep MCP tool results straight into your map library'
 ---
 
-Every renderer-aware Footstep tool returns a `render` array on its response — a list of framework-agnostic GeoJSON layer descriptors. Drop them straight into deck.gl, MapLibre, Leaflet, Mapbox-GL-JS, or Cesium. No polyline decoder, no per-tool extraction, no shape detection.
+Every renderer-aware Footstep tool returns a `render` array on its response — a list of framework-agnostic GeoJSON layer descriptors. Drop them straight into deck.gl, MapLibre, Leaflet, Mapbox-GL-JS, or Cesium.
 
 ```ts
 const result = await tools.get_directions.execute({
