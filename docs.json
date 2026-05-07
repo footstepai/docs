@@ -84,6 +84,7 @@
               "mcp/configuration",
               "mcp/response-shape",
               "mcp/defaults",
+              "mcp/render-envelopes",
               "mcp/tools"
             ]
           },

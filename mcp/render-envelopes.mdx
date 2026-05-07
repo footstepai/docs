@@ -1,0 +1,225 @@
+---
+title: 'Render envelopes'
+description: 'Drop Footstep MCP tool results straight into your map library'
+---
+
+Every renderer-aware Footstep tool returns a `render` array on its response — a list of framework-agnostic GeoJSON layer descriptors. Drop them straight into deck.gl, MapLibre, Leaflet, Mapbox-GL-JS, or Cesium. No polyline decoder, no per-tool extraction, no shape detection.
+
+```ts
+const result = await tools.get_directions.execute({
+  locations: [{ lat: 51.5, lon: -0.1 }, { lat: 55.95, lon: -3.19 }],
+});
+
+for (const layer of result.render ?? []) {
+  // layer.kind: "linestring" | "point" | "polygon" | "h3-cells" | …
+  // layer.data: GeoJSON Feature / FeatureCollection (or kind-specific shape)
+  // layer.bbox: [minLng, minLat, maxLng, maxLat]
+  myMap.addLayer(layer);
+}
+```
+
+`render` is included by default. Pass `compact: true` to suppress it on calls from text-only clients — see [response defaults & controls](/mcp/defaults).
+
+## Layer descriptor shape
+
+Every entry in `render` is a discriminated union on `kind`. Common fields:
+
+| Field | Type | Notes |
+|---|---|---|
+| `kind` | `"linestring"` \| `"point"` \| `"polygon"` \| `"h3-cells"` \| `"trips"` \| `"arcs"` \| `"heatmap"` | Discriminator |
+| `label` | `string` | Human-readable, suitable for legend entries |
+| `data` | varies by `kind` | GeoJSON for the geometry-typed kinds; semantic shapes for the rest |
+| `bbox` | `[minLng, minLat, maxLng, maxLat]` | RFC 7946 array — drop straight into `fitBounds` / `flyTo` |
+| `style_hints` | varies by `kind` | Optional; carries kind-specific styling guidance (e.g. `value_range` for hex colour scales) |
+
+Layers do **not** carry an `id` or `opacity` — those belong to the renderer. Order in the array is z-precedence: earlier layers render under later ones.
+
+## Layer kinds
+
+### `linestring` — routes, traces, snapped paths
+
+```json
+{
+  "kind": "linestring",
+  "label": "London → Edinburgh",
+  "data": {
+    "type": "Feature",
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [[-0.124, 51.532], [-3.187, 55.953]]
+    },
+    "properties": {}
+  },
+  "bbox": [-3.187, 51.532, -0.124, 55.953],
+  "style_hints": { "recommended_color": "#1f77b4", "mode": "auto" }
+}
+```
+
+Emitted by `get_directions`, `find_and_route`, `optimize_stops`, `compare_routes`, `search_along_route`, `snap_trace`. `style_hints.mode` carries the travel mode (only on `compare_routes`); `recommended_color` is provided when one mode-styled layer needs to visually distinguish itself from another.
+
+### `point` — geocode results, destinations, ordered stops
+
+```json
+{
+  "kind": "point",
+  "label": "Matched destinations",
+  "data": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": { "type": "Point", "coordinates": [-3.187, 55.953] },
+        "properties": { "name": "Edinburgh" }
+      }
+    ]
+  },
+  "bbox": [-3.187, 55.953, -3.187, 55.953]
+}
+```
+
+Emitted by `geocode`, `reverse_geocode`, `search_places`, `batch_geocode`, plus the destination/stop layers attached to `find_and_route`, `optimize_stops`, `search_along_route`. Per-feature `properties` carries the row's full record (label, confidence, place_type, etc.) so you can drive popups directly from the GeoJSON.
+
+### `polygon` — isochrone contours, areas
+
+```json
+{
+  "kind": "polygon",
+  "label": "15-minute walk",
+  "data": {
+    "type": "Feature",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [[[-0.13, 51.5], [...], [-0.13, 51.5]]]
+    },
+    "properties": {}
+  },
+  "bbox": [-0.13, 51.49, -0.10, 51.52],
+  "style_hints": { "contour_value": 15, "contour_label": "15 minutes" }
+}
+```
+
+Emitted by `get_isochrone` (one layer per contour). `style_hints.contour_value` is the underlying numeric (minutes / kilometres) so renderers can colour by gradient.
+
+### `h3-cells` — predicted probability surfaces
+
+```json
+{
+  "kind": "h3-cells",
+  "label": "Predicted area (top 50)",
+  "data": [
+    { "hex": "8a2a1072b59ffff", "value": 0.87 },
+    { "hex": "8a2a1072b58ffff", "value": 0.42 }
+  ],
+  "bbox": [-0.13, 51.50, -0.10, 51.52],
+  "style_hints": { "value_range": [0.42, 0.87] }
+}
+```
+
+Emitted by `get_prediction`. `style_hints.value_range` is required — clients use it to pick a colour scale without a second pass over the data. deck.gl's [`H3HexagonLayer`](https://deck.gl/docs/api-reference/geo-layers/h3-hexagon-layer) consumes `data` directly via `getHexagon: d => d.hex`.
+
+### `trips`, `arcs`, `heatmap`
+
+Reserved for future spatial tools (animated trips for trajectory replay, arcs for matrix flows, heatmaps for density). Their schemas mirror the deck.gl layer of the same name; see [`@footstep-internal/render-envelope`](https://github.com/footstepai/platform/tree/main/packages/render-envelope) for the type definitions.
+
+## Framework integration
+
+### deck.gl
+
+The `kind` taxonomy maps directly to deck.gl primitives:
+
+| `kind` | deck.gl layer |
+|---|---|
+| `linestring` | [`PathLayer`](https://deck.gl/docs/api-reference/layers/path-layer) (or `GeoJsonLayer`) |
+| `point` | [`ScatterplotLayer`](https://deck.gl/docs/api-reference/layers/scatterplot-layer) (or `GeoJsonLayer`) |
+| `polygon` | [`GeoJsonLayer`](https://deck.gl/docs/api-reference/layers/geo-json-layer) |
+| `h3-cells` | [`H3HexagonLayer`](https://deck.gl/docs/api-reference/geo-layers/h3-hexagon-layer) |
+| `trips` | [`TripsLayer`](https://deck.gl/docs/api-reference/geo-layers/trips-layer) |
+| `arcs` | [`ArcLayer`](https://deck.gl/docs/api-reference/layers/arc-layer) |
+| `heatmap` | [`HeatmapLayer`](https://deck.gl/docs/api-reference/aggregation-layers/heatmap-layer) |
+
+Translator example:
+
+```ts
+import { GeoJsonLayer, H3HexagonLayer } from "@deck.gl/layers";
+
+function toDeckLayer(layer: RenderLayer) {
+  switch (layer.kind) {
+    case "linestring":
+    case "polygon":
+    case "point":
+      return new GeoJsonLayer({ id: layer.label, data: layer.data });
+    case "h3-cells":
+      return new H3HexagonLayer({
+        id: layer.label,
+        data: layer.data,
+        getHexagon: (d) => d.hex,
+        getFillColor: (d) => colorScale(d.value, layer.style_hints.value_range),
+      });
+    // ...
+  }
+}
+```
+
+### MapLibre / Mapbox-GL-JS
+
+GeoJSON-typed kinds (`linestring`, `point`, `polygon`) drop straight in as sources:
+
+```ts
+map.addSource("route", { type: "geojson", data: layer.data });
+map.addLayer({
+  id: "route",
+  type: "line",
+  source: "route",
+  paint: { "line-color": layer.style_hints?.recommended_color ?? "#1f77b4" },
+});
+map.fitBounds(layer.bbox, { padding: 40 });
+```
+
+For `h3-cells`, use [`h3-js`](https://github.com/uber/h3-js) to convert each hex to its boundary and emit a polygon FeatureCollection.
+
+### Leaflet
+
+```ts
+import L from "leaflet";
+
+L.geoJSON(layer.data).addTo(map);
+map.fitBounds([
+  [layer.bbox[1], layer.bbox[0]],
+  [layer.bbox[3], layer.bbox[2]],
+]);
+```
+
+Leaflet's `fitBounds` takes `[[lat, lng], [lat, lng]]` — flip from the RFC 7946 array.
+
+### Cesium
+
+Use `Cesium.GeoJsonDataSource.load(layer.data)` for the GeoJSON-typed kinds. For `h3-cells`, convert via `h3-js` to polygons and add as a CZML / GeoJSON data source.
+
+## When the response has multiple layers
+
+Several tools emit two or more layers in `render`:
+
+- `find_and_route` → `[linestring(route), point(destination)]`
+- `optimize_stops` → `[linestring(route), point(ordered stops)]`
+- `compare_routes` → one `linestring` per travel mode
+- `get_isochrone` → one `polygon` per contour
+- `search_along_route` → `[linestring(route), point(matched places)]`
+
+Iterate the array and add each layer. To fit the camera to the whole result, merge bounding boxes:
+
+```ts
+const combined = result.render.reduce(
+  (acc, layer) => [
+    Math.min(acc[0], layer.bbox[0]),
+    Math.min(acc[1], layer.bbox[1]),
+    Math.max(acc[2], layer.bbox[2]),
+    Math.max(acc[3], layer.bbox[3]),
+  ],
+  result.render[0].bbox,
+);
+map.fitBounds(combined);
+```
+
+## Suppressing the envelope
+
+Text-only clients (Claude Desktop, terminal CLIs, summary bots) pass `compact: true` on every call to skip the envelope and only receive narrative-friendly summary fields. See [response defaults & controls](/mcp/defaults).
