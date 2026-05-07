@@ -49,3 +49,38 @@ Alternates aren't always available — for short urban routes there often isn't 
 ## Map rendering
 
 Responses include a `render` envelope with a `linestring` layer for the route. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "route": {
+      "distance_meters": 5765,
+      "duration_seconds": 812,
+      "terrain": {
+        "difficulty": "flat",
+        "total_ascent_meters": 12.4,
+        "total_descent_meters": 8.1,
+        "max_elevation_meters": 28,
+        "min_elevation_meters": 5,
+        "avg_grade_percent": 1.2,
+        "max_grade_percent": 4.5
+      },
+      "legs": [{ "steps": [/* turn-by-turn directions */] }]
+    },
+    "render": [
+      {
+        "kind": "linestring",
+        "label": "Route",
+        "data": {
+          "type": "Feature",
+          "geometry": { "type": "LineString", "coordinates": [/* [lng, lat] pairs */] },
+          "properties": {}
+        },
+        "bbox": [-0.13, 51.49, -0.06, 51.54]
+      }
+    ]
+  }
+}
+```

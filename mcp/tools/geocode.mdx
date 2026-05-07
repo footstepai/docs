@@ -26,3 +26,28 @@ When all results share the same country / country_code / region, those fields ar
 - **Plain street addresses don't need extra context** — `"10 Downing Street, London"` is enough.
 
 If you're driving the tool from an LLM, mentioning these hints in the system prompt often improves results without any code changes.
+
+## Map rendering
+
+Responses include a `render` envelope with a `point` layer for the matched candidates (per-feature `properties` carries name, label, place_type, confidence). Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "results": [
+      {
+        "name": "Buckingham Palace",
+        "label": "Buckingham Palace, London, England, United Kingdom",
+        "coordinates": { "lat": 51.501, "lng": -0.142 },
+        "place_type": "venue"
+      }
+    ],
+    "context": { "country": "United Kingdom", "country_code": "GBR" },
+    "render": [
+      { "kind": "point", "label": "Geocoded matches", "data": {/* FeatureCollection */}, "bbox": [/* … */] }
+    ]
+  }
+}
+```

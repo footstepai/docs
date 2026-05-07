@@ -27,3 +27,33 @@ For step-by-step directions on a chosen mode, call `get_directions` after compar
 ## Map rendering
 
 Responses include a `render` envelope with one `linestring` layer per mode (style hints carry the mode name and a recommended colour for distinct styling). Pass `compact: true` for summary-only responses (the comparison block + per-mode totals only). See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "routes": {
+      "auto":      { "distance_meters": 6000, "duration_seconds": 600 },
+      "bicycle":   { "distance_meters": 5800, "duration_seconds": 1300 }
+    },
+    "comparison": { "fastest": "auto", "shortest": "bicycle", "easiest": "auto", "summary": "…" },
+    "render": [
+      {
+        "kind": "linestring",
+        "label": "auto route",
+        "data": {/* GeoJSON LineString */},
+        "bbox": [/* … */],
+        "style_hints": { "mode": "auto", "recommended_color": "#1f77b4" }
+      },
+      {
+        "kind": "linestring",
+        "label": "bicycle route",
+        "data": {/* GeoJSON LineString */},
+        "bbox": [/* … */],
+        "style_hints": { "mode": "bicycle", "recommended_color": "#ff7f0e" }
+      }
+    ]
+  }
+}
+```

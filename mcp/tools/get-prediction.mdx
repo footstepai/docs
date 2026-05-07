@@ -38,3 +38,33 @@ A rich response (default) returns the following keys in `structuredContent`:
 | `compact` | `false` | When `true`, omits both the full grid (`cells`) and the `render` envelope, leaving only `top_results`, `summary`, and `coverage`. The compact response is what every existing chaining flow needs. |
 
 LLM agents that don't render maps and only want to chain into other tools should pass `compact: true`. Renderer clients should leave the defaults.
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "profile": "despondent",
+    "summary": { "hex_count": 8910, "processing_time_ms": 1234 },
+    "coverage": { "top_n": 50, "total_count": 8910, "coverage_percent": 87.4, "truncated": true },
+    "top_results": [
+      { "hex": "8c194ad14da43ff", "score": 0.91, "lat": 51.502341, "lng": -0.123456 }
+    ],
+    "cells": [
+      { "hex": "8c194ad14da43ff", "score": 0.91 },
+      { "hex": "8c194ad14da45ff", "score": 0.42 }
+    ],
+    "render": [
+      {
+        "kind": "h3-cells",
+        "label": "Prediction",
+        "data": [
+          { "hex": "8c194ad14da43ff", "value": 0.91 }
+        ],
+        "bbox": [/* … */],
+        "style_hints": { "value_range": [0.02, 0.91] }
+      }
+    ]
+  }
+}
+```

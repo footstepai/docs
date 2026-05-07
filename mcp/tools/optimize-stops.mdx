@@ -23,3 +23,29 @@ For step-by-step directions through the optimised order, call `get_directions` w
 ## Map rendering
 
 Responses include a `render` envelope with a `linestring` layer for the optimised route plus a `point` layer for the ordered stops. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) for the full flag matrix and [render envelopes](/mcp/render-envelopes) for the layer schema.
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "optimized_order": [0, 2, 1, 3],
+    "savings": { "distance_saved_meters": 500, "time_saved_seconds": 120 },
+    "route": { "distance_meters": 12340, "duration_seconds": 2200 },
+    "render": [
+      { "kind": "linestring", "label": "Optimised route", "data": {/* … */}, "bbox": [/* … */] },
+      {
+        "kind": "point",
+        "label": "Stops in visit order",
+        "data": {
+          "type": "FeatureCollection",
+          "features": [
+            { "type": "Feature", "geometry": {/* … */}, "properties": { "order_index": 0, "original_index": 0 } }
+          ]
+        },
+        "bbox": [/* … */]
+      }
+    ]
+  }
+}
+```

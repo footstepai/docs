@@ -28,3 +28,23 @@ Pass `narrative: true` for an AI-generated 1-3 sentence summary of the route alo
 ## Map rendering
 
 Responses include a `render` envelope with a `linestring` layer for the route plus a `point` layer for the matched destination. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "destination": {
+      "name": "London Bridge",
+      "label": "London Bridge, London, England, United Kingdom",
+      "coordinates": { "lat": 51.508, "lng": -0.087 },
+      "place_type": "venue"
+    },
+    "route": { "distance_meters": 4312, "duration_seconds": 723 },
+    "render": [
+      { "kind": "linestring", "label": "Route", "data": {/* GeoJSON */}, "bbox": [/* … */] },
+      { "kind": "point", "label": "Destination: London Bridge", "data": {/* FeatureCollection */}, "bbox": [/* … */] }
+    ]
+  }
+}
+```

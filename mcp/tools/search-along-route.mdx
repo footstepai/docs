@@ -23,3 +23,30 @@ When all candidate places share the same country / region (the typical case for 
 ## Map rendering
 
 Responses include a `render` envelope with a `linestring` layer for the route plus a `point` layer for the candidate places. Pass `compact: true` for summary-only responses (route summary fields and candidate places only). See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "route": { "distance_meters": 24000, "duration_seconds": 1500 },
+    "places": [
+      { "place": { "name": "Costa", "label": "Costa, Cambridge Services", "coordinates": { "lat": 52.05, "lng": 0.10 } }, "detour_seconds": 90 }
+    ],
+    "render": [
+      { "kind": "linestring", "label": "Route", "data": {/* GeoJSON */}, "bbox": [/* … */] },
+      {
+        "kind": "point",
+        "label": "Matched places",
+        "data": {
+          "type": "FeatureCollection",
+          "features": [
+            { "type": "Feature", "geometry": {/* Point */}, "properties": { "name": "Costa", "detour_seconds": 90 } }
+          ]
+        },
+        "bbox": [/* … */]
+      }
+    ]
+  }
+}
+```

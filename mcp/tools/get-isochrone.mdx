@@ -38,4 +38,32 @@ Contours are returned **sorted ascending by `value`** — the smallest reach fir
 
 ## Map rendering
 
-Each contour ships with full GeoJSON polygon coordinates plus a `render` envelope (one `polygon` layer per contour, with `style_hints.contour_value` carrying the contour's value for gradient ordering). Drop the layers straight into your map library. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+Each contour ships with a vertex-count + bbox summary plus a `polygon` layer per contour in the `render` envelope (with `style_hints.contour_value` carrying the contour's value for gradient ordering). Drop the layers straight into your map library. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "origin": { "lat": 51.532, "lon": -0.124 },
+    "travel": "pedestrian",
+    "contours": [
+      {
+        "metric": "time",
+        "value": 15,
+        "geometry_summary": { "type": "Polygon", "vertex_count": 137, "bbox": {/* … */} },
+        "reachable_places": [/* named anchors inside the polygon */]
+      }
+    ],
+    "render": [
+      {
+        "kind": "polygon",
+        "label": "15-minute reach",
+        "data": {/* GeoJSON Feature with full Polygon geometry */},
+        "bbox": [/* … */],
+        "style_hints": { "contour_value": 15, "contour_label": "15-minute reach" }
+      }
+    ]
+  }
+}
+```

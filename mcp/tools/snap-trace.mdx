@@ -57,3 +57,20 @@ For high-quality traces (cyclometer downloads, surveying-grade data) or when you
 ## Map rendering
 
 Responses include a `render` envelope with a `linestring` layer for the snapped trace. Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "confidence": 0.91,
+    "distance_meters": 2300,
+    "duration_seconds": 480,
+    "terrain": { "difficulty": "flat", "total_ascent_meters": 4 },
+    "edges": [/* coalesced segment-level surface / class / speed / grade */],
+    "render": [
+      { "kind": "linestring", "label": "Snapped trace", "data": {/* GeoJSON LineString */}, "bbox": [/* … */] }
+    ]
+  }
+}
+```

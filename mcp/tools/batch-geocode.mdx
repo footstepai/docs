@@ -34,3 +34,25 @@ Free-text rows benefit from the same query hygiene as `geocode`:
 - **Plain street addresses don't need extra context.**
 
 For batch jobs that mix addresses and landmarks, the structured fields (`address`, `locality`, `region`, `country`, etc.) give the most precise control for the address rows.
+
+## Map rendering
+
+Responses include a `render` envelope with a `point` layer for the **successfully** matched rows — failed rows are skipped in the layer (their structured-response row carries an `error` field instead). Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "results": [
+      { "name": "London", "coordinates": { "lat": 51.5, "lng": -0.1 } },
+      { "error": "no match" },
+      { "name": "Paris", "coordinates": { "lat": 48.85, "lng": 2.35 } }
+    ],
+    "summary": { "total": 3, "matched": 2, "failed": 1 },
+    "render": [
+      { "kind": "point", "label": "Geocoded addresses", "data": {/* FeatureCollection: only matched rows */}, "bbox": [/* … */] }
+    ]
+  }
+}
+```

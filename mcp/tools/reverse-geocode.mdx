@@ -19,3 +19,27 @@ You can filter by place type (venue, address, street, locality) to control the l
 The nearest location(s) with coordinates, a full label, country, region, district (e.g. borough or municipality), locality, neighbourhood, optional confidence score (omitted when 1.0), and result type. Each result also carries the straight-line `distance_meters` from the input point and — when the result isn't sitting on top of the input — a `bearing_deg` (0–360) plus 8-point `bearing_compass` (e.g. `"NE"`). By default returns a single result; you can ask for more.
 
 When you request multiple results and they all share the same country / region, those fields are hoisted into a top-level `context` object so they aren't repeated on every row.
+
+## Map rendering
+
+Responses include a `render` envelope with a `point` layer for the resolved location(s). Pass `compact: true` for summary-only responses. See [response defaults & controls](/mcp/defaults) and [render envelopes](/mcp/render-envelopes).
+
+## Example response
+
+```json
+{
+  "structuredContent": {
+    "results": [
+      {
+        "name": "10 Downing Street",
+        "label": "10 Downing Street, London, England, United Kingdom",
+        "coordinates": { "lat": 51.5034, "lng": -0.1276 },
+        "place_type": "address"
+      }
+    ],
+    "render": [
+      { "kind": "point", "label": "Resolved location", "data": {/* FeatureCollection */}, "bbox": [/* … */] }
+    ]
+  }
+}
+```
