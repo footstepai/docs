@@ -3,14 +3,16 @@ title: 'find_and_route'
 description: 'Find a place and get directions to it in one step'
 ---
 
-Geocode a destination (address, place name, or landmark) and route to it from your current location. Combines geocoding and routing in a single call so the agent doesn't need to chain two separate tools.
+Geocode an origin and a destination (address, place name, postcode, or landmark) and route between them. Combines geocoding and routing in a single call so the agent doesn't need to chain two separate tools.
+
+Both `origin` and `destination` accept either lat/lon coordinates or a place name / postcode / address string — the string form is geocoded for you.
 
 ## Example prompts
 
-- "How do I get to the nearest train station from here?"
-- "Directions to Buckingham Palace from Kings Cross"
-- "Walking route to the British Museum from my hotel at 51.52, -0.13"
-- "Find 10 Downing Street and show me how to cycle there"
+- "How do I get from SE3 0HA to Buckingham Palace?"
+- "Directions from Kings Cross to the British Museum"
+- "Walking route from my hotel at 51.52, -0.13 to the nearest train station"
+- "Find 10 Downing Street and show me how to cycle there from Westminster"
 
 ## What you get back
 
@@ -20,10 +22,11 @@ Alternatives are filtered for usefulness: same country as the primary, above a m
 
 Pass `narrative: true` for an AI-generated 1-3 sentence summary of the route alongside the structured data. When narrative is included, the response also carries `narrative_units` (`kilometers` or `miles`) telling you which units the summary used. All numeric route fields are always in meters / seconds regardless.
 
-## Tips for landmark destinations
+## Tips for landmark origins and destinations
 
 - **Qualify with city context** — `"Big Ben, London"` resolves more reliably than `"Big Ben"`.
-- **Plain street addresses don't need extra context.**
+- **Plain street addresses and postcodes don't need extra context.**
+- **Coords win when you have them** — pass `{ "lat": ..., "lon": ... }` whenever the caller already has a precise location (e.g. a GPS fix or a click on the map).
 
 ## Map rendering
 

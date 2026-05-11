@@ -8,9 +8,20 @@ tag: 'Research Preview'
   **Research Preview** — Predictions are generated from behavioural models that have not yet been fully validated against real-world outcomes. Access is granted on request — contact support@footstep.ai.
 </Warning>
 
-Pinpoint where to look first when someone goes missing. Given a last known position, a behavioural profile (age, condition, possible intent), and a search area, returns a probability-ranked grid covering that area — so search teams can prioritise the highest-likelihood ground.
+Pinpoint where to look first when someone goes missing. Given a last known position, a behavioural profile, and a search area, returns a confidence-ranked grid covering that area — so search teams can prioritise the highest-likelihood ground.
 
 Supports three area types: circle (centre + radius), polygon (GeoJSON), or buffered path (LineString + buffer). Weather is fetched automatically unless overridden or disabled.
+
+## Inputs
+
+| Field | Required | Description |
+|---|---|---|
+| `profile` | yes | Behavioural profile id. One of `despondent`, `dementia_alzheimers`. |
+| `area_type` + area shape | yes | `circle` (with `center` + `radius_m`), `polygon` (with `polygon`), or `path` (with `path` + `buffer_m`). |
+| `datetime` | yes | ISO 8601 scenario time. Drives weather lookup and time-of-day signals. |
+| `age_years` | no | Subject age. Optional — omit when unknown. Supplying it sharpens the prediction. |
+| `initial_bearing_deg` | no | Initial direction of travel. Focuses results to a directional cone. |
+| `weather` | no | Manual override. When omitted, weather is fetched for `datetime`. |
 
 ## Example prompts
 
@@ -23,7 +34,7 @@ Supports three area types: circle (centre + radius), polygon (GeoJSON), or buffe
 
 A rich response (default) returns the following keys in `structuredContent`:
 
-- `top_results` — the top 50 H3 hexagons ranked by score (highest first). Each row carries `hex`, `score`, and the cell centroid as `lat` / `lng` so the result can be chained directly into `search_places`, `reverse_geocode`, `get_directions`, etc. without a separate hex-to-coordinates step.
+- `top_results` — the top 50 H3 hexagons ranked by score (highest first). Each row carries `hex`, `score`, and the cell centroid as `lat` / `lng` so the result can be chained directly into `search_places`, `reverse_geocode`, `get_directions`, etc. without a separate hex-to-coordinates step. `score` is an integer 0–30 — a relative confidence score across the surviving hexes in this prediction, NOT a probability or percentage.
 - `cells` — every scored hex (the full grid). Each row carries `hex` and `score`. Suppress with `include_hexes: false` if you don't need the full surface in the structured response — the rendered hex layer in `render` is independent of this field.
 - `summary` — `hex_count` (total hexes scored) and `processing_time_ms`.
 - `coverage` — `top_n` (how many rows are in `top_results`), `total_count` (how many were scored), `coverage_percent` (score mass held by the returned rows), and `truncated` (false when every scored hex was returned). Use `coverage_percent` to gauge how concentrated the prediction is — a high value means the top hexes hold most of the likelihood; a low value means the search area is genuinely diffuse.
@@ -48,21 +59,21 @@ LLM agents that don't render maps and only want to chain into other tools should
     "summary": { "hex_count": 8910, "processing_time_ms": 1234 },
     "coverage": { "top_n": 50, "total_count": 8910, "coverage_percent": 87.4, "truncated": true },
     "top_results": [
-      { "hex": "8c194ad14da43ff", "score": 0.91, "lat": 51.502341, "lng": -0.123456 }
+      { "hex": "8c194ad14da43ff", "score": 28, "lat": 51.502341, "lng": -0.123456 }
     ],
     "cells": [
-      { "hex": "8c194ad14da43ff", "score": 0.91 },
-      { "hex": "8c194ad14da45ff", "score": 0.42 }
+      { "hex": "8c194ad14da43ff", "score": 28 },
+      { "hex": "8c194ad14da45ff", "score": 12 }
     ],
     "render": [
       {
         "kind": "h3-cells",
         "label": "Prediction",
         "data": [
-          { "hex": "8c194ad14da43ff", "value": 0.91 }
+          { "hex": "8c194ad14da43ff", "value": 28 }
         ],
         "bbox": [/* … */],
-        "style_hints": { "value_range": [0.02, 0.91] }
+        "style_hints": { "value_range": [0, 28] }
       }
     ]
   }

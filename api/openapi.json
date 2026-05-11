@@ -3335,7 +3335,7 @@
               "walk_or_snap"
             ],
             "default": "walk_or_snap",
-            "description": "Matching strategy. `edge_walk` requires the trace to follow exact road edges (high-quality data only). `map_snap` is strict per-point snapping. `walk_or_snap` (default) is forgiving — falls back to walking the closest edges when an exact snap fails, which matches typical phone-GPS behaviour."
+            "description": "Matching strategy. `edge_walk` requires the trace to follow exact road edges (high-quality data only). `map_snap` is strict per-point snapping. `walk_or_snap` (default) is forgiving \u2014 falls back to walking the closest edges when an exact snap fails, which matches typical phone-GPS behaviour."
           },
           "format": {
             "$ref": "#/components/schemas/Format"
@@ -4518,8 +4518,16 @@
         ],
         "properties": {
           "origin": {
-            "$ref": "#/components/schemas/Coordinate",
-            "description": "Starting location"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Coordinate"
+              },
+              {
+                "type": "string",
+                "minLength": 1
+              }
+            ],
+            "description": "Starting location. Either lat/lon coordinates, or a place name / postcode / address (geocoded internally)."
           },
           "destination": {
             "type": "string",
@@ -4556,6 +4564,10 @@
           },
           "format": {
             "$ref": "#/components/schemas/Format"
+          },
+          "origin_country": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-3 country hint applied when origin is a string."
           }
         }
       },
@@ -4777,8 +4789,11 @@
         "properties": {
           "profile": {
             "type": "string",
-            "minLength": 1,
-            "description": "Behavioural profile identifier (e.g. \"despondent\", \"dementia_alzheimers\")"
+            "enum": [
+              "despondent",
+              "dementia_alzheimers"
+            ],
+            "description": "Behavioural profile id. Must be one of the listed values."
           },
           "area": {
             "description": "Search area \u2014 circle, polygon, or buffered path",
@@ -4945,7 +4960,6 @@
       "PredictParams": {
         "type": "object",
         "required": [
-          "age_years",
           "datetime"
         ],
         "properties": {
@@ -4953,7 +4967,7 @@
             "type": "number",
             "exclusiveMinimum": true,
             "minimum": 0,
-            "description": "Subject age in years"
+            "description": "Subject age in years. Optional \u2014 omit when unknown; the model handles missing age."
           },
           "initial_bearing_deg": {
             "type": "number",
@@ -5044,7 +5058,7 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 30,
-                  "description": "Quantized probability score (0\u201330). Higher = more likely."
+                  "description": "Relative confidence score (0\u201330). Higher = more likely."
                 }
               }
             }

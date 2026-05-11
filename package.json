@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "mint dev",
-    "postinstall": "cp node_modules/@footstep-internal/api-spec/openapi.json api/openapi.json"
+    "postinstall": "cp node_modules/@footstep-internal/api-spec/openapi.json api/openapi.json",
+    "check:openapi": "node scripts/check-openapi-drift.mjs"
   },
   "keywords": [],
   "author": "",
