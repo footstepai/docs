@@ -189,6 +189,60 @@
       "redirect": true
     }
   },
+  "redirects": [
+    {
+      "source": "/v1/routing/:endpoint",
+      "destination": "/api/endpoint/:endpoint"
+    },
+    {
+      "source": "/v1/routing",
+      "destination": "/api/routing"
+    },
+    {
+      "source": "/v1/geocoding/:endpoint",
+      "destination": "/api/endpoint/:endpoint"
+    },
+    {
+      "source": "/v1/geocoding",
+      "destination": "/api/geocoding"
+    },
+    {
+      "source": "/v1/ai/:endpoint",
+      "destination": "/api/endpoint/:endpoint"
+    },
+    {
+      "source": "/v1/ai",
+      "destination": "/api/ai"
+    },
+    {
+      "source": "/v1/predict",
+      "destination": "/api/endpoint/predict"
+    },
+    {
+      "source": "/routing/:endpoint",
+      "destination": "/api/endpoint/:endpoint"
+    },
+    {
+      "source": "/routing",
+      "destination": "/api/routing"
+    },
+    {
+      "source": "/geocoding/:endpoint",
+      "destination": "/api/endpoint/:endpoint"
+    },
+    {
+      "source": "/geocoding",
+      "destination": "/api/geocoding"
+    },
+    {
+      "source": "/mintlify-assets",
+      "destination": "/"
+    },
+    {
+      "source": "/mintlify-assets/:rest*",
+      "destination": "/"
+    }
+  ],
   "footer": {
     "socials": {
       "x": "https://x.com/footstepai",

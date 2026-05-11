@@ -461,7 +461,7 @@
                     "travel": "bicycle",
                     "contours": [
                       {
-                        "distance": 5.0
+                        "distance": 5
                       }
                     ]
                   }
@@ -1546,11 +1546,11 @@
                             "lat": 48.8566,
                             "lng": 2.3522
                           },
-                          "label": "Paris, \u00cele-de-France, France",
+                          "label": "Paris, Île-de-France, France",
                           "name": "Paris",
                           "country": "France",
                           "country_code": "FRA",
-                          "region": "\u00cele-de-France",
+                          "region": "Île-de-France",
                           "locality": "Paris",
                           "confidence": 0.95,
                           "place_type": "locality"
@@ -1683,11 +1683,11 @@
                                 "lat": 48.8584,
                                 "lng": 2.2945
                               },
-                              "label": "Eiffel Tower, Paris, \u00cele-de-France, France",
+                              "label": "Eiffel Tower, Paris, Île-de-France, France",
                               "name": "Eiffel Tower",
                               "country": "France",
                               "country_code": "FRA",
-                              "region": "\u00cele-de-France",
+                              "region": "Île-de-France",
                               "locality": "Paris",
                               "confidence": 0.96,
                               "place_type": "venue"
@@ -2139,6 +2139,78 @@
         }
       }
     },
+    "/v1/geocoding/resolve": {
+      "get": {
+        "tags": [
+          "Geocoding"
+        ],
+        "summary": "Resolve a free-text place name to a single best location",
+        "description": "Given free text like 'Kings Cross, London', returns the single best matching location. Uses heuristics to prefer specific matches (venue, neighbourhood, address) over broad admin fallbacks (locality, region) when the input contains a comma. Use this when you need ONE location, not a ranked list of candidates.",
+        "operationId": "geocodingResolve",
+        "parameters": [
+          {
+            "name": "text",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Free-text place name to resolve (e.g. 'Kings Cross, London')"
+          },
+          {
+            "name": "boundary.country",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes to restrict results"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resolved single best location",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "result",
+                    "query"
+                  ],
+                  "properties": {
+                    "result": {
+                      "$ref": "#/components/schemas/GeocodingResult"
+                    },
+                    "query": {
+                      "type": "object",
+                      "required": [
+                        "text"
+                      ],
+                      "properties": {
+                        "text": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Could not resolve text",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/predict": {
       "post": {
         "operationId": "predict",
@@ -2235,7 +2307,7 @@
                       "weather": {
                         "temperature_c": 2.5,
                         "precipitation_mmh": 0.5,
-                        "wind_speed_mps": 8.0,
+                        "wind_speed_mps": 8,
                         "wind_direction_deg": 270
                       }
                     }
@@ -2272,78 +2344,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/geocoding/resolve": {
-      "get": {
-        "tags": [
-          "Geocoding"
-        ],
-        "summary": "Resolve a free-text place name to a single best location",
-        "description": "Given free text like 'Kings Cross, London', returns the single best matching location. Uses heuristics to prefer specific matches (venue, neighbourhood, address) over broad admin fallbacks (locality, region) when the input contains a comma. Use this when you need ONE location, not a ranked list of candidates.",
-        "operationId": "geocodingResolve",
-        "parameters": [
-          {
-            "name": "text",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Free-text place name to resolve (e.g. 'Kings Cross, London')"
-          },
-          {
-            "name": "boundary.country",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Comma-separated ISO 3166-1 alpha-3 country codes to restrict results"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Resolved single best location",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "result",
-                    "query"
-                  ],
-                  "properties": {
-                    "result": {
-                      "$ref": "#/components/schemas/GeocodingResult"
-                    },
-                    "query": {
-                      "type": "object",
-                      "required": [
-                        "text"
-                      ],
-                      "properties": {
-                        "text": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Could not resolve text",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -3335,7 +3335,7 @@
               "walk_or_snap"
             ],
             "default": "walk_or_snap",
-            "description": "Matching strategy. `edge_walk` requires the trace to follow exact road edges (high-quality data only). `map_snap` is strict per-point snapping. `walk_or_snap` (default) is forgiving \u2014 falls back to walking the closest edges when an exact snap fails, which matches typical phone-GPS behaviour."
+            "description": "Matching strategy. `edge_walk` requires the trace to follow exact road edges (high-quality data only). `map_snap` is strict per-point snapping. `walk_or_snap` (default) is forgiving — falls back to walking the closest edges when an exact snap fails, which matches typical phone-GPS behaviour."
           },
           "format": {
             "$ref": "#/components/schemas/Format"
@@ -4574,6 +4574,7 @@
       "FindAndRouteResponse": {
         "type": "object",
         "required": [
+          "origin",
           "destination",
           "route"
         ],
@@ -4596,6 +4597,10 @@
           "narrative": {
             "type": "string",
             "description": "AI-generated 1-3 sentence summary of the route. Present only when `narrative: true` was requested and the LLM service was available."
+          },
+          "origin": {
+            "$ref": "#/components/schemas/Origin",
+            "description": "Echoed origin — coordinates always present; geocoded label/name fields present only when the caller passed a string."
           }
         }
       },
@@ -4779,44 +4784,6 @@
           }
         }
       },
-      "PredictRequest": {
-        "type": "object",
-        "required": [
-          "profile",
-          "area",
-          "params"
-        ],
-        "properties": {
-          "profile": {
-            "type": "string",
-            "enum": [
-              "despondent",
-              "dementia_alzheimers"
-            ],
-            "description": "Behavioural profile id. Must be one of the listed values."
-          },
-          "area": {
-            "description": "Search area \u2014 circle, polygon, or buffered path",
-            "discriminator": {
-              "propertyName": "type"
-            },
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CircleArea"
-              },
-              {
-                "$ref": "#/components/schemas/PolygonArea"
-              },
-              {
-                "$ref": "#/components/schemas/PathArea"
-              }
-            ]
-          },
-          "params": {
-            "$ref": "#/components/schemas/PredictParams"
-          }
-        }
-      },
       "CircleArea": {
         "type": "object",
         "required": [
@@ -4861,58 +4828,11 @@
           }
         }
       },
-      "PolygonArea": {
-        "type": "object",
-        "description": "Polygon search area. Maximum area 25 km\u00b2.",
-        "required": [
-          "type",
-          "geometry"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "polygon"
-            ]
-          },
-          "geometry": {
-            "type": "object",
-            "required": [
-              "type",
-              "coordinates"
-            ],
-            "description": "GeoJSON Polygon geometry (max 25 km\u00b2)",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "Polygon"
-                ]
-              },
-              "coordinates": {
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "number"
-                    },
-                    "minItems": 2,
-                    "maxItems": 2
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "PathArea": {
         "type": "object",
         "required": [
           "type",
-          "geometry",
-          "buffer_m"
+          "geometry"
         ],
         "properties": {
           "type": {
@@ -4953,7 +4873,54 @@
             "minimum": 0,
             "exclusiveMinimum": true,
             "maximum": 500,
-            "description": "Buffer distance in metres around the path (max 500 m)"
+            "default": 50,
+            "description": "Buffer distance in metres around the path (max 500 m). Defaults to 50 m — matches typical SAR practice for off-path search around a known route."
+          }
+        }
+      },
+      "PolygonArea": {
+        "type": "object",
+        "description": "Polygon search area. Maximum area 25 km².",
+        "required": [
+          "type",
+          "geometry"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "polygon"
+            ]
+          },
+          "geometry": {
+            "type": "object",
+            "required": [
+              "type",
+              "coordinates"
+            ],
+            "description": "GeoJSON Polygon geometry (max 25 km²)",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Polygon"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -4967,7 +4934,7 @@
             "type": "number",
             "exclusiveMinimum": true,
             "minimum": 0,
-            "description": "Subject age in years. Optional \u2014 omit when unknown; the model handles missing age."
+            "description": "Subject age in years. Optional — omit when unknown; the model handles missing age."
           },
           "initial_bearing_deg": {
             "type": "number",
@@ -4990,35 +4957,41 @@
           }
         }
       },
-      "Weather": {
+      "PredictRequest": {
         "type": "object",
         "required": [
-          "temperature_c",
-          "precipitation_mmh",
-          "wind_speed_mps",
-          "wind_direction_deg"
+          "profile",
+          "area",
+          "params"
         ],
-        "description": "Manual weather override. When provided, the API skips the automatic weather lookup.",
         "properties": {
-          "temperature_c": {
-            "type": "number",
-            "description": "Temperature in degrees Celsius"
+          "profile": {
+            "type": "string",
+            "enum": [
+              "despondent",
+              "dementia_alzheimers"
+            ],
+            "description": "Behavioural profile id. Must be one of the listed values."
           },
-          "precipitation_mmh": {
-            "type": "number",
-            "minimum": 0,
-            "description": "Precipitation rate in mm/hour"
+          "area": {
+            "description": "Search area — circle, polygon, or buffered path",
+            "discriminator": {
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CircleArea"
+              },
+              {
+                "$ref": "#/components/schemas/PolygonArea"
+              },
+              {
+                "$ref": "#/components/schemas/PathArea"
+              }
+            ]
           },
-          "wind_speed_mps": {
-            "type": "number",
-            "minimum": 0,
-            "description": "Wind speed in metres per second"
-          },
-          "wind_direction_deg": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 360,
-            "description": "Wind direction in degrees (0 = north)"
+          "params": {
+            "$ref": "#/components/schemas/PredictParams"
           }
         }
       },
@@ -5058,7 +5031,7 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 30,
-                  "description": "Relative confidence score (0\u201330). Higher = more likely."
+                  "description": "Relative confidence score (0–30). Higher = more likely."
                 }
               }
             }
@@ -5088,6 +5061,86 @@
               "low"
             ],
             "description": "Model confidence level for the search area"
+          }
+        }
+      },
+      "Weather": {
+        "type": "object",
+        "required": [
+          "temperature_c",
+          "precipitation_mmh",
+          "wind_speed_mps",
+          "wind_direction_deg"
+        ],
+        "description": "Manual weather override. When provided, the API skips the automatic weather lookup.",
+        "properties": {
+          "temperature_c": {
+            "type": "number",
+            "description": "Temperature in degrees Celsius"
+          },
+          "precipitation_mmh": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Precipitation rate in mm/hour"
+          },
+          "wind_speed_mps": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Wind speed in metres per second"
+          },
+          "wind_direction_deg": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 360,
+            "description": "Wind direction in degrees (0 = north)"
+          }
+        }
+      },
+      "Origin": {
+        "type": "object",
+        "required": [
+          "coordinates",
+          "resolved_from"
+        ],
+        "description": "Echoed origin of the route. Always carries coordinates; geocoded fields (name/label/place_type/country_code) are present when the caller passed a string and omitted when the caller passed coordinates directly.",
+        "properties": {
+          "coordinates": {
+            "type": "object",
+            "required": [
+              "lat",
+              "lng"
+            ],
+            "properties": {
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              }
+            }
+          },
+          "resolved_from": {
+            "type": "string",
+            "enum": [
+              "string",
+              "coordinates"
+            ],
+            "description": "How the origin was supplied: `string` (geocoded internally) or `coordinates` (passed through verbatim)."
+          },
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "place_type": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string"
           }
         }
       }

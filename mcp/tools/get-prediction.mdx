@@ -17,7 +17,7 @@ Supports three area types: circle (centre + radius), polygon (GeoJSON), or buffe
 | Field | Required | Description |
 |---|---|---|
 | `profile` | yes | Behavioural profile id. One of `despondent`, `dementia_alzheimers`. |
-| `area_type` + area shape | yes | `circle` (with `center` + `radius_m`), `polygon` (with `polygon`), or `path` (with `path` + `buffer_m`). |
+| `area_type` + area shape | yes | `circle` (with `center` + `radius_m`), `polygon` (with `polygon`), or `path` (with `path` and an optional `buffer_m` — defaults to 50 m, capped at 500 m). |
 | `datetime` | yes | ISO 8601 scenario time. Drives weather lookup and time-of-day signals. |
 | `age_years` | no | Subject age. Optional — omit when unknown. Supplying it sharpens the prediction. |
 | `initial_bearing_deg` | no | Initial direction of travel. Focuses results to a directional cone. |
