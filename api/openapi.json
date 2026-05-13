@@ -22,9 +22,7 @@
         "operationId": "calculateRoute",
         "summary": "Calculate a route with terrain analysis",
         "description": "Calculate a route between two or more locations. Returns turn-by-turn directions with terrain analytics (ascent, descent, grade, difficulty) included by default. All distances are in meters, durations in seconds.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -135,9 +133,7 @@
         "operationId": "getElevation",
         "summary": "Get elevation data for points or a path",
         "description": "Query elevation values for coordinates or an encoded polyline. Returns height values with a computed summary including ascent, descent, min/max/avg elevation.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -231,9 +227,7 @@
         "operationId": "optimizeRoute",
         "summary": "Optimise visit order for multiple stops",
         "description": "Find the optimal order to visit multiple locations. Returns the optimised route with terrain analytics and savings (distance and time) compared to the original order.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -314,9 +308,7 @@
         "operationId": "snapTrace",
         "summary": "Snap a GPS trace to the road network",
         "description": "Map-match a GPS trace to the road network. Returns a snapped polyline with confidence score. Optionally includes directions with terrain analytics, road attributes (surface, grade, road class), and per-point match quality.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -412,9 +404,7 @@
         "operationId": "calculateIsochrone",
         "summary": "Calculate reachability polygons",
         "description": "Compute reachability polygons (isochrones) from an origin point. Pass `from` as a place name and the origin is geocoded for you, or pass `locations` if you already have coordinates. Returns one or more contour polygons capped by time or distance.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -515,9 +505,7 @@
         "operationId": "calculateMatrix",
         "summary": "Calculate time/distance matrix",
         "description": "Compute a time and distance matrix between sources and targets. Returns a 2D matrix indexed by [source][target] with distance_meters and duration_seconds for each pair. Null cells indicate unreachable pairs. All distances are in meters regardless of request units.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -600,9 +588,7 @@
         "operationId": "compareRoutes",
         "summary": "Compare travel modes between two locations",
         "description": "Calculate routes between the same locations using multiple travel modes and return a side-by-side comparison. Includes distance, duration, and terrain difficulty for each mode, plus a summary showing which is fastest, shortest, and easiest. Useful for deciding how to travel.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -624,10 +610,7 @@
                         "lon": -0.0754
                       }
                     ],
-                    "travel_modes": [
-                      "pedestrian",
-                      "bicycle"
-                    ]
+                    "travel_modes": ["pedestrian", "bicycle"]
                   }
                 },
                 "three_modes": {
@@ -643,11 +626,7 @@
                         "lon": -0.0754
                       }
                     ],
-                    "travel_modes": [
-                      "pedestrian",
-                      "bicycle",
-                      "auto"
-                    ]
+                    "travel_modes": ["pedestrian", "bicycle", "auto"]
                   }
                 }
               }
@@ -693,9 +672,7 @@
         "operationId": "findAndRoute",
         "summary": "Geocode a destination and route to it",
         "description": "Find a place by name or address, then calculate a route to it from your origin. Combines geocoding and routing in a single call. Returns the matched destination, the full route with terrain analytics, and alternative geocoding matches.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -770,9 +747,7 @@
         "operationId": "locateOnRoad",
         "summary": "Snap coordinates to the nearest road",
         "description": "Check if coordinates are on a routable road and get the nearest snapped position. Returns distance, on-road status, and optionally edge metadata (road class, surface, speed).",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -857,9 +832,7 @@
         "operationId": "searchAlongRoute",
         "summary": "Find places along a route",
         "description": "Calculate a route between locations and search for places along the corridor. Results are ranked by how little detour they add. Useful for finding stops (petrol stations, restaurants, charging points) on the way to a destination.",
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "requestBody": {
           "required": true,
           "content": {
@@ -947,9 +920,7 @@
         "operationId": "geocodingSearch",
         "summary": "Search for a place or address",
         "description": "Forward geocode: convert a text query (address, place name, landmark) into geographic coordinates. Results are ranked by relevance. Use focus.point to bias results towards a location. Use boundary.country to restrict to specific countries.",
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "parameters": [
           {
             "name": "text",
@@ -1124,9 +1095,7 @@
         "operationId": "geocodingReverse",
         "summary": "Reverse geocode coordinates",
         "description": "Reverse geocode: convert geographic coordinates into a human-readable address or place name. Returns the nearest matching locations sorted by proximity.",
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "parameters": [
           {
             "name": "point.lat",
@@ -1271,9 +1240,7 @@
         "operationId": "geocodingAutocomplete",
         "summary": "Autocomplete place search",
         "description": "Typeahead search: get suggestions as the user types. Optimised for low-latency responses. Use focus.point to bias results towards the user's current location.",
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "parameters": [
           {
             "name": "text",
@@ -1423,9 +1390,7 @@
         "operationId": "geocodingStructuredSearch",
         "summary": "Search by address components",
         "description": "Forward geocode using structured address components instead of free text. More precise than text search when you already have address fields separated (e.g. from a database or form). Provide as many fields as you have. The more you provide, the more accurate the result.",
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "parameters": [
           {
             "name": "address",
@@ -1594,9 +1559,7 @@
         "operationId": "geocodingBatch",
         "summary": "Geocode up to 1,000 addresses in one request",
         "description": "Batch geocode a list of addresses in a single request. Each item can be free text or structured address components. Results are returned per-item with the original index preserved, so failed items don't break the batch. Use this for spreadsheet imports, database enrichment, or any bulk geocoding task.",
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1753,9 +1716,7 @@
         "operationId": "geocodingPlaces",
         "summary": "Find places near a location",
         "description": "Find points of interest (cafes, supermarkets, parks, ATMs, etc.) near a location. Pass `near` as a place name (e.g. 'Kings Cross, London') and the endpoint geocodes it for you, or pass `near.lat`+`near.lon` if you already have coordinates. For 'find X near Y' queries, prefer this over a separate `/v1/geocoding/search` call.",
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "parameters": [
           {
             "name": "query",
@@ -1900,9 +1861,7 @@
         "operationId": "geocodingParse",
         "summary": "Parse a free-text address into components",
         "description": "Break a free-text address into structured components (house number, road, city, state, postcode, country). Use this to normalise messy address data before passing it to structured search, or to understand what parts of an address were recognised.",
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "parameters": [
           {
             "name": "text",
@@ -1981,9 +1940,7 @@
         "operationId": "aiQuery",
         "summary": "Natural language geospatial query",
         "description": "Accept a natural language query and return structured geospatial results. The endpoint classifies intent (route, geocode, isochrone, etc.), extracts locations and parameters, calls the appropriate backend, and returns the full result with a natural language summary. Use context.location to help resolve relative references like 'nearest' or 'nearby'.",
-        "tags": [
-          "AI"
-        ],
+        "tags": ["AI"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2066,9 +2023,7 @@
         "operationId": "aiParseAddress",
         "summary": "Correct and structure messy addresses",
         "description": "Parse, correct, and standardize addresses using AI. Fixes typos, expands abbreviations, infers missing components (postcode, region, country), and returns structured address components with a confidence score. Each correction is itemised so you can see exactly what changed.",
-        "tags": [
-          "AI"
-        ],
+        "tags": ["AI"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2141,9 +2096,7 @@
     },
     "/v1/geocoding/resolve": {
       "get": {
-        "tags": [
-          "Geocoding"
-        ],
+        "tags": ["Geocoding"],
         "summary": "Resolve a free-text place name to a single best location",
         "description": "Given free text like 'Kings Cross, London', returns the single best matching location. Uses heuristics to prefer specific matches (venue, neighbourhood, address) over broad admin fallbacks (locality, region) when the input contains a comma. Use this when you need ONE location, not a ranked list of candidates.",
         "operationId": "geocodingResolve",
@@ -2174,19 +2127,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "result",
-                    "query"
-                  ],
+                  "required": ["result", "query"],
                   "properties": {
                     "result": {
                       "$ref": "#/components/schemas/GeocodingResult"
                     },
                     "query": {
                       "type": "object",
-                      "required": [
-                        "text"
-                      ],
+                      "required": ["text"],
                       "properties": {
                         "text": {
                           "type": "string"
@@ -2214,11 +2162,9 @@
     "/v1/predict": {
       "post": {
         "operationId": "predict",
-        "summary": "Generate spatial predictions",
-        "description": "Predict probability distributions across H3 hexagons for a given behavioural profile and search area. Define a search area (circle, polygon, or buffered path), provide subject parameters, and receive per-hex probabilities ranked by likelihood. Weather data is fetched automatically unless overridden or disabled.",
-        "tags": [
-          "Predict"
-        ],
+        "summary": "Generate spatial predictions (Research Preview)",
+        "description": "Generate a spatial probability surface over an H3 hexagon grid for a given behavioural profile and search area.\n\nDefine the area as a `circle` (a centre point plus a search radius), a `polygon` (an explicit boundary), or a `path` (a known route with a lateral search corridor). Submit the subject's parameters and a reference datetime, and receive per-hex probability scores ranked by likelihood, plus a `top_results` summary.\n\nScores are returned as integers on a 0–30 relative scale — higher values indicate higher predicted likelihood within the queried area. Weather is fetched automatically for the requested datetime; override with the `weather` field or suppress with `disable_weather: true`.",
+        "tags": ["Predict"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2256,26 +2202,11 @@
                         "type": "Polygon",
                         "coordinates": [
                           [
-                            [
-                              -0.13,
-                              51.5
-                            ],
-                            [
-                              -0.12,
-                              51.5
-                            ],
-                            [
-                              -0.12,
-                              51.51
-                            ],
-                            [
-                              -0.13,
-                              51.51
-                            ],
-                            [
-                              -0.13,
-                              51.5
-                            ]
+                            [-0.13, 51.5],
+                            [-0.12, 51.5],
+                            [-0.12, 51.51],
+                            [-0.13, 51.51],
+                            [-0.13, 51.5]
                           ]
                         ]
                       }
@@ -2364,10 +2295,7 @@
     "schemas": {
       "Coordinate": {
         "type": "object",
-        "required": [
-          "lat",
-          "lon"
-        ],
+        "required": ["lat", "lon"],
         "properties": {
           "lat": {
             "type": "number",
@@ -2383,10 +2311,7 @@
       },
       "Format": {
         "type": "string",
-        "enum": [
-          "footstep",
-          "geojson"
-        ],
+        "enum": ["footstep", "geojson"],
         "default": "footstep",
         "description": "Response format. footstep = optimised for app developers (encoded polyline, flat structure). geojson = standard GeoJSON FeatureCollection (decoded coordinates, immediately usable in Leaflet/Mapbox GL/deck.gl)."
       },
@@ -2477,12 +2402,7 @@
               },
               "bicycle_type": {
                 "type": "string",
-                "enum": [
-                  "road",
-                  "hybrid",
-                  "cross",
-                  "mountain"
-                ]
+                "enum": ["road", "hybrid", "cross", "mountain"]
               },
               "use_roads": {
                 "type": "number",
@@ -2534,12 +2454,7 @@
       },
       "BoundingBox": {
         "type": "object",
-        "required": [
-          "min_lat",
-          "min_lon",
-          "max_lat",
-          "max_lon"
-        ],
+        "required": ["min_lat", "min_lon", "max_lat", "max_lon"],
         "properties": {
           "min_lat": {
             "type": "number"
@@ -2558,11 +2473,7 @@
       },
       "RouteFlags": {
         "type": "object",
-        "required": [
-          "has_toll",
-          "has_highway",
-          "has_ferry"
-        ],
+        "required": ["has_toll", "has_highway", "has_ferry"],
         "properties": {
           "has_toll": {
             "type": "boolean"
@@ -2577,13 +2488,7 @@
       },
       "StepFlags": {
         "type": "object",
-        "required": [
-          "toll",
-          "ferry",
-          "rough",
-          "gate",
-          "highway"
-        ],
+        "required": ["toll", "ferry", "rough", "gate", "highway"],
         "properties": {
           "toll": {
             "type": "boolean"
@@ -2661,10 +2566,7 @@
       },
       "Lane": {
         "type": "object",
-        "required": [
-          "indications",
-          "valid"
-        ],
+        "required": ["indications", "valid"],
         "properties": {
           "indications": {
             "type": "array",
@@ -2807,10 +2709,7 @@
             "description": "Sampled elevation profile for charting",
             "items": {
               "type": "object",
-              "required": [
-                "distance_meters",
-                "elevation_meters"
-              ],
+              "required": ["distance_meters", "elevation_meters"],
               "properties": {
                 "distance_meters": {
                   "type": "number"
@@ -2823,22 +2722,14 @@
           },
           "difficulty": {
             "type": "string",
-            "enum": [
-              "flat",
-              "rolling",
-              "hilly",
-              "mountainous"
-            ],
+            "enum": ["flat", "rolling", "hilly", "mountainous"],
             "description": "Terrain difficulty classification based on grade distribution"
           }
         }
       },
       "Waypoint": {
         "type": "object",
-        "required": [
-          "lat",
-          "lon"
-        ],
+        "required": ["lat", "lon"],
         "properties": {
           "lat": {
             "type": "number"
@@ -2978,10 +2869,7 @@
       },
       "Error": {
         "type": "object",
-        "required": [
-          "error",
-          "message"
-        ],
+        "required": ["error", "message"],
         "properties": {
           "error": {
             "type": "string"
@@ -2993,9 +2881,7 @@
       },
       "RouteRequest": {
         "type": "object",
-        "required": [
-          "locations"
-        ],
+        "required": ["locations"],
         "properties": {
           "locations": {
             "type": "array",
@@ -3008,13 +2894,7 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian",
-              "bus",
-              "truck"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"],
             "default": "auto",
             "description": "How to travel: auto (car), pedestrian, bicycle, bus, or truck"
           },
@@ -3023,10 +2903,7 @@
           },
           "units": {
             "type": "string",
-            "enum": [
-              "kilometers",
-              "miles"
-            ],
+            "enum": ["kilometers", "miles"],
             "default": "kilometers"
           },
           "language": {
@@ -3060,9 +2937,7 @@
       },
       "RouteResponse": {
         "type": "object",
-        "required": [
-          "route"
-        ],
+        "required": ["route"],
         "properties": {
           "route": {
             "$ref": "#/components/schemas/Route"
@@ -3154,9 +3029,7 @@
       },
       "OptimizeRequest": {
         "type": "object",
-        "required": [
-          "locations"
-        ],
+        "required": ["locations"],
         "properties": {
           "locations": {
             "type": "array",
@@ -3169,11 +3042,7 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian"],
             "default": "auto"
           },
           "travel_options": {
@@ -3181,10 +3050,7 @@
           },
           "units": {
             "type": "string",
-            "enum": [
-              "kilometers",
-              "miles"
-            ],
+            "enum": ["kilometers", "miles"],
             "default": "kilometers"
           },
           "elevation_interval": {
@@ -3205,11 +3071,7 @@
       },
       "OptimizeResponse": {
         "type": "object",
-        "required": [
-          "route",
-          "optimized_order",
-          "savings"
-        ],
+        "required": ["route", "optimized_order", "savings"],
         "properties": {
           "route": {
             "$ref": "#/components/schemas/Route"
@@ -3259,10 +3121,7 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "lat",
-                "lon"
-              ],
+              "required": ["lat", "lon"],
               "properties": {
                 "lat": {
                   "type": "number"
@@ -3288,22 +3147,12 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian",
-              "bus",
-              "truck"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"],
             "default": "auto"
           },
           "output": {
             "type": "string",
-            "enum": [
-              "route",
-              "attributes",
-              "both"
-            ],
+            "enum": ["route", "attributes", "both"],
             "default": "route",
             "description": "route = directions with terrain, attributes = road details, both = combined"
           },
@@ -3329,11 +3178,7 @@
           },
           "shape_match": {
             "type": "string",
-            "enum": [
-              "edge_walk",
-              "map_snap",
-              "walk_or_snap"
-            ],
+            "enum": ["edge_walk", "map_snap", "walk_or_snap"],
             "default": "walk_or_snap",
             "description": "Matching strategy. `edge_walk` requires the trace to follow exact road edges (high-quality data only). `map_snap` is strict per-point snapping. `walk_or_snap` (default) is forgiving — falls back to walking the closest edges when an exact snap fails, which matches typical phone-GPS behaviour."
           },
@@ -3344,10 +3189,7 @@
       },
       "SnapResponse": {
         "type": "object",
-        "required": [
-          "snapped_shape",
-          "confidence"
-        ],
+        "required": ["snapped_shape", "confidence"],
         "properties": {
           "snapped_shape": {
             "type": "string",
@@ -3361,9 +3203,7 @@
           },
           "match_quality": {
             "type": "string",
-            "enum": [
-              "low"
-            ],
+            "enum": ["low"],
             "description": "Present when the match is unreliable. Currently the only value is `low` (confidence below 0.5). Distance, duration, edges, and terrain are still populated but should be treated as approximate."
           },
           "match_quality_reason": {
@@ -3398,10 +3238,7 @@
             "description": "Present when output includes 'attributes'. Road segment details.",
             "items": {
               "type": "object",
-              "required": [
-                "names",
-                "length_meters"
-              ],
+              "required": ["names", "length_meters"],
               "properties": {
                 "names": {
                   "type": "array",
@@ -3474,11 +3311,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "enum": [
-                    "matched",
-                    "interpolated",
-                    "unmatched"
-                  ]
+                  "enum": ["matched", "interpolated", "unmatched"]
                 },
                 "distance_from_trace_meters": {
                   "type": "number",
@@ -3495,9 +3328,7 @@
       },
       "IsochroneRequest": {
         "type": "object",
-        "required": [
-          "contours"
-        ],
+        "required": ["contours"],
         "properties": {
           "locations": {
             "type": "array",
@@ -3510,13 +3341,7 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian",
-              "bus",
-              "truck"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"],
             "default": "pedestrian"
           },
           "travel_options": {
@@ -3572,11 +3397,7 @@
       },
       "IsochroneResponse": {
         "type": "object",
-        "required": [
-          "origin",
-          "travel",
-          "contours"
-        ],
+        "required": ["origin", "travel", "contours"],
         "description": "Structured isochrone response with typed contours",
         "properties": {
           "origin": {
@@ -3590,18 +3411,11 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "metric",
-                "value",
-                "geometry"
-              ],
+              "required": ["metric", "value", "geometry"],
               "properties": {
                 "metric": {
                   "type": "string",
-                  "enum": [
-                    "time",
-                    "distance"
-                  ],
+                  "enum": ["time", "distance"],
                   "description": "Whether this contour is time or distance based"
                 },
                 "value": {
@@ -3614,10 +3428,7 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "enum": [
-                        "Polygon",
-                        "LineString"
-                      ]
+                      "enum": ["Polygon", "LineString"]
                     },
                     "coordinates": {
                       "description": "Coordinate arrays"
@@ -3629,12 +3440,7 @@
                   "description": "Named anchors (venues, neighbourhoods, landmarks) within this contour, ordered by relevance. Best-effort enrichment; may be absent if no named anchors can be resolved.",
                   "items": {
                     "type": "object",
-                    "required": [
-                      "name",
-                      "label",
-                      "place_type",
-                      "coordinates"
-                    ],
+                    "required": ["name", "label", "place_type", "coordinates"],
                     "properties": {
                       "name": {
                         "type": "string"
@@ -3647,10 +3453,7 @@
                       },
                       "coordinates": {
                         "type": "object",
-                        "required": [
-                          "lat",
-                          "lng"
-                        ],
+                        "required": ["lat", "lng"],
                         "properties": {
                           "lat": {
                             "type": "number"
@@ -3670,10 +3473,7 @@
       },
       "MatrixRequest": {
         "type": "object",
-        "required": [
-          "sources",
-          "targets"
-        ],
+        "required": ["sources", "targets"],
         "properties": {
           "sources": {
             "type": "array",
@@ -3693,13 +3493,7 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian",
-              "bus",
-              "truck"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"],
             "default": "auto"
           },
           "travel_options": {
@@ -3707,10 +3501,7 @@
           },
           "units": {
             "type": "string",
-            "enum": [
-              "kilometers",
-              "miles"
-            ],
+            "enum": ["kilometers", "miles"],
             "default": "kilometers"
           },
           "format": {
@@ -3720,9 +3511,7 @@
       },
       "MatrixResponse": {
         "type": "object",
-        "required": [
-          "matrix"
-        ],
+        "required": ["matrix"],
         "description": "Time/distance matrix with explicit units",
         "properties": {
           "matrix": {
@@ -3734,10 +3523,7 @@
                 "oneOf": [
                   {
                     "type": "object",
-                    "required": [
-                      "distance_meters",
-                      "duration_seconds"
-                    ],
+                    "required": ["distance_meters", "duration_seconds"],
                     "properties": {
                       "distance_meters": {
                         "type": "number",
@@ -3760,9 +3546,7 @@
       },
       "LocateRequest": {
         "type": "object",
-        "required": [
-          "locations"
-        ],
+        "required": ["locations"],
         "properties": {
           "locations": {
             "type": "array",
@@ -3774,13 +3558,7 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian",
-              "bus",
-              "truck"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"],
             "default": "auto",
             "description": "Filter edges by travel type"
           },
@@ -3796,19 +3574,13 @@
       },
       "LocateResponse": {
         "type": "object",
-        "required": [
-          "locations"
-        ],
+        "required": ["locations"],
         "properties": {
           "locations": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "input",
-                "distance_meters",
-                "on_road"
-              ],
+              "required": ["input", "distance_meters", "on_road"],
               "properties": {
                 "input": {
                   "$ref": "#/components/schemas/Coordinate"
@@ -3830,9 +3602,7 @@
                   "description": "Present when verbose=true",
                   "items": {
                     "type": "object",
-                    "required": [
-                      "names"
-                    ],
+                    "required": ["names"],
                     "properties": {
                       "names": {
                         "type": "array",
@@ -3884,10 +3654,7 @@
       },
       "GeocodingCoordinate": {
         "type": "object",
-        "required": [
-          "lat",
-          "lng"
-        ],
+        "required": ["lat", "lng"],
         "properties": {
           "lat": {
             "type": "number",
@@ -3960,10 +3727,7 @@
       },
       "GeocodingSearchResponse": {
         "type": "object",
-        "required": [
-          "results",
-          "query"
-        ],
+        "required": ["results", "query"],
         "properties": {
           "results": {
             "type": "array",
@@ -3973,10 +3737,7 @@
           },
           "query": {
             "type": "object",
-            "required": [
-              "text",
-              "size"
-            ],
+            "required": ["text", "size"],
             "properties": {
               "text": {
                 "type": "string"
@@ -3990,10 +3751,7 @@
       },
       "GeocodingReverseResponse": {
         "type": "object",
-        "required": [
-          "results",
-          "query"
-        ],
+        "required": ["results", "query"],
         "properties": {
           "results": {
             "type": "array",
@@ -4003,11 +3761,7 @@
           },
           "query": {
             "type": "object",
-            "required": [
-              "lat",
-              "lon",
-              "size"
-            ],
+            "required": ["lat", "lon", "size"],
             "properties": {
               "lat": {
                 "type": "number"
@@ -4024,10 +3778,7 @@
       },
       "GeocodingAutocompleteResponse": {
         "type": "object",
-        "required": [
-          "results",
-          "query"
-        ],
+        "required": ["results", "query"],
         "properties": {
           "results": {
             "type": "array",
@@ -4037,10 +3788,7 @@
           },
           "query": {
             "type": "object",
-            "required": [
-              "text",
-              "size"
-            ],
+            "required": ["text", "size"],
             "properties": {
               "text": {
                 "type": "string"
@@ -4054,9 +3802,7 @@
       },
       "GeocodingBatchRequest": {
         "type": "object",
-        "required": [
-          "items"
-        ],
+        "required": ["items"],
         "properties": {
           "items": {
             "type": "array",
@@ -4109,19 +3855,13 @@
       },
       "GeocodingBatchResponse": {
         "type": "object",
-        "required": [
-          "results",
-          "summary"
-        ],
+        "required": ["results", "summary"],
         "properties": {
           "results": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "index",
-                "results"
-              ],
+              "required": ["index", "results"],
               "properties": {
                 "index": {
                   "type": "integer",
@@ -4142,11 +3882,7 @@
           },
           "summary": {
             "type": "object",
-            "required": [
-              "total",
-              "matched",
-              "failed"
-            ],
+            "required": ["total", "matched", "failed"],
             "properties": {
               "total": {
                 "type": "integer",
@@ -4166,10 +3902,7 @@
       },
       "GeocodingParseResponse": {
         "type": "object",
-        "required": [
-          "input",
-          "components"
-        ],
+        "required": ["input", "components"],
         "properties": {
           "input": {
             "type": "string",
@@ -4209,9 +3942,7 @@
       },
       "AIQueryRequest": {
         "type": "object",
-        "required": [
-          "query"
-        ],
+        "required": ["query"],
         "properties": {
           "query": {
             "type": "string",
@@ -4236,12 +3967,7 @@
       },
       "AIQueryResponse": {
         "type": "object",
-        "required": [
-          "intent",
-          "parameters",
-          "result",
-          "summary"
-        ],
+        "required": ["intent", "parameters", "result", "summary"],
         "properties": {
           "intent": {
             "type": "string",
@@ -4272,9 +3998,7 @@
       },
       "AIParseAddressRequest": {
         "type": "object",
-        "required": [
-          "addresses"
-        ],
+        "required": ["addresses"],
         "properties": {
           "addresses": {
             "type": "array",
@@ -4283,9 +4007,7 @@
             "description": "Addresses to parse and correct",
             "items": {
               "type": "object",
-              "required": [
-                "text"
-              ],
+              "required": ["text"],
               "properties": {
                 "text": {
                   "type": "string",
@@ -4302,9 +4024,7 @@
       },
       "AIParseAddressResponse": {
         "type": "object",
-        "required": [
-          "results"
-        ],
+        "required": ["results"],
         "properties": {
           "results": {
             "type": "array",
@@ -4376,11 +4096,7 @@
                   "description": "List of corrections applied. Empty array if input was clean.",
                   "items": {
                     "type": "object",
-                    "required": [
-                      "field",
-                      "type",
-                      "corrected"
-                    ],
+                    "required": ["field", "type", "corrected"],
                     "properties": {
                       "field": {
                         "type": "string",
@@ -4422,10 +4138,7 @@
       },
       "CompareRoutesRequest": {
         "type": "object",
-        "required": [
-          "locations",
-          "travel_modes"
-        ],
+        "required": ["locations", "travel_modes"],
         "properties": {
           "locations": {
             "type": "array",
@@ -4440,13 +4153,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": [
-                "auto",
-                "bicycle",
-                "pedestrian",
-                "bus",
-                "truck"
-              ]
+              "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"]
             },
             "minItems": 2,
             "maxItems": 4,
@@ -4469,10 +4176,7 @@
       },
       "CompareRoutesResponse": {
         "type": "object",
-        "required": [
-          "routes",
-          "comparison"
-        ],
+        "required": ["routes", "comparison"],
         "properties": {
           "routes": {
             "type": "object",
@@ -4483,12 +4187,7 @@
           },
           "comparison": {
             "type": "object",
-            "required": [
-              "fastest",
-              "shortest",
-              "easiest",
-              "summary"
-            ],
+            "required": ["fastest", "shortest", "easiest", "summary"],
             "properties": {
               "fastest": {
                 "type": "string",
@@ -4512,10 +4211,7 @@
       },
       "FindAndRouteRequest": {
         "type": "object",
-        "required": [
-          "origin",
-          "destination"
-        ],
+        "required": ["origin", "destination"],
         "properties": {
           "origin": {
             "oneOf": [
@@ -4539,13 +4235,7 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian",
-              "bus",
-              "truck"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"],
             "default": "auto"
           },
           "travel_options": {
@@ -4573,11 +4263,7 @@
       },
       "FindAndRouteResponse": {
         "type": "object",
-        "required": [
-          "origin",
-          "destination",
-          "route"
-        ],
+        "required": ["origin", "destination", "route"],
         "properties": {
           "destination": {
             "$ref": "#/components/schemas/GeocodingResult",
@@ -4656,10 +4342,7 @@
       },
       "GeocodingPlacesResponse": {
         "type": "object",
-        "required": [
-          "results",
-          "query"
-        ],
+        "required": ["results", "query"],
         "properties": {
           "results": {
             "type": "array",
@@ -4688,10 +4371,7 @@
       },
       "SearchAlongRouteRequest": {
         "type": "object",
-        "required": [
-          "locations",
-          "search"
-        ],
+        "required": ["locations", "search"],
         "properties": {
           "locations": {
             "type": "array",
@@ -4708,13 +4388,7 @@
           },
           "travel": {
             "type": "string",
-            "enum": [
-              "auto",
-              "bicycle",
-              "pedestrian",
-              "bus",
-              "truck"
-            ],
+            "enum": ["auto", "bicycle", "pedestrian", "bus", "truck"],
             "default": "auto"
           },
           "travel_options": {
@@ -4741,10 +4415,7 @@
       },
       "SearchAlongRouteResponse": {
         "type": "object",
-        "required": [
-          "route",
-          "places"
-        ],
+        "required": ["route", "places"],
         "properties": {
           "route": {
             "$ref": "#/components/schemas/Route",
@@ -4786,24 +4457,15 @@
       },
       "CircleArea": {
         "type": "object",
-        "required": [
-          "type",
-          "center",
-          "radius_m"
-        ],
+        "required": ["type", "center", "radius_m"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "circle"
-            ]
+            "enum": ["circle"]
           },
           "center": {
             "type": "object",
-            "required": [
-              "lat",
-              "lng"
-            ],
+            "required": ["lat", "lng"],
             "properties": {
               "lat": {
                 "type": "number",
@@ -4830,30 +4492,20 @@
       },
       "PathArea": {
         "type": "object",
-        "required": [
-          "type",
-          "geometry"
-        ],
+        "required": ["type", "geometry"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "path"
-            ]
+            "enum": ["path"]
           },
           "geometry": {
             "type": "object",
-            "required": [
-              "type",
-              "coordinates"
-            ],
+            "required": ["type", "coordinates"],
             "description": "GeoJSON LineString geometry",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "LineString"
-                ]
+                "enum": ["LineString"]
               },
               "coordinates": {
                 "type": "array",
@@ -4881,30 +4533,20 @@
       "PolygonArea": {
         "type": "object",
         "description": "Polygon search area. Maximum area 25 km².",
-        "required": [
-          "type",
-          "geometry"
-        ],
+        "required": ["type", "geometry"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "polygon"
-            ]
+            "enum": ["polygon"]
           },
           "geometry": {
             "type": "object",
-            "required": [
-              "type",
-              "coordinates"
-            ],
+            "required": ["type", "coordinates"],
             "description": "GeoJSON Polygon geometry (max 25 km²)",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "Polygon"
-                ]
+                "enum": ["Polygon"]
               },
               "coordinates": {
                 "type": "array",
@@ -4926,9 +4568,7 @@
       },
       "PredictParams": {
         "type": "object",
-        "required": [
-          "datetime"
-        ],
+        "required": ["datetime"],
         "properties": {
           "age_years": {
             "type": "number",
@@ -4959,18 +4599,11 @@
       },
       "PredictRequest": {
         "type": "object",
-        "required": [
-          "profile",
-          "area",
-          "params"
-        ],
+        "required": ["profile", "area", "params"],
         "properties": {
           "profile": {
             "type": "string",
-            "enum": [
-              "despondent",
-              "dementia_alzheimers"
-            ],
+            "enum": ["despondent", "dementia_alzheimers"],
             "description": "Behavioural profile id. Must be one of the listed values."
           },
           "area": {
@@ -5018,10 +4651,7 @@
             "description": "Per-hex predictions sorted by score (highest first)",
             "items": {
               "type": "object",
-              "required": [
-                "hex",
-                "score"
-              ],
+              "required": ["hex", "score"],
               "properties": {
                 "hex": {
                   "type": "string",
@@ -5038,10 +4668,7 @@
           },
           "summary": {
             "type": "object",
-            "required": [
-              "hex_count",
-              "processing_time_ms"
-            ],
+            "required": ["hex_count", "processing_time_ms"],
             "properties": {
               "hex_count": {
                 "type": "integer",
@@ -5055,11 +4682,7 @@
           },
           "confidence": {
             "type": "string",
-            "enum": [
-              "high",
-              "medium",
-              "low"
-            ],
+            "enum": ["high", "medium", "low"],
             "description": "Model confidence level for the search area"
           }
         }
@@ -5098,18 +4721,12 @@
       },
       "Origin": {
         "type": "object",
-        "required": [
-          "coordinates",
-          "resolved_from"
-        ],
+        "required": ["coordinates", "resolved_from"],
         "description": "Echoed origin of the route. Always carries coordinates; geocoded fields (name/label/place_type/country_code) are present when the caller passed a string and omitted when the caller passed coordinates directly.",
         "properties": {
           "coordinates": {
             "type": "object",
-            "required": [
-              "lat",
-              "lng"
-            ],
+            "required": ["lat", "lng"],
             "properties": {
               "lat": {
                 "type": "number"
@@ -5121,10 +4738,7 @@
           },
           "resolved_from": {
             "type": "string",
-            "enum": [
-              "string",
-              "coordinates"
-            ],
+            "enum": ["string", "coordinates"],
             "description": "How the origin was supplied: `string` (geocoded internally) or `coordinates` (passed through verbatim)."
           },
           "name": {
