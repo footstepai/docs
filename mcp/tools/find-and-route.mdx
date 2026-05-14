@@ -9,7 +9,7 @@ Both `origin` and `destination` accept either lat/lon coordinates or a place nam
 
 ## Example prompts
 
-- "How do I get from SE3 0HA to Buckingham Palace?"
+- "How do I get from SW1A 1AA to Buckingham Palace?"
 - "Directions from Kings Cross to the British Museum"
 - "Walking route from my hotel at 51.52, -0.13 to the nearest train station"
 - "Find 10 Downing Street and show me how to cycle there from Westminster"
@@ -46,7 +46,7 @@ Responses include a `render` envelope with a `linestring` layer for the route pl
     "route": { "distance_meters": 4312, "duration_seconds": 723 },
     "render": [
       { "kind": "linestring", "label": "Route", "data": {/* GeoJSON */}, "bbox": [/* … */] },
-      { "kind": "point", "label": "Start: SE3 0HA", "data": {/* FeatureCollection */}, "bbox": [/* … */] },
+      { "kind": "point", "label": "Start: SW1A 1AA", "data": {/* FeatureCollection */}, "bbox": [/* … */] },
       { "kind": "point", "label": "Destination: London Bridge", "data": {/* FeatureCollection */}, "bbox": [/* … */] }
     ]
   }
