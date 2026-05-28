@@ -919,7 +919,7 @@
       "get": {
         "operationId": "geocodingSearch",
         "summary": "Search for a place or address",
-        "description": "Forward geocode: convert a text query (address, place name, landmark) into geographic coordinates. Results are ranked by relevance. Use focus.point to bias results towards a location. Use boundary.country to restrict to specific countries.",
+        "description": "Forward geocode: convert a text query (address, place name, landmark) into geographic coordinates. Results are ranked by relevance. Whenever you have any spatial context — the user's visible viewport, last-known location, a prior result — supply `focus.point.lat`+`focus.point.lon` so common place names ('Cambridge', 'Bath', 'Lebanon') resolve to the one the caller means. Add `boundary.country` (comma-separated ISO 3166-1 alpha-3 codes) when the search context is country-bound.",
         "tags": ["Geocoding"],
         "parameters": [
           {
@@ -950,7 +950,7 @@
               "minimum": -90,
               "maximum": 90
             },
-            "description": "Latitude to bias results towards"
+            "description": "Latitude to bias results toward. Supply whenever you have spatial context — viewport centre, last-known location, a prior result. Same-name places nearby float above distant namesakes. Pair with `focus.point.lon`."
           },
           {
             "name": "focus.point.lon",
@@ -960,7 +960,7 @@
               "minimum": -180,
               "maximum": 180
             },
-            "description": "Longitude to bias results towards"
+            "description": "Longitude to bias results toward. Pair with `focus.point.lat`."
           },
           {
             "name": "boundary.country",
@@ -968,7 +968,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Comma-separated ISO 3166-1 alpha-3 country codes (e.g. GBR,USA)"
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes to restrict results (e.g. 'GBR' or 'GBR,USA'). Set when the search context is country-bound."
           },
           {
             "name": "place_types",
@@ -1239,7 +1239,7 @@
       "get": {
         "operationId": "geocodingAutocomplete",
         "summary": "Autocomplete place search",
-        "description": "Typeahead search: get suggestions as the user types. Optimised for low-latency responses. Use focus.point to bias results towards the user's current location.",
+        "description": "Typeahead search: get suggestions as the user types. Optimised for low-latency responses. Supply `focus.point.lat`+`focus.point.lon` whenever you have spatial context — the user's current location, map viewport, last-known anchor — so suggestions reflect where they are. Add `boundary.country` (comma-separated ISO 3166-1 alpha-3 codes) when the search context is country-bound.",
         "tags": ["Geocoding"],
         "parameters": [
           {
@@ -1270,7 +1270,7 @@
               "minimum": -90,
               "maximum": 90
             },
-            "description": "Latitude to bias results towards"
+            "description": "Latitude to bias results toward. Supply whenever you have spatial context — user's current location, map viewport, last-known anchor. Same-name places nearby float above distant namesakes. Pair with `focus.point.lon`."
           },
           {
             "name": "focus.point.lon",
@@ -1280,7 +1280,7 @@
               "minimum": -180,
               "maximum": 180
             },
-            "description": "Longitude to bias results towards"
+            "description": "Longitude to bias results toward. Pair with `focus.point.lat`."
           },
           {
             "name": "boundary.country",
@@ -1288,7 +1288,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Comma-separated ISO 3166-1 alpha-3 country codes (e.g. GBR,USA)"
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes to restrict results (e.g. 'GBR' or 'GBR,USA'). Set when the search context is country-bound."
           },
           {
             "name": "place_types",
@@ -1715,7 +1715,7 @@
       "get": {
         "operationId": "geocodingPlaces",
         "summary": "Find places near a location",
-        "description": "Find points of interest (cafes, supermarkets, parks, ATMs, etc.) near a location. Pass `near` as a place name (e.g. 'Kings Cross, London') and the endpoint geocodes it for you, or pass `near.lat`+`near.lon` if you already have coordinates. For 'find X near Y' queries, prefer this over a separate `/v1/geocoding/search` call.",
+        "description": "Find points of interest (cafes, supermarkets, parks, ATMs, etc.) near a location. Prefer `near.lat`+`near.lon` whenever you already have coordinates — this disambiguates common place names that exist in multiple countries. Use `near` only when you genuinely have just a place name, and qualify it tightly (e.g. 'Kings Cross, London' not 'Kings Cross'; 'Lebanon, NH' not 'Lebanon'). Add `boundary.country` to restrict results when the search context is country-bound. For 'find X near Y' queries, prefer this over a separate `/v1/geocoding/search` call.",
         "tags": ["Geocoding"],
         "parameters": [
           {
@@ -1745,7 +1745,7 @@
               "minimum": -90,
               "maximum": 90
             },
-            "description": "Latitude of search center. Use with `near.lon` when you already have coordinates; otherwise prefer `near`."
+            "description": "Latitude of search center. Prefer this over `near` whenever you already have coordinates — viewport centre, last-known location, a prior result. Pair with `near.lon`."
           },
           {
             "name": "near.lon",
@@ -1786,7 +1786,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Comma-separated ISO 3166-1 alpha-3 country codes (e.g. GBR,USA)"
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes to restrict results (e.g. 'GBR' or 'GBR,USA'). Set when the search context is country-bound."
           }
         ],
         "responses": {
@@ -2098,7 +2098,7 @@
       "get": {
         "tags": ["Geocoding"],
         "summary": "Resolve a free-text place name to a single best location",
-        "description": "Given free text like 'Kings Cross, London', returns the single best matching location. Uses heuristics to prefer specific matches (venue, neighbourhood, address) over broad admin fallbacks (locality, region) when the input contains a comma. Use this when you need ONE location, not a ranked list of candidates.",
+        "description": "Given free text like 'Kings Cross, London', returns the single best matching location. Uses heuristics to prefer specific matches (venue, neighbourhood, address) over broad admin fallbacks (locality, region) when the input contains a comma. Supply `focus.point.lat`+`focus.point.lon` whenever you have spatial context so common place names ('Cambridge', 'Bath', 'Lebanon') resolve to the one the caller means. Add `boundary.country` (comma-separated ISO 3166-1 alpha-3 codes) when the search context is country-bound. Use this when you need ONE location, not a ranked list of candidates.",
         "operationId": "geocodingResolve",
         "parameters": [
           {
@@ -2111,13 +2111,35 @@
             "description": "Free-text place name to resolve (e.g. 'Kings Cross, London')"
           },
           {
+            "name": "focus.point.lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "description": "Latitude to bias results toward. Supply whenever you have spatial context — viewport centre, last-known location, a prior result. Same-name places nearby float above distant namesakes. Pair with `focus.point.lon`."
+          },
+          {
+            "name": "focus.point.lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "description": "Longitude to bias results toward. Pair with `focus.point.lat`."
+          },
+          {
             "name": "boundary.country",
             "in": "query",
             "required": false,
             "schema": {
               "type": "string"
             },
-            "description": "Comma-separated ISO 3166-1 alpha-3 country codes to restrict results"
+            "description": "Comma-separated ISO 3166-1 alpha-3 country codes to restrict results (e.g. 'GBR' or 'GBR,USA'). Set when the search context is country-bound."
           }
         ],
         "responses": {
