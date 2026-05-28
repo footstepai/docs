@@ -5,7 +5,7 @@ description: 'Convert an address or place name to coordinates'
 
 Forward geocode: turn a text query (address, place name, or landmark) into geographic coordinates. Results are ranked by relevance and include a confidence score.
 
-You can bias results towards a location or restrict to specific countries for better accuracy.
+You can bias results towards a location with `focus_lat`+`focus_lon`, or restrict to specific countries with `country` (comma-separated ISO 3166-1 alpha-3 codes). Supply `focus_lat`+`focus_lon` whenever you have any spatial context — a visible viewport, a previous result, a known anchor. Common place names like "Cambridge", "Bath", or "Lebanon" exist in several countries; a focus point picks the one the user means.
 
 ## Example prompts
 

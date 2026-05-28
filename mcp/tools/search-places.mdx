@@ -7,7 +7,9 @@ Search for places by category or keyword near a location. Unlike `geocode` (whic
 
 `query` accepts both **categories** (cafe, restaurant, supermarket, park, gym, atm, pharmacy, hotel, hospital, fuel, library, museum, …) and **specific names** (Costa, Tesco, Black Sheep Coffee, Tower Bridge). Categories are expanded internally to multilingual synonyms — "cafe" also catches "coffee", "café", "kaffee", etc. Hybrid queries like "italian restaurant" combine the literal phrase with the category synonyms.
 
-For "find X near Y" queries, pass `near` as a place name and the search center is geocoded for you — there is no need to call `geocode` first. If you already have coordinates, pass `lat` and `lon` instead.
+For "find X near Y" queries, pass `near` as a place name and the search center is geocoded for you — there is no need to call `geocode` first. If you already have coordinates, pass `lat` and `lon` instead — this disambiguates common place names that exist in multiple countries.
+
+Qualify ambiguous `near` strings tightly: "Lebanon, NH" not just "Lebanon", "Cambridge, UK" when you specifically mean the English one. Add `country` (comma-separated ISO 3166-1 alpha-3 codes, e.g. `"GBR"` or `"USA,CAN"`) when the search context is country-bound.
 
 ## Example prompts
 
@@ -15,6 +17,7 @@ For "find X near Y" queries, pass `near` as a place name and the search center i
 - "What restaurants are within 1km of my hotel?" → `search_places(query="restaurant", lat=..., lon=..., radius=1)`
 - "Are there any supermarkets near 51.53, -0.12?" → `search_places(query="supermarket", lat=51.53, lon=-0.12)`
 - "Show me parks within walking distance of Tower Bridge" → `search_places(query="park", near="Tower Bridge, London")`
+- "Find an airport near Lebanon, NH" → `search_places(query="airport", near="Lebanon, NH", country="USA")`
 
 ## What you get back
 
